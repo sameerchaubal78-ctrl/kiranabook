@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KiranaBook — Smart Store Manager</title>
+  <meta name="description" content="Track inventory, manage udhar khata, and record daily sales. Free digital store manager for Indian kirana shop owners." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+
+  <!-- ═══════════════════════════════════════════════════════════
+       STEP 1 OF SETUP: Replace these two values with your own
+       from https://supabase.com → your project → Settings → API
+  ════════════════════════════════════════════════════════════ -->
+  <script>
+    var SUPABASE_URL  = 'https://mixrbhloeesotpbpinrt.supabase.co';
+    var SUPABASE_ANON = 'sb_publishable_rApZB0cGwexMB4rQcEsrEA_e7qayOPn';
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    /* ── Reset & Tokens ─────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --saffron:       #E8650A;
+      --saffron-light: #FFF0E6;
+      --saffron-dark:  #B54D04;
+      --green:         #1A6B3A;
+      --green-light:   #E8F5EE;
+      --ink:           #1A1207;
+      --cream:         #FDFAF4;
+      --warm-gray:     #8A7E6F;
+      --border:        #E8DFD0;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--ink); overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+
+    /* ── Page visibility ─────────────────────────────────────── */
+    .page { display: none; }
+    .page.active { display: block; }
+
+    /* ── Shared buttons ──────────────────────────────────────── */
+    .btn-primary { background: var(--saffron); color: #fff; padding: 13px 26px; border-radius: 10px; font-size: 15px; font-weight: 500; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background .2s, transform .1s; display: inline-flex; align-items: center; gap: 8px; }
+    .btn-primary:hover { background: var(--saffron-dark); transform: translateY(-1px); }
+    .btn-secondary { background: transparent; color: var(--ink); padding: 13px 22px; border-radius: 10px; font-size: 15px; border: 1px solid var(--border); cursor: pointer; font-family: 'DM Sans', sans-serif; transition: border-color .2s, background .2s; }
+    .btn-secondary:hover { border-color: var(--ink); background: #f5f0e8; }
+
+    /* ════════════════════════════════════════════════════════
+       HOMEPAGE
+    ════════════════════════════════════════════════════════ */
+    .nav { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 2rem; border-bottom: 1px solid var(--border); background: var(--cream); position: sticky; top: 0; z-index: 100; }
+    .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; cursor: pointer; }
+    .logo-mark { width: 36px; height: 36px; background: var(--saffron); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+    .logo-text { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; color: var(--ink); }
+    .logo-text span { color: var(--saffron); }
+    .nav-links { display: flex; align-items: center; gap: 2rem; list-style: none; }
+    .nav-links a { font-size: 14px; color: var(--warm-gray); text-decoration: none; transition: color .2s; }
+    .nav-links a:hover { color: var(--ink); }
+    .nav-auth { display: flex; gap: 10px; align-items: center; }
+    .nav-signin { padding: 8px 18px; border-radius: 8px; font-size: 14px; font-weight: 500; border: 1px solid var(--border); background: transparent; cursor: pointer; font-family: 'DM Sans', sans-serif; color: var(--ink); transition: background .15s; }
+    .nav-signin:hover { background: var(--saffron-light); }
+    .nav-cta { background: var(--saffron); color: #fff; padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 500; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background .2s; }
+    .nav-cta:hover { background: var(--saffron-dark); }
+
+    /* Hero */
+    .hero { display: grid; grid-template-columns: 1fr 1fr; min-height: 560px; align-items: stretch; }
+    .hero-left { padding: 4rem 2rem 4rem 2.5rem; display: flex; flex-direction: column; justify-content: center; gap: 1.5rem; border-right: 1px solid var(--border); }
+    .hero-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--saffron-light); color: var(--saffron-dark); font-size: 12px; font-weight: 500; padding: 6px 12px; border-radius: 20px; width: fit-content; }
+    .hero-badge::before { content: ''; width: 6px; height: 6px; background: var(--saffron); border-radius: 50%; display: inline-block; }
+    .hero-headline { font-family: 'Playfair Display', serif; font-size: 48px; font-weight: 900; line-height: 1.1; letter-spacing: -1px; }
+    .hero-headline em { font-style: italic; color: var(--saffron); }
+    .hero-sub { font-size: 16px; color: var(--warm-gray); line-height: 1.7; max-width: 420px; font-weight: 300; }
+    .hero-sub strong { color: var(--ink); font-weight: 500; }
+    .hero-actions { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    .hero-trust { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--warm-gray); }
+    .trust-avatars { display: flex; }
+    .trust-avatars span { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--cream); display: flex; align-items: center; justify-content: center; font-size: 12px; margin-left: -6px; font-weight: 500; }
+    .trust-avatars span:first-child { margin-left: 0; }
+    .hero-right { background: var(--ink); padding: 2.5rem; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+    .hero-right::before { content: ''; position: absolute; top: -60px; right: -60px; width: 240px; height: 240px; background: var(--saffron); border-radius: 50%; opacity: .08; }
+    .hero-right::after { content: ''; position: absolute; bottom: -40px; left: -40px; width: 180px; height: 180px; background: var(--green); border-radius: 50%; opacity: .12; }
+    .app-preview { background: #fff; border-radius: 16px; padding: 1.25rem; width: 100%; max-width: 320px; position: relative; z-index: 1; box-shadow: 0 32px 64px rgba(0,0,0,.4); }
+    .preview-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 1rem; }
+    .ps { background: #f7f5f0; border-radius: 8px; padding: 10px 12px; }
+    .ps-label { font-size: 10px; color: #999; margin-bottom: 3px; }
+    .ps-val { font-size: 16px; font-weight: 500; }
+    .pi { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border: 1px solid #f0ece4; border-radius: 8px; margin-bottom: 6px; }
+    .pi-name { font-size: 12px; font-weight: 500; flex: 1; }
+
+    /* Features */
+    .features { padding: 4rem 2.5rem; border-bottom: 1px solid var(--border); }
+    .section-label { font-size: 12px; font-weight: 500; letter-spacing: 1.5px; color: var(--saffron); text-transform: uppercase; margin-bottom: .75rem; }
+    .section-title { font-family: 'Playfair Display', serif; font-size: 34px; font-weight: 700; line-height: 1.2; margin-bottom: 3rem; max-width: 480px; }
+    .features-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+    .feature-card { background: var(--cream); padding: 2rem 1.75rem; transition: background .2s; }
+    .feature-card:hover { background: #fff; }
+    .feature-icon { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 1rem; }
+    .fi-orange { background: var(--saffron-light); } .fi-green { background: var(--green-light); } .fi-blue { background: #EBF4FF; }
+    .feature-name { font-size: 16px; font-weight: 500; margin-bottom: 8px; }
+    .feature-desc { font-size: 14px; color: var(--warm-gray); line-height: 1.65; font-weight: 300; }
+
+    /* How */
+    .how { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--border); }
+    .how-left { padding: 4rem 2.5rem; border-right: 1px solid var(--border); display: flex; flex-direction: column; justify-content: center; gap: 2rem; }
+    .steps { display: flex; flex-direction: column; gap: 1.5rem; }
+    .step { display: flex; gap: 1rem; align-items: flex-start; }
+    .step-num { width: 32px; height: 32px; border-radius: 50%; background: var(--saffron); color: #fff; font-size: 13px; font-weight: 500; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+    .step-name { font-size: 15px; font-weight: 500; margin-bottom: 4px; }
+    .step-desc { font-size: 14px; color: var(--warm-gray); line-height: 1.6; font-weight: 300; }
+    .how-right { background: var(--green); padding: 3rem 2.5rem; display: flex; align-items: center; justify-content: center; }
+    .testimonial-card { background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.15); border-radius: 16px; padding: 2rem; max-width: 320px; }
+    .quote-mark { font-family: 'Playfair Display', serif; font-size: 48px; color: rgba(255,255,255,.3); line-height: 1; margin-bottom: .5rem; }
+    .quote-text { font-size: 16px; color: rgba(255,255,255,.9); line-height: 1.7; font-weight: 300; margin-bottom: 1.5rem; }
+    .quote-text strong { color: #fff; font-weight: 500; }
+    .quote-author { display: flex; align-items: center; gap: 10px; }
+    .qa-avatar { width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,.2); display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 500; color: #fff; }
+    .qa-name { font-size: 14px; font-weight: 500; color: #fff; }
+    .qa-loc  { font-size: 12px; color: rgba(255,255,255,.55); }
+
+    /* CTA */
+    .cta-section { padding: 5rem 2.5rem; text-align: center; background: var(--ink); display: flex; flex-direction: column; align-items: center; gap: 1.5rem; position: relative; overflow: hidden; }
+    .cta-section::before { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 600px; height: 600px; background: radial-gradient(circle, rgba(232,101,10,.12) 0%, transparent 70%); pointer-events: none; }
+    .cta-tag { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--saffron); font-weight: 500; }
+    .cta-title { font-family: 'Playfair Display', serif; font-size: 42px; font-weight: 900; color: #fff; line-height: 1.15; letter-spacing: -.5px; position: relative; z-index: 1; }
+    .cta-title em { font-style: italic; color: var(--saffron); }
+    .cta-sub { font-size: 16px; color: rgba(255,255,255,.5); font-weight: 300; max-width: 400px; line-height: 1.7; position: relative; z-index: 1; }
+    .cta-note { font-size: 13px; color: rgba(255,255,255,.3); position: relative; z-index: 1; }
+    .footer { display: flex; align-items: center; justify-content: space-between; padding: 1.5rem 2.5rem; border-top: 1px solid var(--border); font-size: 13px; color: var(--warm-gray); }
+    .footer-logo { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 700; color: var(--ink); }
+    .footer-logo span { color: var(--saffron); }
+
+    /* ════════════════════════════════════════════════════════
+       AUTH MODAL
+    ════════════════════════════════════════════════════════ */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(26,18,7,.6); backdrop-filter: blur(4px); z-index: 500; align-items: center; justify-content: center; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: var(--cream); border-radius: 20px; padding: 2.5rem; width: 100%; max-width: 420px; margin: 1rem; position: relative; box-shadow: 0 40px 80px rgba(0,0,0,.25); animation: modalIn .25s ease; }
+    @keyframes modalIn { from { opacity:0; transform:translateY(20px) scale(.97); } to { opacity:1; transform:none; } }
+    .modal-close { position: absolute; top: 1.25rem; right: 1.25rem; width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border); background: transparent; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; color: var(--warm-gray); }
+    .modal-logo { display: flex; align-items: center; gap: 8px; margin-bottom: 1.75rem; }
+    .modal-logo-mark { width: 32px; height: 32px; background: var(--saffron); border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+    .modal-logo-text { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; }
+    .modal-logo-text span { color: var(--saffron); }
+    .modal-title { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; margin-bottom: .5rem; line-height: 1.2; }
+    .modal-sub { font-size: 14px; color: var(--warm-gray); margin-bottom: 2rem; line-height: 1.6; font-weight: 300; }
+    .google-btn {
+      display: flex; align-items: center; justify-content: center; gap: 12px;
+      width: 100%; padding: 14px; border-radius: 10px;
+      border: 1.5px solid var(--border); background: #fff;
+      font-size: 15px; font-weight: 500; cursor: pointer;
+      font-family: 'DM Sans', sans-serif; color: var(--ink);
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .google-btn:hover { border-color: #4285F4; box-shadow: 0 0 0 3px rgba(66,133,244,.12); }
+    .google-btn:disabled { opacity: .6; cursor: not-allowed; }
+    .auth-divider { display: flex; align-items: center; gap: 12px; margin: 1.5rem 0; }
+    .auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .auth-divider span { font-size: 12px; color: var(--warm-gray); }
+    .auth-benefits { display: flex; flex-direction: column; gap: 8px; }
+    .auth-benefit { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--warm-gray); }
+    .auth-benefit-icon { width: 24px; height: 24px; border-radius: 6px; background: var(--saffron-light); display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; }
+    .auth-error { background: #FFF0F0; border: 1px solid #FFD0D0; border-radius: 8px; padding: 10px 14px; font-size: 13px; color: #A32D2D; margin-top: 1rem; display: none; }
+
+    /* ════════════════════════════════════════════════════════
+       APP PAGE
+    ════════════════════════════════════════════════════════ */
+    .app-nav { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); background: var(--cream); position: sticky; top: 0; z-index: 100; }
+    .app-body { max-width: 720px; margin: 0 auto; padding: 1.5rem; }
+    .user-chip { display: flex; align-items: center; gap: 8px; }
+    .user-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--saffron-light); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; color: var(--saffron-dark); overflow: hidden; }
+    .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .user-name { font-size: 14px; font-weight: 500; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .signout-btn { padding: 6px 12px; border: 1px solid var(--border); background: transparent; border-radius: 7px; font-size: 12px; cursor: pointer; font-family: 'DM Sans', sans-serif; color: var(--warm-gray); transition: color .15s, border-color .15s; }
+    .signout-btn:hover { color: var(--ink); border-color: var(--ink); }
+
+    .stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 1.25rem; }
+    .stat-card { background: #f7f7f7; border-radius: 8px; padding: .85rem 1rem; }
+    .stat-label { font-size: 12px; color: #888; margin-bottom: 4px; }
+    .stat-value { font-size: 20px; font-weight: 500; }
+    .app-tabs { display: flex; gap: 4px; background: #f3f3f3; border-radius: 8px; padding: 4px; margin-bottom: 1.25rem; }
+    .app-tab { flex: 1; padding: 8px; text-align: center; font-size: 14px; cursor: pointer; border-radius: 6px; border: none; background: transparent; color: #666; font-family: 'DM Sans', sans-serif; }
+    .app-tab.on { background: #fff; color: #111; font-weight: 500; }
+    .panel { display: none; } .panel.on { display: block; }
+    .form-card { border: 1px solid #e5e5e5; border-radius: 12px; padding: 1rem; margin-bottom: 1rem; background: #fff; }
+    .form-label { font-size: 13px; font-weight: 500; color: #666; margin-bottom: 10px; }
+    .form-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+    .form-row3 { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+    .finput { padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; font-family: 'DM Sans', sans-serif; width: 100%; }
+    .fselect { padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; font-family: 'DM Sans', sans-serif; width: 100%; background: #fff; }
+    .abtn { padding: 8px 18px; background: #111; color: #fff; border: none; border-radius: 6px; font-size: 14px; cursor: pointer; font-family: 'DM Sans', sans-serif; margin-top: 4px; }
+    .abtn:hover { background: #333; }
+    .abtn:disabled { background: #999; cursor: not-allowed; }
+    .item-card { display: flex; align-items: center; gap: 12px; padding: 1rem; border: 1px solid #e5e5e5; border-radius: 10px; margin-bottom: 8px; background: #fff; }
+    .item-card.low { border-left: 3px solid #BA7517; }
+    .item-icon { width: 36px; height: 36px; border-radius: 8px; background: #f3f3f3; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .item-name { font-size: 15px; font-weight: 500; }
+    .item-meta { font-size: 12px; color: #888; margin-top: 2px; }
+    .stock-badge { font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: 500; display: inline-block; margin-top: 4px; }
+    .qty-ctrl { display: flex; align-items: center; gap: 6px; }
+    .qty-btn { width: 28px; height: 28px; border-radius: 6px; border: 1px solid #ddd; background: #f3f3f3; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; }
+    .qty-num { font-size: 15px; font-weight: 500; min-width: 28px; text-align: center; }
+    .del-btn { margin-left: 6px; padding: 6px 10px; border: 1px solid #A32D2D; color: #A32D2D; background: transparent; border-radius: 6px; cursor: pointer; font-size: 13px; }
+    .udhar-card { border: 1px solid #e5e5e5; border-radius: 12px; padding: 1rem; margin-bottom: 12px; background: #fff; }
+    .udhar-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .avatar { width: 38px; height: 38px; border-radius: 50%; background: #E6F1FB; display: flex; align-items: center; justify-content: center; font-weight: 500; font-size: 13px; color: #185FA5; flex-shrink: 0; }
+    .udhar-entry-row { display: flex; justify-content: space-between; padding: 6px 0; border-top: 1px solid #f0f0f0; font-size: 13px; }
+    .wa-btn { display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; background: #25D366; color: #fff; border: none; border-radius: 7px; font-size: 12px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+    .mark-paid-btn { padding: 6px 10px; border: 1px solid #ddd; background: transparent; border-radius: 7px; font-size: 12px; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+    .sale-card { display: flex; align-items: center; gap: 12px; padding: 1rem; border: 1px solid #e5e5e5; border-radius: 10px; margin-bottom: 8px; background: #fff; }
+    .search-input { width: 100%; padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; margin-bottom: 1rem; font-family: 'DM Sans', sans-serif; }
+    .empty { text-align: center; padding: 2rem; color: #888; font-size: 14px; }
+    .loading-state { text-align: center; padding: 3rem; color: #888; font-size: 14px; }
+    .spinner { width: 28px; height: 28px; border: 2px solid #ddd; border-top-color: var(--saffron); border-radius: 50%; animation: spin .7s linear infinite; margin: 0 auto 12px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #save-toast { display: none; position: fixed; bottom: 20px; right: 20px; background: #111; color: #fff; padding: 8px 16px; border-radius: 8px; font-size: 13px; z-index: 999; font-family: 'DM Sans', sans-serif; }
+    #cloud-status { font-size: 11px; color: #aaa; margin-left: 8px; }
+
+    /* Animations */
+    @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+    .hero-left > * { animation: fadeUp .5s ease both; }
+    .hero-left > *:nth-child(1) { animation-delay:.05s; }
+    .hero-left > *:nth-child(2) { animation-delay:.12s; }
+    .hero-left > *:nth-child(3) { animation-delay:.18s; }
+    .hero-left > *:nth-child(4) { animation-delay:.24s; }
+    .hero-left > *:nth-child(5) { animation-delay:.30s; }
+    .app-preview { animation: fadeUp .6s ease .2s both; }
+
+    @media (max-width: 700px) {
+      .hero { grid-template-columns: 1fr; }
+      .hero-right { display: none; }
+      .hero-left { padding: 2.5rem 1.25rem; }
+      .hero-headline { font-size: 34px; }
+      .features-grid { grid-template-columns: 1fr; }
+      .how { grid-template-columns: 1fr; }
+      .how-right { display: none; }
+      .nav-links { display: none; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .form-row3 { grid-template-columns: 1fr 1fr; }
+      .footer { flex-direction: column; gap: 8px; text-align: center; }
+      .user-name { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════
+     AUTH MODAL
+══════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="auth-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-logo">
+      <div class="modal-logo-mark">🏪</div>
+      <div class="modal-logo-text">Kirana<span>Book</span></div>
+    </div>
+    <h2 class="modal-title" id="modal-title">Welcome back</h2>
+    <p class="modal-sub" id="modal-sub">Sign in to access your store dashboard and all your data.</p>
+    <button class="google-btn" id="google-btn" onclick="signInWithGoogle()">
+      <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.35-8.16 2.35-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+      Continue with Google
+    </button>
+    <div class="auth-error" id="auth-error"></div>
+    <div class="auth-divider"><span>why sign in?</span></div>
+    <div class="auth-benefits">
+      <div class="auth-benefit"><div class="auth-benefit-icon">☁️</div>Your data saved securely in the cloud</div>
+      <div class="auth-benefit"><div class="auth-benefit-icon">📱</div>Access from any phone or device</div>
+      <div class="auth-benefit"><div class="auth-benefit-icon">🔒</div>Private — only you can see your store data</div>
+      <div class="auth-benefit"><div class="auth-benefit-icon">🆓</div>Completely free, always</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     HOME PAGE
+══════════════════════════════════════════════════════════ -->
+<div id="page-home" class="page active">
+  <nav class="nav">
+    <div class="logo" onclick="scrollTo(0,0)">
+      <div class="logo-mark">🏪</div>
+      <div class="logo-text">Kirana<span>Book</span></div>
+    </div>
+    <ul class="nav-links">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#how">How it works</a></li>
+      <li><a href="#features">Free to use</a></li>
+    </ul>
+    <div class="nav-auth">
+      <button class="nav-signin" onclick="openModal('signin')">Sign in</button>
+      <button class="nav-cta" onclick="openModal('signup')">Create free account →</button>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-left">
+      <div class="hero-badge">Made for Indian Kirana Stores</div>
+      <h1 class="hero-headline">Run your store<br><em>smarter,</em><br>not harder.</h1>
+      <p class="hero-sub">Track stock, manage <strong>udhar khata</strong>, and record daily sales — all in one free app. Your data saved securely in the cloud.</p>
+      <div class="hero-actions">
+        <button class="btn-primary" onclick="openModal('signup')">शुरू करें — Create free account →</button>
+        <button class="btn-secondary" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">See features</button>
+      </div>
+      <div class="hero-trust">
+        <div class="trust-avatars">
+          <span style="background:#FAEEDA;color:#854F0B;">R</span>
+          <span style="background:#E6F1FB;color:#185FA5;">S</span>
+          <span style="background:#EAF3DE;color:#3B6D11;">M</span>
+          <span style="background:#F4C0D1;color:#72243E;">P</span>
+        </div>
+        <span>Trusted by 500+ kirana owners across India</span>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="app-preview">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+          <div style="font-size:14px;font-weight:500;">Today's Overview</div>
+          <div style="font-size:11px;color:#999;">16 May, 2026</div>
+        </div>
+        <div class="preview-stats">
+          <div class="ps"><div class="ps-label">Stock value</div><div class="ps-val">₹42,800</div></div>
+          <div class="ps"><div class="ps-label">Today's sales</div><div class="ps-val" style="color:#1A6B3A">₹3,240</div></div>
+          <div class="ps"><div class="ps-label">Low stock</div><div class="ps-val" style="color:#E8650A">3 items</div></div>
+          <div class="ps"><div class="ps-label">Total udhar</div><div class="ps-val" style="color:#A32D2D">₹1,870</div></div>
+        </div>
+        <div class="pi"><span>🌾</span><span class="pi-name">Tata Salt 1kg</span><span style="font-size:10px;padding:2px 6px;border-radius:10px;background:#EAF3DE;color:#3B6D11;font-weight:500;">In stock</span></div>
+        <div class="pi"><span>🥛</span><span class="pi-name">Amul Butter</span><span style="font-size:10px;padding:2px 6px;border-radius:10px;background:#FAEEDA;color:#854F0B;font-weight:500;">⚠ Low</span></div>
+        <div style="margin-top:10px;padding:10px 12px;background:#FFF5F5;border-radius:8px;display:flex;align-items:center;justify-content:space-between;">
+          <div><div style="font-size:10px;color:#999;">Latest udhar</div><div style="font-size:13px;font-weight:500;">Ramesh Sharma</div></div>
+          <div style="font-size:13px;font-weight:500;color:#A32D2D;">owes ₹350</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="features" id="features">
+    <div class="section-label">Features</div>
+    <h2 class="section-title">Everything your store needs, nothing it doesn't.</h2>
+    <div class="features-grid">
+      <div class="feature-card"><div class="feature-icon fi-orange">📦</div><div class="feature-name">Smart Inventory Tracker</div><div class="feature-desc">Add items, update stock with one tap. Get automatic low-stock alerts before you run out of anything.</div></div>
+      <div class="feature-card"><div class="feature-icon fi-green">📒</div><div class="feature-name">Digital Udhar Khata</div><div class="feature-desc">Replace your paper notebook. Track credit per customer, record payments, see who owes what — instantly.</div></div>
+      <div class="feature-card"><div class="feature-icon fi-blue">📊</div><div class="feature-name">Daily Sales Log</div><div class="feature-desc">Record every sale by cash, UPI, or udhar. Know your daily earnings without any manual calculation.</div></div>
+      <div class="feature-card"><div class="feature-icon fi-orange">💬</div><div class="feature-name">WhatsApp Reminders</div><div class="feature-desc">Send customers their balance on WhatsApp with one tap. Professional message, zero effort.</div></div>
+      <div class="feature-card"><div class="feature-icon fi-green">☁️</div><div class="feature-name">Cloud Sync</div><div class="feature-desc">Your data is saved to the cloud under your Google account. Access it from any phone, any time.</div></div>
+      <div class="feature-card"><div class="feature-icon fi-blue">🆓</div><div class="feature-name">Completely Free</div><div class="feature-desc">No subscription. No hidden charges. KiranaBook is free for every shop owner in India. Always.</div></div>
+    </div>
+  </section>
+
+  <section class="how" id="how">
+    <div class="how-left">
+      <div>
+        <div class="section-label">How it works</div>
+        <h2 class="section-title">Up and running in 3 minutes.</h2>
+      </div>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div><div class="step-name">Create your free account</div><div class="step-desc">Sign up with your Google account in one tap. No passwords to remember.</div></div></div>
+        <div class="step"><div class="step-num">2</div><div><div class="step-name">Add your stock & customers</div><div class="step-desc">Enter your inventory and start recording udhar. Takes less time than a paper notebook.</div></div></div>
+        <div class="step"><div class="step-num">3</div><div><div class="step-name">Run your store smarter</div><div class="step-desc">Track sales, get low-stock alerts, send WhatsApp reminders, and see your store's health daily.</div></div></div>
+      </div>
+      <button class="btn-primary" style="width:fit-content" onclick="openModal('signup')">Create free account →</button>
+    </div>
+    <div class="how-right">
+      <div class="testimonial-card">
+        <div class="quote-mark">"</div>
+        <p class="quote-text">Pehle udhar ka hisaab notebook mein likhta tha aur bhool jaata tha. Ab <strong>sab kuch phone mein hai</strong> — kaun kitna deta hai, sab pata rehta hai.</p>
+        <div class="quote-author">
+          <div class="qa-avatar">RS</div>
+          <div><div class="qa-name">Rajesh Singh</div><div class="qa-loc">Kirana store owner, Pune</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-section">
+    <div class="cta-tag">Free forever · Works on any phone · Your data in the cloud</div>
+    <h2 class="cta-title">Your store deserves<br>a <em>smarter</em> system.</h2>
+    <p class="cta-sub">Join hundreds of kirana owners who have moved from paper notebooks to a modern digital store manager.</p>
+    <button class="btn-primary" style="font-size:16px;padding:16px 36px;" onclick="openModal('signup')">शुरू करें — Start Free Today →</button>
+    <div class="cta-note">No credit card · No download · Sign in with Google</div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-logo">Kirana<span>Book</span></div>
+    <div>Made with ❤️ for Indian kirana store owners</div>
+    <div>© 2026 KiranaBook</div>
+  </footer>
+</div><!-- /page-home -->
+
+
+<!-- ══════════════════════════════════════════════════════════
+     APP PAGE
+══════════════════════════════════════════════════════════ -->
+<div id="page-app" class="page">
+  <nav class="app-nav">
+    <div class="logo" onclick="goHome()" style="cursor:pointer;">
+      <div class="logo-mark" style="width:30px;height:30px;font-size:15px;">🏪</div>
+      <div class="logo-text" style="font-size:17px;">Kirana<span>Book</span></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span id="cloud-status"></span>
+      <div class="user-chip">
+        <div class="user-avatar" id="user-avatar"></div>
+        <span class="user-name" id="user-name"></span>
+      </div>
+      <button class="signout-btn" onclick="signOut()">Sign out</button>
+    </div>
+  </nav>
+
+  <div class="app-body">
+    <div class="stats-grid" id="stats-row"></div>
+    <div class="app-tabs">
+      <button id="tb-inv" class="app-tab on" onclick="showTab('inv')">📦 Inventory</button>
+      <button id="tb-udh" class="app-tab" onclick="showTab('udh')">📒 Udhar Khata</button>
+      <button id="tb-sal" class="app-tab" onclick="showTab('sal')">📊 Sales</button>
+    </div>
+
+    <!-- Inventory -->
+    <div id="panel-inv" class="panel on">
+      <div class="form-card">
+        <div class="form-label">Add new item</div>
+        <div class="form-row3">
+          <input id="i-name" class="finput" placeholder="Item name" />
+          <input id="i-qty" class="finput" type="number" placeholder="Qty" min="0" />
+          <input id="i-price" class="finput" type="number" placeholder="Price ₹" min="0" />
+        </div>
+        <div class="form-row2" style="margin-bottom:10px;">
+          <select id="i-cat" class="fselect"><option>Grains & Dal</option><option>Oil & Ghee</option><option>Spices</option><option>Snacks</option><option>Beverages</option><option>Dairy</option><option>Cleaning</option><option>Other</option></select>
+          <input id="i-low" class="finput" type="number" placeholder="Low stock alert below" min="0" />
+        </div>
+        <button id="btn-add-item" class="abtn">+ Add item</button>
+      </div>
+      <input id="i-search" class="search-input" placeholder="Search items..." />
+      <div style="font-size:13px;font-weight:500;color:#666;margin-bottom:10px;">Stock list</div>
+      <div id="inv-list"></div>
+    </div>
+
+    <!-- Udhar -->
+    <div id="panel-udh" class="panel">
+      <div class="form-card">
+        <div class="form-label">Add udhar entry</div>
+        <div class="form-row2">
+          <input id="u-name" class="finput" placeholder="Customer name" />
+          <input id="u-amt" class="finput" type="number" placeholder="Amount ₹" min="0" />
+        </div>
+        <div class="form-row2" style="margin-bottom:10px;">
+          <select id="u-type" class="fselect"><option value="debit">Gave on credit (उधार दिया)</option><option value="credit">Received payment (पैसे मिले)</option></select>
+          <input id="u-note" class="finput" placeholder="Note (optional)" />
+        </div>
+        <button id="btn-add-udhar" class="abtn">+ Add entry</button>
+      </div>
+      <div style="font-size:13px;font-weight:500;color:#666;margin-bottom:10px;">Customer balances</div>
+      <div id="udh-list"></div>
+    </div>
+
+    <!-- Sales -->
+    <div id="panel-sal" class="panel">
+      <div class="form-card">
+        <div class="form-label">Record a sale</div>
+        <div class="form-row3" style="margin-bottom:10px;">
+          <select id="s-item" class="fselect"></select>
+          <input id="s-qty" class="finput" type="number" placeholder="Qty" min="1" />
+          <select id="s-pay" class="fselect"><option>Cash</option><option>UPI</option><option>Udhar</option></select>
+        </div>
+        <button id="btn-add-sale" class="abtn">+ Record sale</button>
+      </div>
+      <div style="font-size:13px;font-weight:500;color:#666;margin-bottom:10px;">Today's sales</div>
+      <div id="sal-list"></div>
+    </div>
+  </div>
+</div>
+
+<div id="save-toast">☁️ Saved</div>
+
+<script>
+(function(){
+  /* ══════════════════════════════════════════════════════════
+     SUPABASE INIT
+  ══════════════════════════════════════════════════════════ */
+  var sb = null;
+  var currentUser = null;
+
+  function initSupabase(){
+    if(SUPABASE_URL === 'YOUR_SUPABASE_URL' || SUPABASE_ANON === 'YOUR_SUPABASE_ANON_KEY'){
+      console.warn('KiranaBook: Supabase not configured. Running in demo mode with localStorage.');
+      return false;
+    }
+    try {
+      sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+      return true;
+    } catch(e){ console.error('Supabase init error:', e); return false; }
+  }
+
+  var sbReady = initSupabase();
+
+  /* ══════════════════════════════════════════════════════════
+     AUTH
+  ══════════════════════════════════════════════════════════ */
+  window.openModal = function(mode){
+    var modal = document.getElementById('auth-modal');
+    document.getElementById('modal-title').textContent = mode === 'signup' ? 'Create your account' : 'Welcome back';
+    document.getElementById('modal-sub').textContent = mode === 'signup'
+      ? 'Sign up with Google to get your free store dashboard — your data saved securely in the cloud.'
+      : 'Sign in to access your store dashboard and all your data.';
+    document.getElementById('auth-error').style.display = 'none';
+    modal.classList.add('open');
+  };
+
+  window.closeModal = function(){
+    document.getElementById('auth-modal').classList.remove('open');
+  };
+
+  window.signInWithGoogle = function(){
+    if(!sbReady){
+      showAuthError('Supabase is not configured yet. See the setup guide in the HTML comments to add your credentials.');
+      return;
+    }
+    var btn = document.getElementById('google-btn');
+    btn.disabled = true;
+    btn.textContent = 'Redirecting to Google...';
+    sb.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: window.location.href }
+    }).then(function(res){
+      if(res.error){ showAuthError(res.error.message); btn.disabled=false; btn.innerHTML = googleBtnHTML(); }
+    });
+  };
+
+  function googleBtnHTML(){
+    return '<svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.35-8.16 2.35-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg> Continue with Google';
+  }
+
+  function showAuthError(msg){
+    var el = document.getElementById('auth-error');
+    el.textContent = msg; el.style.display = 'block';
+  }
+
+  window.signOut = function(){
+    if(sb){ sb.auth.signOut(); }
+    currentUser = null;
+    showPage('home');
+  };
+
+  /* ── Listen for auth state ── */
+  if(sbReady){
+    sb.auth.onAuthStateChange(function(event, session){
+      if(session && session.user){
+        currentUser = session.user;
+        closeModal();
+        loadUserAndShowApp(session.user);
+      } else {
+        currentUser = null;
+      }
+    });
+    // Check existing session on load
+    sb.auth.getSession().then(function(res){
+      if(res.data && res.data.session){
+        currentUser = res.data.session.user;
+        loadUserAndShowApp(res.data.session.user);
+      }
+    });
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     DATA — Supabase tables (per-user via RLS) OR localStorage
+  ══════════════════════════════════════════════════════════ */
+  var EMOJIS = {'Grains & Dal':'🌾','Oil & Ghee':'🫙','Spices':'🌶️','Snacks':'🍿','Beverages':'🧃','Dairy':'🥛','Cleaning':'🧹','Other':'📦'};
+  var items = [], udhar = [], sales = [], nid = 1000;
+
+  /* localStorage fallback (demo mode / no Supabase) */
+  function lsLoad(key,fb){ try{ var r=localStorage.getItem('kb_'+key); return r?JSON.parse(r):fb; }catch(e){ return fb; } }
+  function lsSave(key,val){ try{ localStorage.setItem('kb_'+key,JSON.stringify(val)); }catch(e){} }
+
+  function setCloudStatus(msg){ document.getElementById('cloud-status').textContent = msg; }
+
+  async function loadUserAndShowApp(user){
+    showPage('app');
+    // Set user info in nav
+    var nameEl = document.getElementById('user-name');
+    var avatarEl = document.getElementById('user-avatar');
+    var displayName = user.user_metadata && user.user_metadata.full_name ? user.user_metadata.full_name : user.email;
+    nameEl.textContent = displayName.split(' ')[0];
+    if(user.user_metadata && user.user_metadata.avatar_url){
+      avatarEl.innerHTML = '<img src="'+user.user_metadata.avatar_url+'" alt="avatar" />';
+    } else {
+      avatarEl.textContent = displayName[0].toUpperCase();
+    }
+    await loadData(user.id);
+    drawAll();
+  }
+
+  async function loadData(userId){
+    if(!sbReady){
+      // Demo mode — use localStorage
+      items = lsLoad('items', getDefaultItems());
+      udhar = lsLoad('udhar', getDefaultUdhar());
+      sales = lsLoad('sales', []);
+      setCloudStatus('📱 Demo mode');
+      return;
+    }
+    setCloudStatus('⏳ Loading...');
+    try {
+      var [iRes, uRes, sRes] = await Promise.all([
+        sb.from('kb_items').select('*').eq('user_id', userId).order('created_at'),
+        sb.from('kb_udhar').select('*').eq('user_id', userId).order('created_at'),
+        sb.from('kb_sales').select('*').eq('user_id', userId).order('created_at', {ascending:false})
+      ]);
+      items = iRes.data || [];
+      udhar = uRes.data || [];
+      sales = sRes.data || [];
+      setCloudStatus('☁️ Synced');
+    } catch(e){
+      setCloudStatus('⚠️ Offline');
+      items = lsLoad('items_'+userId, getDefaultItems());
+      udhar = lsLoad('udhar_'+userId, getDefaultUdhar());
+      sales = lsLoad('sales_'+userId, []);
+    }
+  }
+
+  function getDefaultItems(){
+    return [
+      {id:'d1',name:'Tata Salt 1kg',qty:45,price:22,cat:'Grains & Dal',low:10},
+      {id:'d2',name:'Amul Butter 100g',qty:8,price:55,cat:'Dairy',low:10},
+      {id:'d3',name:'Sunflower Oil 1L',qty:22,price:145,cat:'Oil & Ghee',low:5},
+      {id:'d4',name:'Parle-G Biscuits',qty:60,price:10,cat:'Snacks',low:20},
+      {id:'d5',name:'Red Chilli Powder',qty:4,price:85,cat:'Spices',low:5}
+    ];
+  }
+  function getDefaultUdhar(){
+    return [
+      {id:'e1',customer:'Ramesh Sharma',type:'debit',amount:350,note:'Oil, salt',date:'Yesterday'},
+      {id:'e2',customer:'Sunita Devi',type:'debit',amount:120,note:'Bread, butter',date:'Yesterday'},
+      {id:'e3',customer:'Sunita Devi',type:'credit',amount:50,note:'Partial payment',date:'Today'}
+    ];
+  }
+
+  /* ── Persist helpers ── */
+  var toastTimer;
+  function showToast(){ var t=document.getElementById('save-toast'); t.style.display='block'; clearTimeout(toastTimer); toastTimer=setTimeout(function(){t.style.display='none';},1800); }
+
+  async function persistItem(item, isNew){
+    showToast();
+    if(!sbReady || !currentUser){ lsSave('items', items); return; }
+    setCloudStatus('⏳ Saving...');
+    try {
+      if(isNew){
+        await sb.from('kb_items').insert({user_id:currentUser.id,name:item.name,qty:item.qty,price:item.price,cat:item.cat,low:item.low});
+      } else {
+        await sb.from('kb_items').update({qty:item.qty}).eq('id',item.id).eq('user_id',currentUser.id);
+      }
+      setCloudStatus('☁️ Saved');
+    } catch(e){ setCloudStatus('⚠️ Save failed'); }
+  }
+
+  async function deleteItem(id){
+    if(!sbReady || !currentUser){ items=items.filter(function(i){return i.id!==id;}); lsSave('items',items); drawAll(); return; }
+    items=items.filter(function(i){return i.id!==id;});
+    drawAll();
+    await sb.from('kb_items').delete().eq('id',id).eq('user_id',currentUser.id);
+    setCloudStatus('☁️ Saved');
+  }
+
+  async function persistUdhar(entry){
+    showToast();
+    if(!sbReady || !currentUser){ lsSave('udhar', udhar); return; }
+    setCloudStatus('⏳ Saving...');
+    try {
+      await sb.from('kb_udhar').insert({user_id:currentUser.id,customer:entry.customer,type:entry.type,amount:entry.amount,note:entry.note,date:entry.date});
+      setCloudStatus('☁️ Saved');
+    } catch(e){ setCloudStatus('⚠️ Save failed'); }
+  }
+
+  async function persistSale(sale){
+    showToast();
+    if(!sbReady || !currentUser){ lsSave('sales', sales); return; }
+    setCloudStatus('⏳ Saving...');
+    try {
+      await sb.from('kb_sales').insert({user_id:currentUser.id,name:sale.name,cat:sale.cat,qty:sale.qty,total:sale.total,pay:sale.pay,time:sale.time});
+      setCloudStatus('☁️ Saved');
+    } catch(e){ setCloudStatus('⚠️ Save failed'); }
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     UI HELPERS
+  ══════════════════════════════════════════════════════════ */
+  function rupee(n){ return '₹'+Number(n).toLocaleString('en-IN'); }
+  function ini(n){ return n.trim().split(/\s+/).map(function(w){return w[0];}).join('').toUpperCase().slice(0,2); }
+
+  function udharTotals(){
+    var t={};
+    for(var i=0;i<udhar.length;i++){
+      var e=udhar[i]; if(!t[e.customer])t[e.customer]=0;
+      t[e.customer]+= e.type==='debit'?Number(e.amount):-Number(e.amount);
+    }
+    return t;
+  }
+
+  /* ── WhatsApp ── */
+  function waShare(cust){
+    var t=udharTotals(),bal=t[cust]||0;
+    var entries=udhar.filter(function(e){return e.customer===cust;});
+    var today=new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'});
+    var lines=['🏪 *KiranaBook — Udhar Statement*','📅 Date: '+today,'👤 Customer: *'+cust+'*','─────────────────'];
+    var last=entries.slice(-5);
+    for(var i=0;i<last.length;i++){
+      var e=last[i];
+      lines.push((e.type==='debit'?'🔴 Credit given':'🟢 Payment received')+': *'+rupee(e.amount)+'*'+(e.note?' ('+e.note+')':''));
+    }
+    lines.push('─────────────────');
+    if(bal>0){lines.push('💰 *Total outstanding: '+rupee(bal)+'*','','Kripya jald se jald bhugtaan karen. 🙏');}
+    else if(bal<0){lines.push('✅ *Overpaid by '+rupee(-bal)+'* — Thank you!');}
+    else{lines.push('✅ *Account settled. Thank you!*');}
+    window.open('https://wa.me/?text='+encodeURIComponent(lines.join('\n')),'_blank');
+  }
+  window.waShare=waShare;
+
+  /* ══════════════════════════════════════════════════════════
+     DRAW FUNCTIONS
+  ══════════════════════════════════════════════════════════ */
+  function drawStats(){
+    var sv=0,lc=0;
+    for(var i=0;i<items.length;i++){sv+=Number(items[i].qty)*Number(items[i].price);if(Number(items[i].qty)<=Number(items[i].low))lc++;}
+    var t=udharTotals(),ud=0,ks=Object.keys(t);
+    for(var k=0;k<ks.length;k++){if(t[ks[k]]>0)ud+=t[ks[k]];}
+    var sd=0;for(var i=0;i<sales.length;i++)sd+=Number(sales[i].total);
+    var st=[{l:'Stock value',v:rupee(sv),c:'#111'},{l:'Low stock',v:lc,c:lc>0?'#854F0B':'#0F6E56'},{l:'Total udhar',v:rupee(ud),c:'#A32D2D'},{l:"Today's sales",v:rupee(sd),c:'#0F6E56'}];
+    var h='';
+    for(var i=0;i<st.length;i++) h+='<div class="stat-card"><div class="stat-label">'+st[i].l+'</div><div class="stat-value" style="color:'+st[i].c+'">'+st[i].v+'</div></div>';
+    document.getElementById('stats-row').innerHTML=h;
+  }
+
+  function drawInv(){
+    var q=(document.getElementById('i-search').value||'').toLowerCase();
+    var list=items.filter(function(i){return i.name.toLowerCase().indexOf(q)>=0;});
+    var el=document.getElementById('inv-list');
+    if(!list.length){el.innerHTML='<div class="empty">No items yet. Add your first item above.</div>';return;}
+    var h='';
+    for(var i=0;i<list.length;i++){
+      var it=list[i],qty=Number(it.qty),low=Number(it.low),price=Number(it.price),isLow=qty<=low;
+      h+='<div class="item-card'+(isLow?' low':'')+'">'+
+        '<div class="item-icon">'+(EMOJIS[it.cat]||'📦')+'</div>'+
+        '<div style="flex:1;min-width:0"><div class="item-name">'+it.name+'</div><div class="item-meta">'+it.cat+' · '+rupee(price)+' each · Value: '+rupee(qty*price)+'</div>'+
+        '<span class="stock-badge" style="background:'+(isLow?'#FAEEDA':'#EAF3DE')+';color:'+(isLow?'#854F0B':'#3B6D11')+'">'+(isLow?'⚠ Low stock':'In stock')+'</span></div>'+
+        '<div class="qty-ctrl"><button class="qty-btn" onclick="chQty(\''+it.id+'\', -1)">−</button><span class="qty-num">'+qty+'</span><button class="qty-btn" onclick="chQty(\''+it.id+'\', 1)">+</button></div>'+
+        '<button class="del-btn" onclick="delItem(\''+it.id+'\')">🗑</button>'+
+      '</div>';
+    }
+    el.innerHTML=h;
+  }
+
+  function drawUdhar(){
+    var t=udharTotals();
+    var customers=[];
+    for(var i=0;i<udhar.length;i++){if(customers.indexOf(udhar[i].customer)<0)customers.push(udhar[i].customer);}
+    var el=document.getElementById('udh-list');
+    if(!customers.length){el.innerHTML='<div class="empty">No udhar entries yet. Add one above.</div>';return;}
+    var h='';
+    for(var c=0;c<customers.length;c++){
+      var cust=customers[c],ents=udhar.filter(function(e){return e.customer===cust;});
+      var bal=t[cust]||0,balColor=bal>0?'#A32D2D':'#0F6E56';
+      var balLabel=bal>0?'Owes '+rupee(bal):bal<0?'Overpaid '+rupee(-bal):'Settled ✓';
+      h+='<div class="udhar-card"><div class="udhar-head">'+
+        '<div class="avatar">'+ini(cust)+'</div>'+
+        '<div style="flex:1"><div style="font-weight:500;font-size:15px">'+cust+'</div><div style="font-size:13px;font-weight:500;color:'+balColor+'">'+balLabel+'</div></div>'+
+        '<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">'+
+          '<button class="wa-btn" onclick="waShare(\''+cust+'\')"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> WhatsApp</button>'+
+          (bal>0?'<button class="mark-paid-btn" onclick="markPaid(\''+cust+'\')">Mark paid</button>':'')+
+        '</div></div>';
+      var show=ents.slice(-4);
+      for(var e=0;e<show.length;e++){
+        var en=show[e];
+        h+='<div class="udhar-entry-row"><span style="color:#888">'+en.date+(en.note?' · '+en.note:'')+'</span><span style="font-weight:500;color:'+(en.type==='credit'?'#0F6E56':'#A32D2D')+'">'+(en.type==='debit'?'−':'+')+rupee(en.amount)+'</span></div>';
+      }
+      h+='</div>';
+    }
+    el.innerHTML=h;
+  }
+
+  function drawSales(){
+    var sel=document.getElementById('s-item');
+    sel.innerHTML='';
+    for(var i=0;i<items.length;i++) sel.innerHTML+='<option value="'+items[i].id+'">'+items[i].name+'</option>';
+    var el=document.getElementById('sal-list');
+    if(!sales.length){el.innerHTML='<div class="empty">No sales yet. Record your first sale above.</div>';return;}
+    var h='';
+    for(var i=0;i<sales.length;i++){
+      var s=sales[i];
+      h+='<div class="sale-card"><div class="item-icon">'+(EMOJIS[s.cat]||'📦')+'</div><div style="flex:1"><div style="font-size:15px;font-weight:500">'+s.name+'</div><div style="font-size:12px;color:#888">Qty: '+s.qty+' · '+s.pay+' · '+s.time+'</div></div><div style="font-size:16px;font-weight:500;color:#0F6E56">'+rupee(s.total)+'</div></div>';
+    }
+    el.innerHTML=h;
+  }
+
+  function drawAll(){ drawStats(); drawInv(); drawUdhar(); drawSales(); }
+
+  /* ══════════════════════════════════════════════════════════
+     ACTIONS
+  ══════════════════════════════════════════════════════════ */
+  window.showTab=function(name){
+    ['inv','udh','sal'].forEach(function(t){
+      document.getElementById('panel-'+t).className='panel'+(t===name?' on':'');
+      document.getElementById('tb-'+t).className='app-tab'+(t===name?' on':'');
+    });
+  };
+
+  window.chQty=function(id,d){
+    var item=null;
+    for(var i=0;i<items.length;i++){if(String(items[i].id)===String(id)){item=items[i];break;}}
+    if(!item)return;
+    item.qty=Math.max(0,Number(item.qty)+d);
+    drawAll();
+    persistItem(item, false);
+  };
+
+  window.delItem=function(id){ deleteItem(id); };
+
+  window.markPaid=function(cust){
+    var t=udharTotals(),bal=t[cust]||0;
+    if(bal>0){
+      var entry={customer:cust,type:'credit',amount:bal,note:'Full payment received',date:'Today'};
+      udhar.push(entry);
+      drawAll();
+      persistUdhar(entry);
+    }
+  };
+
+  window.goHome=function(){
+    showPage('home');
+  };
+
+  function showPage(name){
+    document.getElementById('page-home').className='page'+(name==='home'?' active':'');
+    document.getElementById('page-app').className='page'+(name==='app'?' active':'');
+    window.scrollTo(0,0);
+  }
+
+  /* ── Button listeners ── */
+  document.getElementById('i-search').addEventListener('input', drawInv);
+
+  document.getElementById('btn-add-item').addEventListener('click',function(){
+    var name=document.getElementById('i-name').value.trim();
+    var qty=parseInt(document.getElementById('i-qty').value)||0;
+    var price=parseFloat(document.getElementById('i-price').value)||0;
+    var cat=document.getElementById('i-cat').value;
+    var low=parseInt(document.getElementById('i-low').value)||10;
+    if(!name){alert('Please enter an item name');return;}
+    var item={id:'tmp_'+Date.now(),name:name,qty:qty,price:price,cat:cat,low:low};
+    items.push(item);
+    document.getElementById('i-name').value='';
+    document.getElementById('i-qty').value='';
+    document.getElementById('i-price').value='';
+    drawAll();
+    persistItem(item, true);
+  });
+
+  document.getElementById('btn-add-udhar').addEventListener('click',function(){
+    var name=document.getElementById('u-name').value.trim();
+    var amt=parseFloat(document.getElementById('u-amt').value)||0;
+    var type=document.getElementById('u-type').value;
+    var note=document.getElementById('u-note').value.trim();
+    if(!name){alert('Please enter a customer name');return;}
+    if(!amt){alert('Please enter an amount');return;}
+    var entry={customer:name,type:type,amount:amt,note:note,date:'Today'};
+    udhar.push(entry);
+    document.getElementById('u-name').value='';
+    document.getElementById('u-amt').value='';
+    document.getElementById('u-note').value='';
+    drawUdhar(); drawStats();
+    persistUdhar(entry);
+  });
+
+  document.getElementById('btn-add-sale').addEventListener('click',function(){
+    var itemId=document.getElementById('s-item').value;
+    var qty=parseInt(document.getElementById('s-qty').value)||0;
+    var pay=document.getElementById('s-pay').value;
+    var item=null;
+    for(var i=0;i<items.length;i++){if(String(items[i].id)===String(itemId)){item=items[i];break;}}
+    if(!item||qty<=0){alert('Select an item and enter quantity');return;}
+    if(Number(item.qty)<qty){alert('Not enough stock! Only '+item.qty+' left.');return;}
+    item.qty=Number(item.qty)-qty;
+    var now=new Date();
+    var sale={name:item.name,cat:item.cat,qty:qty,total:qty*Number(item.price),pay:pay,time:now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})};
+    sales.unshift(sale);
+    document.getElementById('s-qty').value='';
+    drawAll();
+    persistItem(item, false);
+    persistSale(sale);
+  });
+
+})();
+</script>
+
+<!--
+╔══════════════════════════════════════════════════════════════╗
+║           KIRANABOOK — SUPABASE SETUP GUIDE                 ║
+╠══════════════════════════════════════════════════════════════╣
+║                                                              ║
+║  STEP 1 — Create a Supabase project                          ║
+║  ─────────────────────────────────                           ║
+║  1. Go to https://supabase.com and sign up (free)            ║
+║  2. Click "New project", give it a name e.g. "kiranabook"    ║
+║  3. Choose a region close to India (e.g. Singapore)          ║
+║  4. Set a database password and click Create                 ║
+║                                                              ║
+║  STEP 2 — Get your API credentials                           ║
+║  ─────────────────────────────────                           ║
+║  1. In your project: Settings → API                          ║
+║  2. Copy "Project URL" → paste as SUPABASE_URL above         ║
+║  3. Copy "anon public" key → paste as SUPABASE_ANON above    ║
+║                                                              ║
+║  STEP 3 — Enable Google Auth                                 ║
+║  ────────────────────────────                                ║
+║  1. Supabase dashboard → Authentication → Providers          ║
+║  2. Enable Google                                            ║
+║  3. Go to https://console.cloud.google.com                   ║
+║  4. Create a project → APIs & Services → Credentials         ║
+║  5. Create OAuth 2.0 Client ID (Web application)             ║
+║  6. Add Authorized redirect URI:                             ║
+║     https://YOUR_PROJECT.supabase.co/auth/v1/callback        ║
+║  7. Copy Client ID + Secret → paste into Supabase            ║
+║  8. In Supabase Auth settings, add your site URL             ║
+║     (e.g. https://kiranabook.vercel.app)                     ║
+║                                                              ║
+║  STEP 4 — Create database tables                             ║
+║  ────────────────────────────────                            ║
+║  In Supabase → SQL Editor → run this SQL:                    ║
+║                                                              ║
+║  create table kb_items (                                     ║
+║    id uuid default gen_random_uuid() primary key,            ║
+║    user_id uuid references auth.users not null,              ║
+║    name text not null,                                       ║
+║    qty integer default 0,                                    ║
+║    price numeric default 0,                                  ║
+║    cat text default 'Other',                                 ║
+║    low integer default 10,                                   ║
+║    created_at timestamptz default now()                      ║
+║  );                                                          ║
+║                                                              ║
+║  create table kb_udhar (                                     ║
+║    id uuid default gen_random_uuid() primary key,            ║
+║    user_id uuid references auth.users not null,              ║
+║    customer text not null,                                   ║
+║    type text not null,                                       ║
+║    amount numeric not null,                                  ║
+║    note text,                                                ║
+║    date text,                                                ║
+║    created_at timestamptz default now()                      ║
+║  );                                                          ║
+║                                                              ║
+║  create table kb_sales (                                     ║
+║    id uuid default gen_random_uuid() primary key,            ║
+║    user_id uuid references auth.users not null,              ║
+║    name text not null,                                       ║
+║    cat text,                                                 ║
+║    qty integer,                                              ║
+║    total numeric,                                            ║
+║    pay text,                                                 ║
+║    time text,                                                ║
+║    created_at timestamptz default now()                      ║
+║  );                                                          ║
+║                                                              ║
+║  -- Row Level Security (each user sees only their data)      ║
+║  alter table kb_items enable row level security;             ║
+║  alter table kb_udhar enable row level security;             ║
+║  alter table kb_sales enable row level security;             ║
+║                                                              ║
+║  create policy "own items" on kb_items                       ║
+║    for all using (auth.uid() = user_id);                     ║
+║  create policy "own udhar" on kb_udhar                       ║
+║    for all using (auth.uid() = user_id);                     ║
+║  create policy "own sales" on kb_sales                       ║
+║    for all using (auth.uid() = user_id);                     ║
+║                                                              ║
+║  STEP 5 — Deploy to Vercel                                   ║
+║  ─────────────────────────                                   ║
+║  1. Go to https://vercel.com → New Project                   ║
+║  2. Drag and drop this HTML file                             ║
+║  3. Vercel gives you a URL like kiranabook.vercel.app        ║
+║  4. Add that URL to Supabase Auth → Site URL                 ║
+║  5. Share the URL with kirana owners!                        ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+-->
+</body>
+</html>
