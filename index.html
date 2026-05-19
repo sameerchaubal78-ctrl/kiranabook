@@ -1,533 +1,313 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>KiranaBook — Smart Store Manager</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,900;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <script>
     var SUPABASE_URL  = 'https://mixrbhloeesotpbpinrt.supabase.co';
     var SUPABASE_ANON = 'sb_publishable_rApZB0cGwexMB4rQcEsrEA_e7qayOPn';
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    /* ── Tokens ── */
     :root {
-      --saffron:      #E8650A;
-      --saffron-2:    #F5874A;
-      --saffron-dim:  #FDF0E8;
-      --saffron-dark: #B54D04;
-      --green:        #0F6640;
-      --green-2:      #1A8A54;
-      --green-dim:    #E6F5EE;
-      --red:          #C13333;
-      --red-dim:      #FDEAEA;
-      --blue:         #1A5FA8;
-      --blue-dim:     #E6F0FC;
-      --ink:          #19120A;
-      --ink-2:        #4A3728;
-      --ink-3:        #8A7060;
-      --paper:        #FFFDF9;
-      --paper-2:      #FBF6EF;
-      --paper-3:      #F5EDE0;
-      --border:       #EAE0D4;
-      --border-2:     #D8CABE;
-      --white:        #FFFFFF;
-      --shadow-sm:    0 1px 3px rgba(25,18,10,.08), 0 1px 2px rgba(25,18,10,.04);
-      --shadow-md:    0 4px 16px rgba(25,18,10,.10), 0 2px 6px rgba(25,18,10,.06);
-      --shadow-lg:    0 12px 40px rgba(25,18,10,.14), 0 4px 12px rgba(25,18,10,.08);
-      --r-sm:  8px;
-      --r-md:  12px;
-      --r-lg:  18px;
-      --r-xl:  24px;
+      --saffron:#E8650A; --saffron-dim:#FDF0E8; --saffron-dark:#B54D04;
+      --green:#0F6640; --green-dim:#E6F5EE;
+      --red:#C13333; --red-dim:#FDEAEA;
+      --blue:#1A5FA8; --blue-dim:#E6F0FC;
+      --ink:#19120A; --ink-2:#4A3728; --ink-3:#8A7060;
+      --paper:#FFFDF9; --paper-2:#FBF6EF; --paper-3:#F5EDE0;
+      --border:#EAE0D4; --border-2:#D8CABE; --white:#FFFFFF;
+      --shadow-sm:0 1px 3px rgba(25,18,10,.08),0 1px 2px rgba(25,18,10,.04);
+      --shadow-md:0 4px 16px rgba(25,18,10,.10),0 2px 6px rgba(25,18,10,.06);
+      --shadow-lg:0 12px 40px rgba(25,18,10,.14),0 4px 12px rgba(25,18,10,.08);
+      --r-sm:8px; --r-md:12px; --r-lg:18px; --r-xl:24px;
     }
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-    body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--paper); color: var(--ink); overflow-x: hidden; -webkit-font-smoothing: antialiased; }
-    .page { display: none; }
-    .page.active { display: block; }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;}
+    body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--paper);color:var(--ink);overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+    .page{display:none;} .page.active{display:block;}
 
-    /* ── Typography ── */
-    .display { font-family: 'Fraunces', serif; }
+    /* NAV */
+    .nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2.5rem;background:rgba(255,253,249,.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:200;}
+    .logo{display:flex;align-items:center;gap:10px;cursor:pointer;text-decoration:none;}
+    .logo-mark{width:38px;height:38px;background:linear-gradient(135deg,var(--saffron),#F5A623);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 4px 12px rgba(232,101,10,.3);}
+    .logo-text{font-family:'Fraunces',serif;font-size:22px;font-weight:700;color:var(--ink);}
+    .logo-text span{color:var(--saffron);}
+    .nav-links{display:flex;gap:2rem;list-style:none;}
+    .nav-links a{font-size:14px;color:var(--ink-3);text-decoration:none;font-weight:500;transition:color .2s;}
+    .nav-links a:hover{color:var(--ink);}
+    .nav-auth{display:flex;gap:10px;align-items:center;}
+    .btn-ghost{padding:9px 18px;border-radius:var(--r-sm);font-size:14px;font-weight:600;border:1.5px solid var(--border-2);background:transparent;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;color:var(--ink-2);transition:all .2s;}
+    .btn-ghost:hover{border-color:var(--saffron);color:var(--saffron);background:var(--saffron-dim);}
+    .btn-saffron{padding:9px 20px;border-radius:var(--r-sm);font-size:14px;font-weight:600;border:none;background:var(--saffron);color:#fff;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s;box-shadow:0 2px 8px rgba(232,101,10,.3);}
+    .btn-saffron:hover{background:var(--saffron-dark);transform:translateY(-1px);}
 
-    /* ── Shared components ── */
-    .chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 20px; letter-spacing: .3px; text-transform: uppercase; }
+    /* HERO */
+    .hero{min-height:92vh;display:grid;grid-template-columns:1fr 1fr;position:relative;overflow:hidden;}
+    .hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 80% 20%,rgba(232,101,10,.07),transparent 60%),radial-gradient(ellipse 40% 60% at 10% 80%,rgba(15,102,64,.06),transparent 60%);pointer-events:none;}
+    .hero-grid{position:absolute;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:40px 40px;opacity:.35;pointer-events:none;}
+    .hero-left{padding:5rem 3rem 5rem 3.5rem;display:flex;flex-direction:column;justify-content:center;gap:2rem;position:relative;z-index:1;}
+    .hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:var(--saffron-dim);color:var(--saffron-dark);font-size:11px;font-weight:700;padding:6px 14px;border-radius:20px;width:fit-content;border:1px solid rgba(232,101,10,.2);letter-spacing:.8px;text-transform:uppercase;}
+    .hero-eyebrow::before{content:'';width:6px;height:6px;background:var(--saffron);border-radius:50%;animation:pulse 2s ease infinite;}
+    @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
+    .hero-h1{font-family:'Fraunces',serif;font-size:56px;font-weight:900;line-height:1.05;letter-spacing:-2px;}
+    .hero-h1 em{font-style:italic;color:var(--saffron);}
+    .hero-h1 .ug{color:var(--green);text-decoration:underline;text-decoration-color:rgba(15,102,64,.3);text-decoration-thickness:3px;text-underline-offset:6px;}
+    .hero-sub{font-size:17px;color:var(--ink-3);line-height:1.75;max-width:460px;}
+    .hero-sub strong{color:var(--ink);font-weight:600;}
+    .hero-ctas{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+    .btn-hero{display:inline-flex;align-items:center;gap:8px;padding:15px 30px;border-radius:var(--r-md);font-size:16px;font-weight:700;border:none;background:var(--saffron);color:#fff;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;box-shadow:0 4px 20px rgba(232,101,10,.35);transition:all .25s;}
+    .btn-hero:hover{background:var(--saffron-dark);transform:translateY(-2px);box-shadow:0 8px 28px rgba(232,101,10,.45);}
+    .btn-outline{display:inline-flex;align-items:center;gap:8px;padding:15px 24px;border-radius:var(--r-md);font-size:15px;font-weight:600;border:1.5px solid var(--border-2);background:transparent;color:var(--ink-2);cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s;}
+    .btn-outline:hover{border-color:var(--ink);background:var(--paper-2);}
+    .social-proof{display:flex;align-items:center;gap:12px;}
+    .avatars{display:flex;}
+    .avatars span{width:32px;height:32px;border-radius:50%;border:2px solid var(--paper);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;margin-left:-8px;}
+    .avatars span:first-child{margin-left:0;}
+    .social-text{font-size:13px;color:var(--ink-3);font-weight:500;}
+    .social-text strong{color:var(--ink);}
+    .hero-right{display:flex;align-items:center;justify-content:center;padding:3rem 3rem 3rem 1rem;position:relative;z-index:1;}
+    .mockup-wrap{position:relative;width:100%;max-width:420px;}
+    .mockup-card{background:var(--white);border-radius:var(--r-xl);padding:1.5rem;box-shadow:var(--shadow-lg),0 0 0 1px var(--border);animation:float 6s ease-in-out infinite;}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+    .badge-float{position:absolute;background:var(--white);border-radius:var(--r-md);padding:10px 14px;box-shadow:var(--shadow-md),0 0 0 1px var(--border);font-size:12px;font-weight:600;animation:float 5s ease-in-out infinite;}
+    .bf1{top:10%;right:-5%;animation-delay:-2s;color:var(--green);}
+    .bf2{bottom:20%;left:-8%;animation-delay:-4s;color:var(--saffron);}
+    .mhdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;}
+    .mtitle{font-family:'Fraunces',serif;font-size:16px;font-weight:700;}
+    .mdate{font-size:11px;color:var(--ink-3);background:var(--paper-2);padding:4px 10px;border-radius:20px;font-weight:500;}
+    .mstats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.25rem;}
+    .ms{border-radius:var(--r-md);padding:12px 14px;}
+    .ms-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px;opacity:.7;}
+    .ms-val{font-size:22px;font-weight:700;font-family:'Fraunces',serif;}
+    .ms-o{background:var(--saffron-dim);color:var(--saffron-dark);}
+    .ms-g{background:var(--green-dim);color:var(--green);}
+    .ms-r{background:var(--red-dim);color:var(--red);}
+    .ms-b{background:var(--blue-dim);color:var(--blue);}
+    .mitems{display:flex;flex-direction:column;gap:8px;margin-bottom:1rem;}
+    .mi{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--paper-2);border-radius:var(--r-sm);border:1px solid var(--border);}
+    .mi-name{font-size:13px;font-weight:600;flex:1;}
+    .mi-qty{font-size:11px;color:var(--ink-3);}
+    .mbadge{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:700;}
+    .mudhar{background:linear-gradient(135deg,#FFF0E6,#FDE8D8);border-radius:var(--r-md);padding:12px 14px;display:flex;align-items:center;justify-content:space-between;border:1px solid rgba(232,101,10,.15);}
 
-    /* ════════════════════════════════
-       HOMEPAGE
-    ════════════════════════════════ */
+    /* FEATURES */
+    .features{padding:6rem 3.5rem;background:var(--paper-2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+    .sec-eyebrow{font-size:11px;font-weight:700;letter-spacing:1.5px;color:var(--saffron);text-transform:uppercase;margin-bottom:1rem;}
+    .sec-h2{font-family:'Fraunces',serif;font-size:42px;font-weight:800;line-height:1.15;margin-bottom:1rem;letter-spacing:-1px;}
+    .sec-sub{font-size:17px;color:var(--ink-3);line-height:1.7;max-width:540px;margin-bottom:3.5rem;}
+    .feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5px;background:var(--border);border-radius:var(--r-lg);overflow:hidden;border:1.5px solid var(--border);}
+    .feat-card{background:var(--paper);padding:2.25rem 2rem;transition:background .25s;}
+    .feat-card:hover{background:var(--white);}
+    .feat-icon{width:52px;height:52px;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:1.25rem;}
+    .fi-o{background:var(--saffron-dim);} .fi-g{background:var(--green-dim);} .fi-b{background:var(--blue-dim);}
+    .feat-title{font-size:17px;font-weight:700;margin-bottom:8px;}
+    .feat-desc{font-size:14px;color:var(--ink-3);line-height:1.7;}
 
-    /* Nav */
-    .nav {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 1rem 2.5rem;
-      background: rgba(255,253,249,.92);
-      backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--border);
-      position: sticky; top: 0; z-index: 200;
-    }
-    .logo { display: flex; align-items: center; gap: 10px; cursor: pointer; text-decoration: none; }
-    .logo-mark {
-      width: 38px; height: 38px;
-      background: linear-gradient(135deg, var(--saffron) 0%, #F5A623 100%);
-      border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 20px;
-      box-shadow: 0 4px 12px rgba(232,101,10,.3);
-    }
-    .logo-text { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 700; color: var(--ink); letter-spacing: -.3px; }
-    .logo-text span { color: var(--saffron); }
-    .nav-links { display: flex; gap: 2rem; list-style: none; }
-    .nav-links a { font-size: 14px; color: var(--ink-3); text-decoration: none; font-weight: 500; transition: color .2s; }
-    .nav-links a:hover { color: var(--ink); }
-    .nav-auth { display: flex; gap: 10px; align-items: center; }
-    .btn-ghost { padding: 9px 18px; border-radius: var(--r-sm); font-size: 14px; font-weight: 600; border: 1.5px solid var(--border-2); background: transparent; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; color: var(--ink-2); transition: all .2s; }
-    .btn-ghost:hover { border-color: var(--saffron); color: var(--saffron); background: var(--saffron-dim); }
-    .btn-saffron { padding: 9px 20px; border-radius: var(--r-sm); font-size: 14px; font-weight: 600; border: none; background: var(--saffron); color: #fff; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: all .2s; box-shadow: 0 2px 8px rgba(232,101,10,.3); }
-    .btn-saffron:hover { background: var(--saffron-dark); box-shadow: 0 4px 16px rgba(232,101,10,.4); transform: translateY(-1px); }
-
-    /* Hero */
-    .hero {
-      min-height: 92vh;
-      display: grid; grid-template-columns: 1fr 1fr;
-      position: relative; overflow: hidden;
-    }
-    .hero-bg {
-      position: absolute; inset: 0;
-      background:
-        radial-gradient(ellipse 60% 50% at 80% 20%, rgba(232,101,10,.07) 0%, transparent 60%),
-        radial-gradient(ellipse 40% 60% at 10% 80%, rgba(15,102,64,.06) 0%, transparent 60%);
-      pointer-events: none;
-    }
-    .hero-grid-pattern {
-      position: absolute; inset: 0;
-      background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
-      background-size: 40px 40px;
-      opacity: .35;
-      pointer-events: none;
-    }
-    .hero-left {
-      padding: 5rem 3rem 5rem 3.5rem;
-      display: flex; flex-direction: column; justify-content: center; gap: 2rem;
-      position: relative; z-index: 1;
-    }
-    .hero-eyebrow {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: var(--saffron-dim); color: var(--saffron-dark);
-      font-size: 11px; font-weight: 700; padding: 6px 14px;
-      border-radius: 20px; width: fit-content;
-      border: 1px solid rgba(232,101,10,.2);
-      letter-spacing: .8px; text-transform: uppercase;
-    }
-    .hero-eyebrow::before { content: ''; width: 6px; height: 6px; background: var(--saffron); border-radius: 50%; animation: pulse 2s ease infinite; }
-    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.3)} }
-    .hero-h1 {
-      font-family: 'Fraunces', serif;
-      font-size: 58px; font-weight: 900; line-height: 1.05;
-      letter-spacing: -2px; color: var(--ink);
-    }
-    .hero-h1 em { font-style: italic; color: var(--saffron); }
-    .hero-h1 .underline-green { color: var(--green); text-decoration: underline; text-decoration-color: rgba(15,102,64,.3); text-decoration-thickness: 3px; text-underline-offset: 6px; }
-    .hero-sub { font-size: 17px; color: var(--ink-3); line-height: 1.75; max-width: 460px; font-weight: 400; }
-    .hero-sub strong { color: var(--ink); font-weight: 600; }
-    .hero-ctas { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
-    .btn-hero {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 15px 30px; border-radius: var(--r-md); font-size: 16px; font-weight: 700;
-      border: none; background: var(--saffron); color: #fff;
-      cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif;
-      box-shadow: 0 4px 20px rgba(232,101,10,.35);
-      transition: all .25s;
-    }
-    .btn-hero:hover { background: var(--saffron-dark); transform: translateY(-2px); box-shadow: 0 8px 28px rgba(232,101,10,.45); }
-    .btn-hero-outline {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 15px 24px; border-radius: var(--r-md); font-size: 15px; font-weight: 600;
-      border: 1.5px solid var(--border-2); background: transparent; color: var(--ink-2);
-      cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif;
-      transition: all .2s;
-    }
-    .btn-hero-outline:hover { border-color: var(--ink); background: var(--paper-2); }
-    .hero-social-proof { display: flex; align-items: center; gap: 12px; }
-    .avatars { display: flex; }
-    .avatars span {
-      width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--paper);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 12px; font-weight: 700; margin-left: -8px;
-    }
-    .avatars span:first-child { margin-left: 0; }
-    .social-text { font-size: 13px; color: var(--ink-3); font-weight: 500; }
-    .social-text strong { color: var(--ink); }
-
-    /* Hero right — floating dashboard mockup */
-    .hero-right {
-      display: flex; align-items: center; justify-content: center;
-      padding: 3rem 3rem 3rem 1rem;
-      position: relative; z-index: 1;
-    }
-    .mockup-wrap {
-      position: relative; width: 100%; max-width: 420px;
-    }
-    .mockup-card {
-      background: var(--white);
-      border-radius: var(--r-xl);
-      padding: 1.5rem;
-      box-shadow: var(--shadow-lg), 0 0 0 1px var(--border);
-      animation: float 6s ease-in-out infinite;
-    }
-    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
-    .mockup-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; }
-    .mockup-title { font-family: 'Fraunces', serif; font-size: 16px; font-weight: 700; }
-    .mockup-date { font-size: 11px; color: var(--ink-3); background: var(--paper-2); padding: 4px 10px; border-radius: 20px; font-weight: 500; }
-    .mockup-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1.25rem; }
-    .mstat { border-radius: var(--r-md); padding: 12px 14px; }
-    .mstat-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .6px; margin-bottom: 4px; opacity: .7; }
-    .mstat-val { font-size: 22px; font-weight: 700; font-family: 'Fraunces', serif; }
-    .mstat-orange { background: var(--saffron-dim); color: var(--saffron-dark); }
-    .mstat-green  { background: var(--green-dim);   color: var(--green); }
-    .mstat-red    { background: var(--red-dim);     color: var(--red); }
-    .mstat-blue   { background: var(--blue-dim);    color: var(--blue); }
-    .mockup-items { display: flex; flex-direction: column; gap: 8px; margin-bottom: 1rem; }
-    .mitem { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--paper-2); border-radius: var(--r-sm); border: 1px solid var(--border); }
-    .mitem-icon { font-size: 18px; }
-    .mitem-name { font-size: 13px; font-weight: 600; flex: 1; }
-    .mitem-qty { font-size: 11px; color: var(--ink-3); }
-    .mbadge { font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 700; }
-    .mockup-udhar { background: linear-gradient(135deg, #FFF0E6 0%, #FDE8D8 100%); border-radius: var(--r-md); padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; border: 1px solid rgba(232,101,10,.15); }
-    /* Floating badges */
-    .badge-float {
-      position: absolute; background: var(--white); border-radius: var(--r-md);
-      padding: 10px 14px; box-shadow: var(--shadow-md), 0 0 0 1px var(--border);
-      font-size: 12px; font-weight: 600; animation: float 5s ease-in-out infinite;
-    }
-    .badge-float-1 { top: 10%; right: -5%; animation-delay: -2s; color: var(--green); }
-    .badge-float-2 { bottom: 20%; left: -8%; animation-delay: -4s; color: var(--saffron); }
-
-    /* Features */
-    .features { padding: 6rem 3.5rem; background: var(--paper-2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-    .section-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; color: var(--saffron); text-transform: uppercase; margin-bottom: 1rem; }
-    .section-h2 { font-family: 'Fraunces', serif; font-size: 42px; font-weight: 800; line-height: 1.15; margin-bottom: 1rem; letter-spacing: -1px; }
-    .section-sub { font-size: 17px; color: var(--ink-3); line-height: 1.7; max-width: 540px; margin-bottom: 3.5rem; font-weight: 400; }
-    .features-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5px; background: var(--border); border-radius: var(--r-lg); overflow: hidden; border: 1.5px solid var(--border); }
-    .feat-card { background: var(--paper); padding: 2.25rem 2rem; transition: background .25s; cursor: default; }
-    .feat-card:hover { background: var(--white); }
-    .feat-icon-wrap { width: 52px; height: 52px; border-radius: var(--r-md); display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 1.25rem; }
-    .fi-o { background: var(--saffron-dim); }
-    .fi-g { background: var(--green-dim); }
-    .fi-b { background: var(--blue-dim); }
-    .feat-title { font-size: 17px; font-weight: 700; margin-bottom: 8px; color: var(--ink); }
-    .feat-desc { font-size: 14px; color: var(--ink-3); line-height: 1.7; }
-
-    /* How */
-    .how { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--border); }
-    .how-left { padding: 5rem 3.5rem; border-right: 1px solid var(--border); }
-    .how-steps { display: flex; flex-direction: column; gap: 2rem; margin-top: 2.5rem; }
-    .how-step { display: flex; gap: 1.25rem; align-items: flex-start; }
-    .how-num {
-      width: 36px; height: 36px; border-radius: 50%;
-      background: var(--saffron); color: #fff;
-      font-size: 14px; font-weight: 700;
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-      box-shadow: 0 4px 12px rgba(232,101,10,.3);
-    }
-    .how-step-title { font-size: 16px; font-weight: 700; margin-bottom: 5px; }
-    .how-step-desc { font-size: 14px; color: var(--ink-3); line-height: 1.65; }
-    .how-right {
-      background: linear-gradient(160deg, #0F3D25 0%, #1A6B3A 60%, #0F4A2A 100%);
-      padding: 4rem 3rem; display: flex; align-items: center; justify-content: center;
-      position: relative; overflow: hidden;
-    }
-    .how-right::before { content: ''; position: absolute; top: -80px; right: -80px; width: 300px; height: 300px; background: rgba(232,101,10,.12); border-radius: 50%; }
-    .how-right::after { content: ''; position: absolute; bottom: -60px; left: -60px; width: 220px; height: 220px; background: rgba(255,255,255,.04); border-radius: 50%; }
-    .testimonial {
-      background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12);
-      border-radius: var(--r-xl); padding: 2.25rem; max-width: 340px;
-      backdrop-filter: blur(10px); position: relative; z-index: 1;
-    }
-    .quote-icon { font-family: 'Fraunces', serif; font-size: 60px; color: rgba(255,255,255,.2); line-height: .8; margin-bottom: .75rem; }
-    .quote-body { font-size: 16px; color: rgba(255,255,255,.88); line-height: 1.75; margin-bottom: 1.75rem; font-weight: 400; }
-    .quote-body strong { color: #fff; font-weight: 700; }
-    .quote-author { display: flex; align-items: center; gap: 12px; }
-    .q-av { width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,.15); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; color: #fff; }
-    .q-name { font-size: 14px; font-weight: 700; color: #fff; }
-    .q-loc { font-size: 12px; color: rgba(255,255,255,.5); margin-top: 1px; }
+    /* HOW */
+    .how{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--border);}
+    .how-left{padding:5rem 3.5rem;border-right:1px solid var(--border);}
+    .how-steps{display:flex;flex-direction:column;gap:2rem;margin-top:2.5rem;}
+    .how-step{display:flex;gap:1.25rem;align-items:flex-start;}
+    .how-num{width:36px;height:36px;border-radius:50%;background:var(--saffron);color:#fff;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 12px rgba(232,101,10,.3);}
+    .step-title{font-size:16px;font-weight:700;margin-bottom:5px;}
+    .step-desc{font-size:14px;color:var(--ink-3);line-height:1.65;}
+    .how-right{background:linear-gradient(160deg,#0F3D25,#1A6B3A 60%,#0F4A2A);padding:4rem 3rem;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+    .how-right::before{content:'';position:absolute;top:-80px;right:-80px;width:300px;height:300px;background:rgba(232,101,10,.12);border-radius:50%;}
+    .testimonial{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:var(--r-xl);padding:2.25rem;max-width:340px;backdrop-filter:blur(10px);position:relative;z-index:1;}
+    .q-mark{font-family:'Fraunces',serif;font-size:60px;color:rgba(255,255,255,.2);line-height:.8;margin-bottom:.75rem;}
+    .q-body{font-size:16px;color:rgba(255,255,255,.88);line-height:1.75;margin-bottom:1.75rem;}
+    .q-body strong{color:#fff;font-weight:700;}
+    .q-author{display:flex;align-items:center;gap:12px;}
+    .q-av{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff;}
+    .q-name{font-size:14px;font-weight:700;color:#fff;}
+    .q-loc{font-size:12px;color:rgba(255,255,255,.5);margin-top:1px;}
 
     /* CTA */
-    .cta-band {
-      padding: 6rem 3.5rem; background: var(--ink);
-      text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1.75rem;
-      position: relative; overflow: hidden;
-    }
-    .cta-band::before {
-      content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
-      width: 700px; height: 700px;
-      background: radial-gradient(circle, rgba(232,101,10,.15) 0%, transparent 65%);
-      pointer-events: none;
-    }
-    .cta-label { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--saffron); font-weight: 700; position: relative; z-index: 1; }
-    .cta-h2 { font-family: 'Fraunces', serif; font-size: 52px; font-weight: 900; color: #fff; line-height: 1.1; letter-spacing: -1.5px; position: relative; z-index: 1; }
-    .cta-h2 em { font-style: italic; color: var(--saffron); }
-    .cta-sub { font-size: 17px; color: rgba(255,255,255,.45); max-width: 420px; line-height: 1.7; position: relative; z-index: 1; }
-    .cta-note { font-size: 13px; color: rgba(255,255,255,.25); position: relative; z-index: 1; }
+    .cta-band{padding:6rem 3.5rem;background:var(--ink);text-align:center;display:flex;flex-direction:column;align-items:center;gap:1.75rem;position:relative;overflow:hidden;}
+    .cta-band::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:700px;height:700px;background:radial-gradient(circle,rgba(232,101,10,.15),transparent 65%);pointer-events:none;}
+    .cta-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--saffron);font-weight:700;position:relative;z-index:1;}
+    .cta-h2{font-family:'Fraunces',serif;font-size:52px;font-weight:900;color:#fff;line-height:1.1;letter-spacing:-1.5px;position:relative;z-index:1;}
+    .cta-h2 em{font-style:italic;color:var(--saffron);}
+    .cta-sub{font-size:17px;color:rgba(255,255,255,.45);max-width:420px;line-height:1.7;position:relative;z-index:1;}
+    .cta-note{font-size:13px;color:rgba(255,255,255,.25);position:relative;z-index:1;}
+    .footer{display:flex;align-items:center;justify-content:space-between;padding:1.75rem 3.5rem;border-top:1px solid var(--border);font-size:13px;color:var(--ink-3);}
+    .footer-logo{font-family:'Fraunces',serif;font-size:18px;font-weight:700;color:var(--ink);}
+    .footer-logo span{color:var(--saffron);}
 
-    .footer { display: flex; align-items: center; justify-content: space-between; padding: 1.75rem 3.5rem; border-top: 1px solid var(--border); font-size: 13px; color: var(--ink-3); }
-    .footer-logo { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 700; color: var(--ink); }
-    .footer-logo span { color: var(--saffron); }
+    /* AUTH MODAL */
+    .overlay{display:none;position:fixed;inset:0;background:rgba(25,18,10,.65);backdrop-filter:blur(6px);z-index:500;align-items:center;justify-content:center;}
+    .overlay.open{display:flex;}
+    .modal{background:var(--white);border-radius:var(--r-xl);padding:2.5rem;width:100%;max-width:460px;margin:1rem;position:relative;box-shadow:var(--shadow-lg);animation:mpop .3s cubic-bezier(.34,1.56,.64,1);max-height:90vh;overflow-y:auto;}
+    @keyframes mpop{from{opacity:0;transform:scale(.9) translateY(20px)}to{opacity:1;transform:none}}
+    .modal-x{position:absolute;top:1.25rem;right:1.25rem;width:32px;height:32px;border-radius:50%;border:1.5px solid var(--border);background:transparent;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;color:var(--ink-3);transition:all .15s;}
+    .modal-x:hover{background:var(--paper-2);color:var(--ink);}
+    .modal-logo{display:flex;align-items:center;gap:8px;margin-bottom:1.5rem;}
+    .modal-logo-mark{width:34px;height:34px;background:linear-gradient(135deg,var(--saffron),#F5A623);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;box-shadow:0 3px 10px rgba(232,101,10,.3);}
+    .modal-logo-text{font-family:'Fraunces',serif;font-size:20px;font-weight:700;}
+    .modal-logo-text span{color:var(--saffron);}
 
-    /* ════════════════════════════════
-       AUTH MODAL
-    ════════════════════════════════ */
-    .overlay { display: none; position: fixed; inset: 0; background: rgba(25,18,10,.65); backdrop-filter: blur(6px); z-index: 500; align-items: center; justify-content: center; }
-    .overlay.open { display: flex; }
-    .modal {
-      background: var(--white); border-radius: var(--r-xl);
-      padding: 2.75rem; width: 100%; max-width: 440px; margin: 1rem;
-      position: relative; box-shadow: var(--shadow-lg);
-      animation: modalPop .3s cubic-bezier(.34,1.56,.64,1);
-    }
-    @keyframes modalPop { from{opacity:0;transform:scale(.9) translateY(20px)} to{opacity:1;transform:none} }
-    .modal-x { position: absolute; top: 1.25rem; right: 1.25rem; width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid var(--border); background: transparent; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; color: var(--ink-3); transition: all .15s; }
-    .modal-x:hover { background: var(--paper-2); color: var(--ink); }
-    .modal-logo { display: flex; align-items: center; gap: 8px; margin-bottom: 2rem; }
-    .modal-logo-mark { width: 34px; height: 34px; background: linear-gradient(135deg, var(--saffron), #F5A623); border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 17px; box-shadow: 0 3px 10px rgba(232,101,10,.3); }
-    .modal-logo-text { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 700; }
-    .modal-logo-text span { color: var(--saffron); }
-    .modal-h { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 800; margin-bottom: .5rem; }
-    .modal-sub { font-size: 14px; color: var(--ink-3); margin-bottom: 2rem; line-height: 1.6; }
-    .google-btn {
-      display: flex; align-items: center; justify-content: center; gap: 12px;
-      width: 100%; padding: 15px; border-radius: var(--r-md);
-      border: 1.5px solid var(--border-2); background: var(--white);
-      font-size: 15px; font-weight: 600; cursor: pointer;
-      font-family: 'Plus Jakarta Sans', sans-serif; color: var(--ink);
-      transition: all .2s; box-shadow: var(--shadow-sm);
-    }
-    .google-btn:hover { border-color: #4285F4; box-shadow: 0 0 0 3px rgba(66,133,244,.12), var(--shadow-sm); transform: translateY(-1px); }
-    .google-btn:disabled { opacity: .6; cursor: not-allowed; transform: none; }
-    .modal-divider { display: flex; align-items: center; gap: 12px; margin: 1.75rem 0; }
-    .modal-divider::before, .modal-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-    .modal-divider span { font-size: 12px; color: var(--ink-3); font-weight: 500; }
-    .modal-perks { display: flex; flex-direction: column; gap: 10px; }
-    .perk { display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--ink-3); }
-    .perk-dot { width: 26px; height: 26px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
-    .auth-err { background: var(--red-dim); border: 1px solid rgba(193,51,51,.2); border-radius: var(--r-sm); padding: 10px 14px; font-size: 13px; color: var(--red); margin-top: 1rem; display: none; }
+    /* Language picker */
+    .lang-pick-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--ink-3);margin-bottom:10px;}
+    .lang-picker{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.75rem;}
+    .lang-btn{padding:14px 10px;border-radius:var(--r-md);border:1.5px solid var(--border-2);background:var(--paper-2);cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s;text-align:center;}
+    .lang-btn:hover{border-color:var(--saffron);background:var(--saffron-dim);}
+    .lang-btn.on{border-color:var(--saffron);background:var(--saffron-dim);box-shadow:0 0 0 3px rgba(232,101,10,.12);}
+    .lang-flag{font-size:26px;display:block;margin-bottom:5px;}
+    .lang-name{font-size:15px;font-weight:700;color:var(--ink);display:block;}
+    .lang-native{font-size:12px;color:var(--ink-3);display:block;margin-top:2px;}
+    .lang-btn.on .lang-name,.lang-btn.on .lang-native{color:var(--saffron-dark);}
 
-    /* ════════════════════════════════
-       APP PAGE
-    ════════════════════════════════ */
-    #page-app { background: var(--paper-2); min-height: 100vh; }
+    .modal-h{font-family:'Fraunces',serif;font-size:26px;font-weight:800;margin-bottom:.5rem;}
+    .modal-sub{font-size:14px;color:var(--ink-3);margin-bottom:1.75rem;line-height:1.6;}
+    .google-btn{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;padding:15px;border-radius:var(--r-md);border:1.5px solid var(--border-2);background:var(--white);font-size:15px;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;color:var(--ink);transition:all .2s;box-shadow:var(--shadow-sm);}
+    .google-btn:hover{border-color:#4285F4;box-shadow:0 0 0 3px rgba(66,133,244,.12),var(--shadow-sm);transform:translateY(-1px);}
+    .google-btn:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+    .modal-div{display:flex;align-items:center;gap:12px;margin:1.5rem 0;}
+    .modal-div::before,.modal-div::after{content:'';flex:1;height:1px;background:var(--border);}
+    .modal-div span{font-size:12px;color:var(--ink-3);}
+    .modal-perks{display:flex;flex-direction:column;gap:10px;}
+    .perk{display:flex;align-items:center;gap:12px;font-size:13px;color:var(--ink-3);}
+    .perk-dot{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+    .auth-err{background:var(--red-dim);border:1px solid rgba(193,51,51,.2);border-radius:var(--r-sm);padding:10px 14px;font-size:13px;color:var(--red);margin-top:1rem;display:none;}
 
-    .app-nav {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 2rem; height: 64px;
-      background: rgba(255,253,249,.95); backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--border);
-      position: sticky; top: 0; z-index: 100;
-      box-shadow: 0 1px 0 var(--border), 0 4px 16px rgba(25,18,10,.04);
-    }
-    .app-logo { display: flex; align-items: center; gap: 9px; cursor: pointer; }
-    .app-logo-mark { width: 32px; height: 32px; background: linear-gradient(135deg, var(--saffron), #F5A623); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; box-shadow: 0 2px 8px rgba(232,101,10,.25); }
-    .app-logo-text { font-family: 'Fraunces', serif; font-size: 19px; font-weight: 700; }
-    .app-logo-text span { color: var(--saffron); }
-    .app-nav-right { display: flex; align-items: center; gap: 10px; }
-    .sync-badge { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--ink-3); font-weight: 500; background: var(--paper-3); padding: 5px 10px; border-radius: 20px; border: 1px solid var(--border); }
-    .user-pill { display: flex; align-items: center; gap: 8px; background: var(--paper-2); border: 1px solid var(--border); border-radius: 20px; padding: 5px 12px 5px 5px; }
-    .user-av { width: 28px; height: 28px; border-radius: 50%; background: var(--saffron-dim); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: var(--saffron-dark); overflow: hidden; flex-shrink: 0; }
-    .user-av img { width: 100%; height: 100%; object-fit: cover; }
-    .user-nm { font-size: 13px; font-weight: 600; color: var(--ink); max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .signout-btn { padding: 7px 14px; border: 1.5px solid var(--border-2); background: transparent; border-radius: var(--r-sm); font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; color: var(--ink-3); transition: all .15s; }
-    .signout-btn:hover { border-color: var(--red); color: var(--red); background: var(--red-dim); }
+    /* APP NAV */
+    .app-nav{display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:64px;background:rgba(255,253,249,.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;box-shadow:0 1px 0 var(--border),0 4px 16px rgba(25,18,10,.04);}
+    .app-logo{display:flex;align-items:center;gap:9px;cursor:pointer;}
+    .app-logo-mark{width:32px;height:32px;background:linear-gradient(135deg,var(--saffron),#F5A623);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 2px 8px rgba(232,101,10,.25);}
+    .app-logo-text{font-family:'Fraunces',serif;font-size:19px;font-weight:700;}
+    .app-logo-text span{color:var(--saffron);}
+    .app-nav-right{display:flex;align-items:center;gap:10px;}
 
-    /* App body */
-    .app-body { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem; }
+    /* App lang toggle */
+    .app-lang{display:flex;gap:2px;background:var(--paper-3);border:1px solid var(--border);border-radius:20px;padding:3px;}
+    .app-lang-btn{padding:4px 12px;border-radius:15px;border:none;background:transparent;font-size:12px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;color:var(--ink-3);transition:all .15s;}
+    .app-lang-btn.on{background:var(--white);color:var(--ink);box-shadow:var(--shadow-sm);}
 
-    /* Stats row */
-    .stats-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 2rem; }
-    .stat-tile {
-      background: var(--white); border: 1px solid var(--border);
-      border-radius: var(--r-lg); padding: 1.25rem 1.5rem;
-      box-shadow: var(--shadow-sm); transition: box-shadow .2s, transform .2s;
-      position: relative; overflow: hidden;
-    }
-    .stat-tile:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
-    .stat-tile::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: var(--r-lg) var(--r-lg) 0 0; }
-    .stat-tile.s-ink::after   { background: var(--ink); }
-    .stat-tile.s-orange::after { background: var(--saffron); }
-    .stat-tile.s-red::after   { background: var(--red); }
-    .stat-tile.s-green::after { background: var(--green); }
-    .stat-icon { font-size: 22px; margin-bottom: 10px; }
-    .stat-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .6px; color: var(--ink-3); margin-bottom: 4px; }
-    .stat-val { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 700; line-height: 1; }
+    .sync-badge{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--ink-3);font-weight:500;background:var(--paper-3);padding:5px 10px;border-radius:20px;border:1px solid var(--border);}
+    .user-pill{display:flex;align-items:center;gap:8px;background:var(--paper-2);border:1px solid var(--border);border-radius:20px;padding:5px 12px 5px 5px;}
+    .user-av{width:28px;height:28px;border-radius:50%;background:var(--saffron-dim);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--saffron-dark);overflow:hidden;flex-shrink:0;}
+    .user-av img{width:100%;height:100%;object-fit:cover;}
+    .user-nm{font-size:13px;font-weight:600;color:var(--ink);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .signout-btn{padding:7px 14px;border:1.5px solid var(--border-2);background:transparent;border-radius:var(--r-sm);font-size:12px;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;color:var(--ink-3);transition:all .15s;}
+    .signout-btn:hover{border-color:var(--red);color:var(--red);background:var(--red-dim);}
 
-    /* Tabs */
-    .tab-bar { display: flex; gap: 0; background: var(--white); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 5px; margin-bottom: 1.75rem; box-shadow: var(--shadow-sm); }
-    .tab-btn {
-      flex: 1; padding: 11px 8px; border: none; border-radius: var(--r-md);
-      background: transparent; color: var(--ink-3); font-size: 14px; font-weight: 600;
-      cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif;
-      display: flex; align-items: center; justify-content: center; gap: 7px;
-      transition: all .2s;
-    }
-    .tab-btn .tab-icon { font-size: 16px; }
-    .tab-btn:hover { color: var(--ink); background: var(--paper-2); }
-    .tab-btn.on { background: var(--saffron); color: #fff; box-shadow: 0 2px 8px rgba(232,101,10,.3); }
-    .tab-count { background: rgba(255,255,255,.25); padding: 1px 7px; border-radius: 10px; font-size: 11px; font-weight: 700; }
-    .tab-btn:not(.on) .tab-count { background: var(--paper-3); color: var(--ink-3); }
+    /* APP BODY */
+    #page-app{background:var(--paper-2);min-height:100vh;}
+    .app-body{max-width:800px;margin:0 auto;padding:2rem 1.5rem;}
+    .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:2rem;}
+    .stat-tile{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.25rem 1.5rem;box-shadow:var(--shadow-sm);transition:box-shadow .2s,transform .2s;position:relative;overflow:hidden;}
+    .stat-tile:hover{box-shadow:var(--shadow-md);transform:translateY(-2px);}
+    .stat-tile::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--r-lg) var(--r-lg) 0 0;}
+    .st-ink::after{background:var(--ink);} .st-o::after{background:var(--saffron);} .st-r::after{background:var(--red);} .st-g::after{background:var(--green);}
+    .stat-icon{font-size:22px;margin-bottom:10px;}
+    .stat-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--ink-3);margin-bottom:4px;}
+    .stat-val{font-family:'Fraunces',serif;font-size:26px;font-weight:700;line-height:1;}
 
-    /* Panel */
-    .panel { display: none; }
-    .panel.on { display: block; }
+    /* TABS */
+    .tab-bar{display:flex;background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);padding:5px;margin-bottom:1.75rem;box-shadow:var(--shadow-sm);}
+    .tab-btn{flex:1;padding:11px 8px;border:none;border-radius:var(--r-md);background:transparent;color:var(--ink-3);font-size:14px;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .2s;}
+    .tab-btn:hover{color:var(--ink);background:var(--paper-2);}
+    .tab-btn.on{background:var(--saffron);color:#fff;box-shadow:0 2px 8px rgba(232,101,10,.3);}
+    .tab-cnt{background:rgba(255,255,255,.25);padding:1px 7px;border-radius:10px;font-size:11px;font-weight:700;}
+    .tab-btn:not(.on) .tab-cnt{background:var(--paper-3);color:var(--ink-3);}
 
-    /* Form card */
-    .form-card {
-      background: var(--white); border: 1px solid var(--border);
-      border-radius: var(--r-lg); padding: 1.5rem 1.75rem;
-      margin-bottom: 1.5rem; box-shadow: var(--shadow-sm);
-    }
-    .form-card-title { font-size: 15px; font-weight: 700; color: var(--ink); margin-bottom: 1.25rem; display: flex; align-items: center; gap: 8px; }
-    .form-card-title-icon { width: 28px; height: 28px; background: var(--saffron-dim); border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
-    .frow2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-    .frow3 { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-    .fg { display: flex; flex-direction: column; gap: 5px; }
-    .fg label { font-size: 11px; font-weight: 700; color: var(--ink-3); text-transform: uppercase; letter-spacing: .5px; }
-    .finput {
-      padding: 10px 12px; border: 1.5px solid var(--border-2); border-radius: var(--r-sm);
-      font-size: 14px; font-family: 'Plus Jakarta Sans', sans-serif;
-      color: var(--ink); background: var(--paper); width: 100%;
-      transition: border-color .15s, box-shadow .15s;
-    }
-    .finput:focus { outline: none; border-color: var(--saffron); box-shadow: 0 0 0 3px rgba(232,101,10,.12); background: var(--white); }
-    .fselect {
-      padding: 10px 12px; border: 1.5px solid var(--border-2); border-radius: var(--r-sm);
-      font-size: 14px; font-family: 'Plus Jakarta Sans', sans-serif;
-      color: var(--ink); background: var(--paper); width: 100%;
-      transition: border-color .15s;
-    }
-    .fselect:focus { outline: none; border-color: var(--saffron); }
-    .submit-btn {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 11px 22px; background: var(--ink); color: #fff;
-      border: none; border-radius: var(--r-sm); font-size: 14px; font-weight: 700;
-      cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif;
-      transition: all .2s; margin-top: 6px;
-    }
-    .submit-btn:hover { background: var(--saffron); box-shadow: 0 4px 14px rgba(232,101,10,.3); transform: translateY(-1px); }
+    /* PANELS */
+    .panel{display:none;} .panel.on{display:block;}
+    .form-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.5rem 1.75rem;margin-bottom:1.5rem;box-shadow:var(--shadow-sm);}
+    .fcard-title{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:1.25rem;display:flex;align-items:center;gap:8px;}
+    .fcard-icon{width:28px;height:28px;background:var(--saffron-dim);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;}
+    .frow2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+    .frow3{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px;margin-bottom:10px;}
+    .fg{display:flex;flex-direction:column;gap:5px;}
+    .fg label{font-size:11px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.5px;}
+    .finput{padding:10px 12px;border:1.5px solid var(--border-2);border-radius:var(--r-sm);font-size:14px;font-family:'Plus Jakarta Sans',sans-serif;color:var(--ink);background:var(--paper);width:100%;transition:border-color .15s,box-shadow .15s;}
+    .finput:focus{outline:none;border-color:var(--saffron);box-shadow:0 0 0 3px rgba(232,101,10,.12);background:var(--white);}
+    .fselect{padding:10px 12px;border:1.5px solid var(--border-2);border-radius:var(--r-sm);font-size:14px;font-family:'Plus Jakarta Sans',sans-serif;color:var(--ink);background:var(--paper);width:100%;transition:border-color .15s;}
+    .fselect:focus{outline:none;border-color:var(--saffron);}
+    .submit-btn{display:inline-flex;align-items:center;gap:8px;padding:11px 22px;background:var(--ink);color:#fff;border:none;border-radius:var(--r-sm);font-size:14px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s;margin-top:6px;}
+    .submit-btn:hover{background:var(--saffron);box-shadow:0 4px 14px rgba(232,101,10,.3);transform:translateY(-1px);}
+    .list-label{font-size:13px;font-weight:700;color:var(--ink-3);margin-bottom:12px;text-transform:uppercase;letter-spacing:.6px;}
+    .search-wrap{position:relative;margin-bottom:1.25rem;}
+    .search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:15px;color:var(--ink-3);pointer-events:none;}
+    .search-input{width:100%;padding:10px 12px 10px 36px;border:1.5px solid var(--border-2);border-radius:var(--r-sm);font-size:14px;font-family:'Plus Jakarta Sans',sans-serif;background:var(--white);color:var(--ink);transition:border-color .15s,box-shadow .15s;}
+    .search-input:focus{outline:none;border-color:var(--saffron);box-shadow:0 0 0 3px rgba(232,101,10,.1);}
 
-    /* List label */
-    .list-label { font-size: 13px; font-weight: 700; color: var(--ink-3); margin-bottom: 12px; text-transform: uppercase; letter-spacing: .6px; display: flex; align-items: center; justify-content: space-between; }
+    /* ITEM CARDS */
+    .item-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:1rem 1.25rem;display:flex;align-items:center;gap:14px;margin-bottom:10px;box-shadow:var(--shadow-sm);transition:box-shadow .2s,transform .15s;}
+    .item-card:hover{box-shadow:var(--shadow-md);transform:translateY(-1px);}
+    .item-card.low{border-color:rgba(193,51,51,.3);border-left:4px solid var(--red);}
+    .item-emoji{width:44px;height:44px;background:var(--paper-2);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;border:1px solid var(--border);}
+    .item-body{flex:1;min-width:0;}
+    .item-name{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:2px;}
+    .item-meta{font-size:12px;color:var(--ink-3);margin-bottom:5px;}
+    .stock-badge{font-size:11px;padding:3px 9px;border-radius:12px;font-weight:700;display:inline-flex;align-items:center;gap:4px;}
+    .sb-low{background:var(--red-dim);color:var(--red);}
+    .sb-ok{background:var(--green-dim);color:var(--green);}
+    .item-right{display:flex;align-items:center;gap:8px;}
+    .qty-ctrl{display:flex;align-items:center;gap:6px;background:var(--paper-2);border:1px solid var(--border);border-radius:var(--r-sm);padding:3px;}
+    .qty-btn{width:30px;height:30px;border-radius:6px;border:none;background:transparent;cursor:pointer;font-size:18px;font-weight:700;display:flex;align-items:center;justify-content:center;color:var(--ink);transition:background .15s;}
+    .qty-btn:hover{background:var(--white);}
+    .qty-val{font-size:15px;font-weight:700;min-width:32px;text-align:center;font-family:'Fraunces',serif;}
+    .del-btn{width:34px;height:34px;border:1.5px solid var(--border-2);background:transparent;border-radius:var(--r-sm);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .15s;}
+    .del-btn:hover{background:var(--red-dim);border-color:var(--red);}
 
-    /* Search */
-    .search-wrap { position: relative; margin-bottom: 1.25rem; }
-    .search-wrap .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 15px; color: var(--ink-3); pointer-events: none; }
-    .search-input { width: 100%; padding: 10px 12px 10px 36px; border: 1.5px solid var(--border-2); border-radius: var(--r-sm); font-size: 14px; font-family: 'Plus Jakarta Sans', sans-serif; background: var(--white); color: var(--ink); transition: border-color .15s, box-shadow .15s; }
-    .search-input:focus { outline: none; border-color: var(--saffron); box-shadow: 0 0 0 3px rgba(232,101,10,.1); }
+    /* UDHAR CARDS */
+    .udhar-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:1.25rem 1.5rem;margin-bottom:12px;box-shadow:var(--shadow-sm);}
+    .udhar-head{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+    .cust-av{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--blue-dim),#C8DEFA);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:var(--blue);flex-shrink:0;border:2px solid rgba(26,95,168,.15);}
+    .cust-name{font-size:16px;font-weight:700;color:var(--ink);}
+    .cust-bal{font-size:13px;font-weight:600;margin-top:1px;}
+    .udhar-actions{display:flex;gap:8px;margin-left:auto;flex-wrap:wrap;justify-content:flex-end;}
+    .wa-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;background:#25D366;color:#fff;border:none;border-radius:var(--r-sm);font-size:12px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .15s;box-shadow:0 2px 8px rgba(37,211,102,.3);}
+    .wa-btn:hover{background:#1DAA54;transform:translateY(-1px);}
+    .mark-paid-btn{padding:8px 14px;border:1.5px solid var(--border-2);background:transparent;border-radius:var(--r-sm);font-size:12px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;color:var(--ink-2);transition:all .15s;}
+    .mark-paid-btn:hover{border-color:var(--green);color:var(--green);background:var(--green-dim);}
+    .udhar-entry{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-top:1px solid var(--border);font-size:13px;}
+    .entry-meta{color:var(--ink-3);display:flex;align-items:center;gap:6px;}
+    .entry-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
 
-    /* Item card */
-    .item-card {
-      background: var(--white); border: 1.5px solid var(--border);
-      border-radius: var(--r-lg); padding: 1rem 1.25rem;
-      display: flex; align-items: center; gap: 14px;
-      margin-bottom: 10px; box-shadow: var(--shadow-sm);
-      transition: box-shadow .2s, transform .15s;
-    }
-    .item-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
-    .item-card.low-stock { border-color: rgba(193,51,51,.3); border-left: 4px solid var(--red); }
-    .item-emoji { width: 44px; height: 44px; background: var(--paper-2); border-radius: var(--r-md); display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; border: 1px solid var(--border); }
-    .item-body { flex: 1; min-width: 0; }
-    .item-name { font-size: 15px; font-weight: 700; color: var(--ink); margin-bottom: 2px; }
-    .item-meta { font-size: 12px; color: var(--ink-3); margin-bottom: 5px; }
-    .stock-badge { font-size: 11px; padding: 3px 9px; border-radius: 12px; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; }
-    .sb-low { background: var(--red-dim); color: var(--red); }
-    .sb-ok  { background: var(--green-dim); color: var(--green); }
-    .item-right { display: flex; align-items: center; gap: 8px; }
-    .qty-ctrl { display: flex; align-items: center; gap: 6px; background: var(--paper-2); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 3px; }
-    .qty-btn { width: 30px; height: 30px; border-radius: 6px; border: none; background: transparent; cursor: pointer; font-size: 18px; font-weight: 700; display: flex; align-items: center; justify-content: center; color: var(--ink); transition: background .15s; }
-    .qty-btn:hover { background: var(--white); }
-    .qty-val { font-size: 15px; font-weight: 700; min-width: 32px; text-align: center; font-family: 'Fraunces', serif; }
-    .del-btn { width: 34px; height: 34px; border: 1.5px solid var(--border-2); background: transparent; border-radius: var(--r-sm); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; transition: all .15s; }
-    .del-btn:hover { background: var(--red-dim); border-color: var(--red); }
+    /* SALE CARDS */
+    .sale-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:1rem 1.25rem;display:flex;align-items:center;gap:14px;margin-bottom:10px;box-shadow:var(--shadow-sm);}
+    .pay-badge{font-size:11px;padding:3px 9px;border-radius:12px;font-weight:700;}
+    .pay-cash{background:var(--green-dim);color:var(--green);}
+    .pay-upi{background:var(--blue-dim);color:var(--blue);}
+    .pay-udhar{background:var(--saffron-dim);color:var(--saffron-dark);}
 
-    /* Udhar card */
-    .udhar-card {
-      background: var(--white); border: 1.5px solid var(--border);
-      border-radius: var(--r-lg); padding: 1.25rem 1.5rem;
-      margin-bottom: 12px; box-shadow: var(--shadow-sm);
-      transition: box-shadow .2s;
-    }
-    .udhar-card:hover { box-shadow: var(--shadow-md); }
-    .udhar-head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
-    .cust-avatar { width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg, var(--blue-dim), #C8DEFA); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; color: var(--blue); flex-shrink: 0; border: 2px solid rgba(26,95,168,.15); }
-    .cust-name { font-size: 16px; font-weight: 700; color: var(--ink); }
-    .cust-bal { font-size: 13px; font-weight: 600; margin-top: 1px; }
-    .udhar-actions { display: flex; gap: 8px; margin-left: auto; flex-wrap: wrap; justify-content: flex-end; }
-    .wa-btn {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 8px 14px; background: #25D366; color: #fff;
-      border: none; border-radius: var(--r-sm); font-size: 12px; font-weight: 700;
-      cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif;
-      transition: all .15s; box-shadow: 0 2px 8px rgba(37,211,102,.3);
-    }
-    .wa-btn:hover { background: #1DAA54; transform: translateY(-1px); }
-    .mark-paid-btn {
-      padding: 8px 14px; border: 1.5px solid var(--border-2); background: transparent;
-      border-radius: var(--r-sm); font-size: 12px; font-weight: 700;
-      cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; color: var(--ink-2);
-      transition: all .15s;
-    }
-    .mark-paid-btn:hover { border-color: var(--green); color: var(--green); background: var(--green-dim); }
-    .udhar-entry-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-top: 1px solid var(--border); font-size: 13px; }
-    .entry-meta { color: var(--ink-3); display: flex; align-items: center; gap: 6px; }
-    .entry-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    /* EMPTY */
+    .empty{text-align:center;padding:3.5rem 2rem;}
+    .empty-icon{font-size:48px;margin-bottom:1rem;opacity:.5;}
+    .empty-title{font-family:'Fraunces',serif;font-size:20px;font-weight:700;margin-bottom:6px;}
+    .empty-sub{font-size:14px;color:var(--ink-3);line-height:1.6;}
 
-    /* Sale card */
-    .sale-card {
-      background: var(--white); border: 1.5px solid var(--border);
-      border-radius: var(--r-lg); padding: 1rem 1.25rem;
-      display: flex; align-items: center; gap: 14px;
-      margin-bottom: 10px; box-shadow: var(--shadow-sm);
-    }
-    .pay-badge { font-size: 11px; padding: 3px 9px; border-radius: 12px; font-weight: 700; }
-    .pay-cash  { background: var(--green-dim);  color: var(--green); }
-    .pay-upi   { background: var(--blue-dim);   color: var(--blue); }
-    .pay-udhar { background: var(--saffron-dim); color: var(--saffron-dark); }
+    /* TOAST */
+    #toast{display:none;position:fixed;bottom:24px;right:24px;background:var(--ink);color:#fff;padding:10px 20px;border-radius:var(--r-md);font-size:13px;font-weight:600;z-index:999;font-family:'Plus Jakarta Sans',sans-serif;box-shadow:var(--shadow-lg);}
 
-    /* Empty state */
-    .empty-state { text-align: center; padding: 3.5rem 2rem; }
-    .empty-icon { font-size: 48px; margin-bottom: 1rem; opacity: .5; }
-    .empty-title { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 700; color: var(--ink); margin-bottom: 6px; }
-    .empty-sub { font-size: 14px; color: var(--ink-3); line-height: 1.6; }
-
-    /* Toast */
-    #toast { display: none; position: fixed; bottom: 24px; right: 24px; background: var(--ink); color: #fff; padding: 10px 20px; border-radius: var(--r-md); font-size: 13px; font-weight: 600; z-index: 999; font-family: 'Plus Jakarta Sans', sans-serif; box-shadow: var(--shadow-lg); display: none; align-items: center; gap: 8px; }
-
-    /* Animations */
-    @keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:none} }
-    .hero-left > * { animation: fadeUp .55s ease both; }
+    /* ANIMS */
+    @keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+    .hero-left > *{animation:fadeUp .55s ease both;}
     .hero-left > *:nth-child(1){animation-delay:.05s}
     .hero-left > *:nth-child(2){animation-delay:.12s}
     .hero-left > *:nth-child(3){animation-delay:.18s}
     .hero-left > *:nth-child(4){animation-delay:.25s}
     .hero-left > *:nth-child(5){animation-delay:.32s}
-    .mockup-card { animation: fadeUp .65s ease .25s both; }
+    .mockup-card{animation:fadeUp .65s ease .25s both;}
 
     @media(max-width:768px){
-      .hero{grid-template-columns:1fr} .hero-right{display:none}
-      .hero-left{padding:3rem 1.5rem} .hero-h1{font-size:40px}
-      .features-grid{grid-template-columns:1fr}
-      .how{grid-template-columns:1fr} .how-right{display:none}
-      .nav-links{display:none} .stats-row{grid-template-columns:1fr 1fr}
-      .frow3{grid-template-columns:1fr 1fr} .footer{flex-direction:column;gap:8px;text-align:center}
-      .user-nm{display:none} .app-body{padding:1rem}
+      .hero{grid-template-columns:1fr} .hero-right{display:none} .hero-left{padding:3rem 1.5rem} .hero-h1{font-size:38px}
+      .feat-grid{grid-template-columns:1fr} .how{grid-template-columns:1fr} .how-right{display:none}
+      .nav-links{display:none} .stats-row{grid-template-columns:1fr 1fr} .frow3{grid-template-columns:1fr 1fr}
+      .footer{flex-direction:column;gap:8px;text-align:center} .user-nm{display:none}
     }
   </style>
 </head>
 <body>
 
-<!-- ════════════════════════════════
-     AUTH MODAL
-════════════════════════════════ -->
+<!-- AUTH MODAL -->
 <div class="overlay" id="auth-modal">
   <div class="modal">
     <button class="modal-x" onclick="closeModal()">✕</button>
@@ -535,69 +315,65 @@
       <div class="modal-logo-mark">🏪</div>
       <div class="modal-logo-text">Kirana<span>Book</span></div>
     </div>
-    <h2 class="modal-h" id="modal-h">Welcome back</h2>
-    <p class="modal-sub" id="modal-sub">Sign in to access your store dashboard. Your data is waiting.</p>
+    <div class="lang-pick-label" id="m-lang-label">भाषा चुनें / Choose language</div>
+    <div class="lang-picker">
+      <button class="lang-btn" id="lb-en" onclick="setLang('en')">
+        <span class="lang-flag">🇬🇧</span>
+        <span class="lang-name">English</span>
+        <span class="lang-native">English</span>
+      </button>
+      <button class="lang-btn on" id="lb-hi" onclick="setLang('hi')">
+        <span class="lang-flag">🇮🇳</span>
+        <span class="lang-name">हिंदी</span>
+        <span class="lang-native">Hindi</span>
+      </button>
+    </div>
+    <h2 class="modal-h" id="m-title">वापसी पर स्वागत है</h2>
+    <p class="modal-sub" id="m-sub">अपने स्टोर डैशबोर्ड तक पहुंचने के लिए साइन इन करें।</p>
     <button class="google-btn" id="google-btn" onclick="signInWithGoogle()">
       <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.35-8.16 2.35-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-      Continue with Google
+      <span id="g-btn-text">Google से जारी रखें</span>
     </button>
     <div class="auth-err" id="auth-err"></div>
-    <div class="modal-divider"><span>why KiranaBook?</span></div>
+    <div class="modal-div"><span id="m-why">KiranaBook क्यों?</span></div>
     <div class="modal-perks">
-      <div class="perk"><div class="perk-dot" style="background:var(--saffron-dim)">☁️</div>Your data saved securely in the cloud</div>
-      <div class="perk"><div class="perk-dot" style="background:var(--green-dim)">📱</div>Access from any phone or device, anytime</div>
-      <div class="perk"><div class="perk-dot" style="background:var(--blue-dim)">🔒</div>Private — only you can see your store data</div>
-      <div class="perk"><div class="perk-dot" style="background:var(--paper-3)">🆓</div>Completely free, forever</div>
+      <div class="perk"><div class="perk-dot" style="background:var(--saffron-dim)">☁️</div><span id="pk1">आपका डेटा क्लाउड में सुरक्षित</span></div>
+      <div class="perk"><div class="perk-dot" style="background:var(--green-dim)">📱</div><span id="pk2">किसी भी फोन से कभी भी एक्सेस</span></div>
+      <div class="perk"><div class="perk-dot" style="background:var(--blue-dim)">🔒</div><span id="pk3">निजी — केवल आप ही देख सकते हैं</span></div>
+      <div class="perk"><div class="perk-dot" style="background:var(--paper-3)">🆓</div><span id="pk4">पूरी तरह मुफ़्त, हमेशा</span></div>
     </div>
   </div>
 </div>
 
-<!-- ════════════════════════════════
-     HOME PAGE
-════════════════════════════════ -->
+<!-- HOME PAGE -->
 <div id="page-home" class="page active">
-
   <nav class="nav">
     <div class="logo" onclick="window.scrollTo(0,0)">
       <div class="logo-mark">🏪</div>
       <div class="logo-text">Kirana<span>Book</span></div>
     </div>
     <ul class="nav-links">
-      <li><a href="#features">Features</a></li>
-      <li><a href="#how">How it works</a></li>
-      <li><a href="#features">Free forever</a></li>
+      <li><a href="#features" id="nl-feat">सुविधाएं</a></li>
+      <li><a href="#how" id="nl-how">कैसे काम करता है</a></li>
+      <li><a href="#features" id="nl-free">हमेशा मुफ़्त</a></li>
     </ul>
     <div class="nav-auth">
-      <button class="btn-ghost" onclick="openModal('signin')">Sign in</button>
-      <button class="btn-saffron" onclick="openModal('signup')">Get started free →</button>
+      <button class="btn-ghost" onclick="openModal('signin')" id="nav-signin">साइन इन</button>
+      <button class="btn-saffron" onclick="openModal('signup')" id="nav-start">मुफ़्त शुरू करें →</button>
     </div>
   </nav>
 
   <section class="hero">
-    <div class="hero-bg"></div>
-    <div class="hero-grid-pattern"></div>
-
+    <div class="hero-bg"></div><div class="hero-grid"></div>
     <div class="hero-left">
-      <div class="hero-eyebrow">Built for Indian Kirana Stores</div>
-      <h1 class="hero-h1">
-        Your store,<br>
-        <em>smarter</em> &amp;<br>
-        <span class="underline-green">more profitable.</span>
-      </h1>
-      <p class="hero-sub">
-        Track stock, manage <strong>udhar khata</strong>, record daily sales — all in one beautiful app.
-        Your data synced to the cloud, accessible from any phone.
-      </p>
+      <div class="hero-eyebrow" id="h-eyebrow">भारतीय किराना स्टोर के लिए बनाया गया</div>
+      <h1 class="hero-h1" id="h-headline">अपना स्टोर,<br><em>स्मार्ट</em> और<br><span class="ug">अधिक लाभदायक।</span></h1>
+      <p class="hero-sub" id="h-sub">स्टॉक ट्रैक करें, <strong>उधार खाता</strong> मैनेज करें, रोज़ की बिक्री रिकॉर्ड करें — सब एक सुंदर ऐप में। आपका डेटा क्लाउड में सुरक्षित।</p>
       <div class="hero-ctas">
-        <button class="btn-hero" onclick="openModal('signup')">
-          शुरू करें — Start Free
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-        </button>
-        <button class="btn-hero-outline" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">
-          See all features
-        </button>
+        <button class="btn-hero" onclick="openModal('signup')" id="h-cta1">शुरू करें — मुफ़्त खाता बनाएं →</button>
+        <button class="btn-outline" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})" id="h-cta2">सुविधाएं देखें</button>
       </div>
-      <div class="hero-social-proof">
+      <div class="social-proof">
         <div class="avatars">
           <span style="background:#FAEEDA;color:#854F0B;">R</span>
           <span style="background:#E6F1FB;color:#185FA5;">S</span>
@@ -605,39 +381,29 @@
           <span style="background:#F4C0D1;color:#72243E;">P</span>
           <span style="background:#EDE4FB;color:#6B35B8;">K</span>
         </div>
-        <div class="social-text"><strong>500+</strong> kirana owners already using KiranaBook</div>
+        <div class="social-text" id="h-trust"><strong>500+</strong> किराना मालिक KiranaBook इस्तेमाल कर रहे हैं</div>
       </div>
     </div>
-
     <div class="hero-right">
       <div class="mockup-wrap">
-        <div class="badge-float badge-float-1">✅ ₹3,240 earned today</div>
-        <div class="badge-float badge-float-2">⚠️ 3 items low on stock</div>
+        <div class="badge-float bf1">✅ ₹3,240 आज कमाए</div>
+        <div class="badge-float bf2">⚠️ 3 चीज़ें कम स्टॉक में</div>
         <div class="mockup-card">
-          <div class="mockup-header">
-            <div class="mockup-title">My Kirana Store</div>
-            <div class="mockup-date">Today, 16 May</div>
+          <div class="mhdr"><div class="mtitle">मेरा किराना स्टोर</div><div class="mdate">आज, 16 मई</div></div>
+          <div class="mstats">
+            <div class="ms ms-o"><div class="ms-label">स्टॉक मूल्य</div><div class="ms-val">₹42.8k</div></div>
+            <div class="ms ms-g"><div class="ms-label">आज की बिक्री</div><div class="ms-val">₹3,240</div></div>
+            <div class="ms ms-r"><div class="ms-label">कुल उधार</div><div class="ms-val">₹1,870</div></div>
+            <div class="ms ms-b"><div class="ms-label">कम स्टॉक</div><div class="ms-val">3 आइटम</div></div>
           </div>
-          <div class="mockup-stats">
-            <div class="mstat mstat-orange"><div class="mstat-label">Stock value</div><div class="mstat-val">₹42.8k</div></div>
-            <div class="mstat mstat-green"><div class="mstat-label">Today's sales</div><div class="mstat-val">₹3,240</div></div>
-            <div class="mstat mstat-red"><div class="mstat-label">Total udhar</div><div class="mstat-val">₹1,870</div></div>
-            <div class="mstat mstat-blue"><div class="mstat-label">Low stock</div><div class="mstat-val">3 items</div></div>
+          <div class="mitems">
+            <div class="mi"><span>🌾</span><span class="mi-name">Tata Salt 1kg</span><span class="mi-qty">45 बचे</span><span class="mbadge" style="background:var(--green-dim);color:var(--green)">✓ OK</span></div>
+            <div class="mi"><span>🥛</span><span class="mi-name">Amul Butter 100g</span><span class="mi-qty">3 बचे</span><span class="mbadge" style="background:var(--red-dim);color:var(--red)">⚠ कम</span></div>
+            <div class="mi"><span>🌶️</span><span class="mi-name">Red Chilli Powder</span><span class="mi-qty">2 बचे</span><span class="mbadge" style="background:var(--red-dim);color:var(--red)">⚠ कम</span></div>
           </div>
-          <div class="mockup-items">
-            <div class="mitem"><span class="mitem-icon">🌾</span><span class="mitem-name">Tata Salt 1kg</span><span class="mitem-qty">45 left</span><span class="mbadge" style="background:var(--green-dim);color:var(--green)">✓ OK</span></div>
-            <div class="mitem"><span class="mitem-icon">🥛</span><span class="mitem-name">Amul Butter 100g</span><span class="mitem-qty">3 left</span><span class="mbadge" style="background:var(--red-dim);color:var(--red)">⚠ Low</span></div>
-            <div class="mitem"><span class="mitem-icon">🌶️</span><span class="mitem-name">Red Chilli Powder</span><span class="mitem-qty">2 left</span><span class="mbadge" style="background:var(--red-dim);color:var(--red)">⚠ Low</span></div>
-          </div>
-          <div class="mockup-udhar">
-            <div>
-              <div style="font-size:10px;color:var(--ink-3);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">Latest udhar</div>
-              <div style="font-size:14px;font-weight:700">Ramesh Sharma</div>
-            </div>
-            <div style="text-align:right">
-              <div style="font-size:18px;font-weight:800;color:var(--red);font-family:'Fraunces',serif">₹350</div>
-              <div style="font-size:10px;color:var(--ink-3)">outstanding</div>
-            </div>
+          <div class="mudhar">
+            <div><div style="font-size:10px;color:var(--ink-3);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">ताज़ा उधार</div><div style="font-size:14px;font-weight:700">Ramesh Sharma</div></div>
+            <div style="text-align:right"><div style="font-size:18px;font-weight:800;color:var(--red);font-family:'Fraunces',serif">₹350</div><div style="font-size:10px;color:var(--ink-3)">बकाया</div></div>
           </div>
         </div>
       </div>
@@ -645,320 +411,455 @@
   </section>
 
   <section class="features" id="features">
-    <div class="section-eyebrow">Everything you need</div>
-    <h2 class="section-h2">Built for the way<br>kirana owners work.</h2>
-    <p class="section-sub">No complicated setup. No training needed. Just open, sign in, and start managing your store better from day one.</p>
-    <div class="features-grid">
-      <div class="feat-card"><div class="feat-icon-wrap fi-o">📦</div><div class="feat-title">Smart Inventory Tracker</div><div class="feat-desc">Add items, update stock with a tap. Automatic low-stock alerts so you never run out of anything important before reordering.</div></div>
-      <div class="feat-card"><div class="feat-icon-wrap fi-g">📒</div><div class="feat-title">Digital Udhar Khata</div><div class="feat-desc">Replace the paper notebook forever. Track credit given to each customer, record payments, and see live balances at a glance.</div></div>
-      <div class="feat-card"><div class="feat-icon-wrap fi-b">📊</div><div class="feat-title">Daily Sales Log</div><div class="feat-desc">Record every sale — cash, UPI, or udhar. Know exactly what you earned today without any manual arithmetic.</div></div>
-      <div class="feat-card"><div class="feat-icon-wrap fi-o">💬</div><div class="feat-title">WhatsApp Reminders</div><div class="feat-desc">Send customers a professional udhar statement on WhatsApp with one tap. No awkward conversations, no forgetting.</div></div>
-      <div class="feat-card"><div class="feat-icon-wrap fi-g">☁️</div><div class="feat-title">Cloud Sync</div><div class="feat-desc">Your data is saved securely to the cloud under your Google account. Access your full store from any phone, any time.</div></div>
-      <div class="feat-card"><div class="feat-icon-wrap fi-b">🆓</div><div class="feat-title">Free Forever</div><div class="feat-desc">No subscriptions. No hidden fees. No ads. KiranaBook is completely free for every kirana owner in India. Always.</div></div>
+    <div class="sec-eyebrow" id="f-eyebrow">सब कुछ जो आपको चाहिए</div>
+    <h2 class="sec-h2" id="f-h2">किराना मालिकों के<br>काम के हिसाब से बनाया।</h2>
+    <p class="sec-sub" id="f-sub">कोई जटिल सेटअप नहीं। कोई ट्रेनिंग नहीं। बस खोलें, साइन इन करें, और पहले दिन से बेहतर स्टोर चलाएं।</p>
+    <div class="feat-grid">
+      <div class="feat-card"><div class="feat-icon fi-o">📦</div><div class="feat-title" id="ft1-t">स्मार्ट इन्वेंटरी ट्रैकर</div><div class="feat-desc" id="ft1-d">सामान जोड़ें, एक टैप से स्टॉक अपडेट करें। कम स्टॉक के लिए अपने आप अलर्ट।</div></div>
+      <div class="feat-card"><div class="feat-icon fi-g">📒</div><div class="feat-title" id="ft2-t">डिजिटल उधार खाता</div><div class="feat-desc" id="ft2-d">कागज़ की नोटबुक बदलें। हर ग्राहक का उधार ट्रैक करें, पेमेंट रिकॉर्ड करें।</div></div>
+      <div class="feat-card"><div class="feat-icon fi-b">📊</div><div class="feat-title" id="ft3-t">रोज़ की बिक्री लॉग</div><div class="feat-desc" id="ft3-d">हर बिक्री — नकद, UPI, या उधार — रिकॉर्ड करें। बिना हिसाब किताब के रोज़ की कमाई जानें।</div></div>
+      <div class="feat-card"><div class="feat-icon fi-o">💬</div><div class="feat-title" id="ft4-t">WhatsApp रिमाइंडर</div><div class="feat-desc" id="ft4-d">एक टैप में ग्राहक को उनका उधार WhatsApp पर भेजें। बिना किसी झिझक के।</div></div>
+      <div class="feat-card"><div class="feat-icon fi-g">☁️</div><div class="feat-title" id="ft5-t">क्लाउड सिंक</div><div class="feat-desc" id="ft5-d">आपका डेटा Google अकाउंट के तहत क्लाउड में सुरक्षित। किसी भी फोन से एक्सेस करें।</div></div>
+      <div class="feat-card"><div class="feat-icon fi-b">🆓</div><div class="feat-title" id="ft6-t">पूरी तरह मुफ़्त</div><div class="feat-desc" id="ft6-d">कोई सदस्यता नहीं। कोई छुपा शुल्क नहीं। KiranaBook भारत के हर किराना मालिक के लिए मुफ़्त है।</div></div>
     </div>
   </section>
 
   <section class="how" id="how">
     <div class="how-left">
-      <div class="section-eyebrow">How it works</div>
-      <h2 class="section-h2">Up and running<br>in 3 minutes.</h2>
+      <div class="sec-eyebrow" id="hw-eyebrow">कैसे काम करता है</div>
+      <h2 class="sec-h2" id="hw-h2">3 मिनट में<br>तैयार।</h2>
       <div class="how-steps">
-        <div class="how-step">
-          <div class="how-num">1</div>
-          <div>
-            <div class="how-step-title">Create your free account</div>
-            <div class="how-step-desc">Sign up with your Google account in one tap. No passwords, no forms to fill. Your private store is ready instantly.</div>
-          </div>
-        </div>
-        <div class="how-step">
-          <div class="how-num">2</div>
-          <div>
-            <div class="how-step-title">Add your items & customers</div>
-            <div class="how-step-desc">Enter your stock and set up udhar accounts. Faster than writing in a notebook, and it never gets messy.</div>
-          </div>
-        </div>
-        <div class="how-step">
-          <div class="how-num">3</div>
-          <div>
-            <div class="how-step-title">Run your store smarter every day</div>
-            <div class="how-step-desc">Track sales, get low-stock alerts, send WhatsApp reminders, and see your store's health on one beautiful screen.</div>
-          </div>
-        </div>
+        <div class="how-step"><div class="how-num">1</div><div><div class="step-title" id="hs1-t">मुफ़्त खाता बनाएं</div><div class="step-desc" id="hs1-d">एक टैप में Google अकाउंट से साइन अप करें। कोई पासवर्ड नहीं, कोई फॉर्म नहीं।</div></div></div>
+        <div class="how-step"><div class="how-num">2</div><div><div class="step-title" id="hs2-t">सामान और ग्राहक जोड़ें</div><div class="step-desc" id="hs2-d">अपना स्टॉक और उधार खाते सेट करें। नोटबुक से भी तेज़।</div></div></div>
+        <div class="how-step"><div class="how-num">3</div><div><div class="step-title" id="hs3-t">हर दिन स्मार्ट तरीके से चलाएं</div><div class="step-desc" id="hs3-d">बिक्री ट्रैक करें, कम स्टॉक अलर्ट पाएं, WhatsApp रिमाइंडर भेजें।</div></div></div>
       </div>
       <div style="margin-top:2.5rem">
-        <button class="btn-hero" onclick="openModal('signup')" style="font-size:15px;padding:13px 26px;">Create free account →</button>
+        <button class="btn-hero" onclick="openModal('signup')" style="font-size:15px;padding:13px 26px;" id="hw-cta">मुफ़्त खाता बनाएं →</button>
       </div>
     </div>
     <div class="how-right">
       <div class="testimonial">
-        <div class="quote-icon">"</div>
-        <p class="quote-body">Pehle udhar ka hisaab notebook mein likhta tha aur bhool jaata tha. Ab <strong>sab kuch phone mein hai</strong> — kaun kitna deta hai, WhatsApp pe bhi bhej deta hoon.</p>
-        <div class="quote-author">
+        <div class="q-mark">"</div>
+        <p class="q-body" id="t-body">पहले उधार का हिसाब नोटबुक में लिखता था और भूल जाता था। अब <strong>सब कुछ फोन में है</strong> — कौन कितना देता है, WhatsApp पे भी भेज देता हूं।</p>
+        <div class="q-author">
           <div class="q-av">RS</div>
-          <div>
-            <div class="q-name">Rajesh Singh</div>
-            <div class="q-loc">Kirana store owner · Pune, Maharashtra</div>
-          </div>
+          <div><div class="q-name">Rajesh Singh</div><div class="q-loc" id="t-loc">किराना स्टोर मालिक · पुणे, महाराष्ट्र</div></div>
         </div>
       </div>
     </div>
   </section>
 
   <section class="cta-band">
-    <div class="cta-label">Free forever · Cloud-synced · Works on any phone</div>
-    <h2 class="cta-h2">Your store deserves<br>a <em>smarter</em> system.</h2>
-    <p class="cta-sub">Join hundreds of kirana owners who've replaced paper notebooks with a modern digital store manager.</p>
-    <button class="btn-hero" onclick="openModal('signup')" style="font-size:16px;padding:16px 36px;">
-      शुरू करें — Start Free Today →
-    </button>
-    <div class="cta-note">No credit card · No download · Sign in with Google</div>
+    <div class="cta-label" id="cta-label">हमेशा मुफ़्त · क्लाउड सिंक · किसी भी फोन पर</div>
+    <h2 class="cta-h2" id="cta-h2">आपके स्टोर को मिले<br>एक <em>स्मार्ट</em> सिस्टम।</h2>
+    <p class="cta-sub" id="cta-sub">सैकड़ों किराना मालिकों के साथ जुड़ें जो कागज़ की नोटबुक छोड़ कर डिजिटल हो गए हैं।</p>
+    <button class="btn-hero" onclick="openModal('signup')" style="font-size:16px;padding:16px 36px;" id="cta-btn">शुरू करें — आज मुफ़्त में →</button>
+    <div class="cta-note" id="cta-note">कोई क्रेडिट कार्ड नहीं · कोई डाउनलोड नहीं · Google से साइन इन</div>
   </section>
 
   <footer class="footer">
     <div class="footer-logo">Kirana<span>Book</span></div>
-    <div style="font-size:13px;color:var(--ink-3)">Made with ❤️ for Indian kirana store owners</div>
-    <div style="font-size:13px;color:var(--ink-3)">© 2026 KiranaBook</div>
+    <div id="f-made">भारतीय किराना मालिकों के लिए ❤️ से बनाया</div>
+    <div>© 2026 KiranaBook</div>
   </footer>
+</div><!-- /home -->
 
-</div><!-- /page-home -->
-
-
-<!-- ════════════════════════════════
-     APP PAGE
-════════════════════════════════ -->
+<!-- APP PAGE -->
 <div id="page-app" class="page">
-
   <nav class="app-nav">
     <div class="app-logo" onclick="goHome()">
       <div class="app-logo-mark">🏪</div>
       <div class="app-logo-text">Kirana<span>Book</span></div>
     </div>
     <div class="app-nav-right">
-      <div class="sync-badge" id="sync-badge">☁️ Synced</div>
+      <div class="app-lang">
+        <button class="app-lang-btn" id="al-hi" onclick="setLang('hi')">हिं</button>
+        <button class="app-lang-btn" id="al-en" onclick="setLang('en')">EN</button>
+      </div>
+      <div class="sync-badge" id="sync-badge">☁️ सिंक हो गया</div>
       <div class="user-pill">
         <div class="user-av" id="user-av"></div>
         <span class="user-nm" id="user-nm"></span>
       </div>
-      <button class="signout-btn" onclick="signOut()">Sign out</button>
+      <button class="signout-btn" id="app-signout" onclick="signOut()">साइन आउट</button>
     </div>
   </nav>
-
   <div class="app-body">
-
-    <!-- Stats -->
     <div class="stats-row" id="stats-row"></div>
-
-    <!-- Tabs -->
     <div class="tab-bar">
       <button id="tb-inv" class="tab-btn on" onclick="showTab('inv')">
-        <span class="tab-icon">📦</span> Inventory
-        <span class="tab-count" id="tc-inv">0</span>
+        <span>📦</span><span id="tl-inv">इन्वेंटरी</span><span class="tab-cnt" id="tc-inv">0</span>
       </button>
       <button id="tb-udh" class="tab-btn" onclick="showTab('udh')">
-        <span class="tab-icon">📒</span> Udhar Khata
-        <span class="tab-count" id="tc-udh">0</span>
+        <span>📒</span><span id="tl-udh">उधार खाता</span><span class="tab-cnt" id="tc-udh">0</span>
       </button>
       <button id="tb-sal" class="tab-btn" onclick="showTab('sal')">
-        <span class="tab-icon">📊</span> Sales
-        <span class="tab-count" id="tc-sal">0</span>
+        <span>📊</span><span id="tl-sal">बिक्री</span><span class="tab-cnt" id="tc-sal">0</span>
       </button>
     </div>
 
-    <!-- Inventory Panel -->
+    <!-- Inventory -->
     <div id="panel-inv" class="panel on">
       <div class="form-card">
-        <div class="form-card-title"><div class="form-card-title-icon">➕</div> Add new item to stock</div>
+        <div class="fcard-title"><div class="fcard-icon">➕</div><span id="inv-form-title">स्टॉक में नया सामान जोड़ें</span></div>
         <div class="frow3">
-          <div class="fg"><label>Item name</label><input id="i-name" class="finput" placeholder="e.g. Tata Salt 1kg" /></div>
-          <div class="fg"><label>Quantity</label><input id="i-qty" class="finput" type="number" placeholder="50" min="0" /></div>
-          <div class="fg"><label>Price ₹</label><input id="i-price" class="finput" type="number" placeholder="22" min="0" /></div>
+          <div class="fg"><label id="l-iname">सामान का नाम</label><input id="i-name" class="finput" placeholder="जैसे: टाटा नमक 1kg" /></div>
+          <div class="fg"><label id="l-iqty">मात्रा</label><input id="i-qty" class="finput" type="number" placeholder="50" min="0" /></div>
+          <div class="fg"><label id="l-iprice">कीमत ₹</label><input id="i-price" class="finput" type="number" placeholder="22" min="0" /></div>
         </div>
         <div class="frow2" style="margin-bottom:14px;">
-          <div class="fg"><label>Category</label>
+          <div class="fg"><label id="l-icat">श्रेणी</label>
             <select id="i-cat" class="fselect">
-              <option>Grains & Dal</option><option>Oil & Ghee</option><option>Spices</option>
-              <option>Snacks</option><option>Beverages</option><option>Dairy</option><option>Cleaning</option><option>Other</option>
+              <option>अनाज और दाल</option><option>तेल और घी</option><option>मसाले</option>
+              <option>नाश्ता</option><option>पेय पदार्थ</option><option>डेयरी</option><option>सफाई</option><option>अन्य</option>
             </select>
           </div>
-          <div class="fg"><label>Low stock alert below</label><input id="i-low" class="finput" type="number" placeholder="10" min="0" /></div>
+          <div class="fg"><label id="l-ilow">कम स्टॉक अलर्ट</label><input id="i-low" class="finput" type="number" placeholder="10" min="0" /></div>
         </div>
-        <button id="btn-add-item" class="submit-btn">➕ Add to inventory</button>
+        <button id="btn-add-item" class="submit-btn">➕ इन्वेंटरी में जोड़ें</button>
       </div>
-      <div class="search-wrap">
-        <span class="search-icon">🔍</span>
-        <input id="i-search" class="search-input" placeholder="Search items by name..." />
-      </div>
-      <div class="list-label"><span>Stock list</span></div>
+      <div class="search-wrap"><span class="search-icon">🔍</span><input id="i-search" class="search-input" placeholder="सामान का नाम खोजें..." /></div>
+      <div class="list-label" id="inv-list-label">स्टॉक सूची</div>
       <div id="inv-list"></div>
     </div>
 
-    <!-- Udhar Panel -->
+    <!-- Udhar -->
     <div id="panel-udh" class="panel">
       <div class="form-card">
-        <div class="form-card-title"><div class="form-card-title-icon">📝</div> Add udhar entry</div>
+        <div class="fcard-title"><div class="fcard-icon">📝</div><span id="udh-form-title">उधार एंट्री जोड़ें</span></div>
         <div class="frow2">
-          <div class="fg"><label>Customer name</label><input id="u-name" class="finput" placeholder="e.g. Ramesh Sharma" /></div>
-          <div class="fg"><label>Amount ₹</label><input id="u-amt" class="finput" type="number" placeholder="200" min="0" /></div>
+          <div class="fg"><label id="l-uname">ग्राहक का नाम</label><input id="u-name" class="finput" placeholder="जैसे: रमेश शर्मा" /></div>
+          <div class="fg"><label id="l-uamt">राशि ₹</label><input id="u-amt" class="finput" type="number" placeholder="200" min="0" /></div>
         </div>
         <div class="frow2" style="margin-bottom:14px;">
-          <div class="fg"><label>Entry type</label>
+          <div class="fg"><label id="l-utype">एंट्री का प्रकार</label>
             <select id="u-type" class="fselect">
-              <option value="debit">🔴 Gave on credit (उधार दिया)</option>
-              <option value="credit">🟢 Received payment (पैसे मिले)</option>
+              <option value="debit" id="uopt-d">🔴 उधार दिया</option>
+              <option value="credit" id="uopt-c">🟢 पैसे मिले</option>
             </select>
           </div>
-          <div class="fg"><label>Note (optional)</label><input id="u-note" class="finput" placeholder="e.g. Tata Salt, bread" /></div>
+          <div class="fg"><label id="l-unote">नोट (वैकल्पिक)</label><input id="u-note" class="finput" placeholder="जैसे: नमक, ब्रेड" /></div>
         </div>
-        <button id="btn-add-udhar" class="submit-btn">➕ Add entry</button>
+        <button id="btn-add-udhar" class="submit-btn">➕ एंट्री जोड़ें</button>
       </div>
-      <div class="list-label"><span>Customer balances</span></div>
+      <div class="list-label" id="udh-list-label">ग्राहक बकाया</div>
       <div id="udh-list"></div>
     </div>
 
-    <!-- Sales Panel -->
+    <!-- Sales -->
     <div id="panel-sal" class="panel">
       <div class="form-card">
-        <div class="form-card-title"><div class="form-card-title-icon">🧾</div> Record a sale</div>
+        <div class="fcard-title"><div class="fcard-icon">🧾</div><span id="sal-form-title">बिक्री दर्ज करें</span></div>
         <div class="frow3" style="margin-bottom:14px;">
-          <div class="fg"><label>Item sold</label><select id="s-item" class="fselect"></select></div>
-          <div class="fg"><label>Quantity</label><input id="s-qty" class="finput" type="number" placeholder="5" min="1" /></div>
-          <div class="fg"><label>Payment mode</label>
-            <select id="s-pay" class="fselect">
-              <option>Cash</option><option>UPI</option><option>Udhar</option>
-            </select>
+          <div class="fg"><label id="l-sitem">बेचा गया सामान</label><select id="s-item" class="fselect"></select></div>
+          <div class="fg"><label id="l-sqty">मात्रा</label><input id="s-qty" class="finput" type="number" placeholder="5" min="1" /></div>
+          <div class="fg"><label id="l-spay">भुगतान का तरीका</label>
+            <select id="s-pay" class="fselect"><option>Cash</option><option>UPI</option><option>Udhar</option></select>
           </div>
         </div>
-        <button id="btn-add-sale" class="submit-btn">🧾 Record sale</button>
+        <button id="btn-add-sale" class="submit-btn">🧾 बिक्री दर्ज करें</button>
       </div>
-      <div class="list-label"><span>Today's sales</span></div>
+      <div class="list-label" id="sal-list-label">आज की बिक्री</div>
       <div id="sal-list"></div>
     </div>
-
   </div>
-</div><!-- /page-app -->
+</div>
 
-<div id="toast" style="display:none;position:fixed;bottom:24px;right:24px;background:var(--ink);color:#fff;padding:10px 20px;border-radius:var(--r-md);font-size:13px;font-weight:600;z-index:999;font-family:'Plus Jakarta Sans',sans-serif;box-shadow:var(--shadow-lg);align-items:center;gap:8px;"></div>
+<div id="toast"></div>
 
 <script>
 (function(){
-  var EMOJIS={'Grains & Dal':'🌾','Oil & Ghee':'🫙','Spices':'🌶️','Snacks':'🍿','Beverages':'🧃','Dairy':'🥛','Cleaning':'🧹','Other':'📦'};
+  var EMOJIS={'Grains & Dal':'🌾','अनाज और दाल':'🌾','Oil & Ghee':'🫙','तेल और घी':'🫙','Spices':'🌶️','मसाले':'🌶️','Snacks':'🍿','नाश्ता':'🍿','Beverages':'🧃','पेय पदार्थ':'🧃','Dairy':'🥛','डेयरी':'🥛','Cleaning':'🧹','सफाई':'🧹','Other':'📦','अन्य':'📦'};
 
-  /* ── Supabase ── */
-  var sb=null, currentUser=null;
-  function initSB(){
-    if(SUPABASE_URL==='YOUR_SUPABASE_URL') return false;
-    try{ sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON); return true; }catch(e){ return false; }
+  /* ══ TRANSLATIONS ══ */
+  var TX = {
+    en:{
+      lang_label:'Choose your language',
+      modal_signin_h:'Welcome back', modal_signin_sub:'Sign in to access your store dashboard.',
+      modal_signup_h:'Create your account', modal_signup_sub:'Sign up with Google — data saved securely in the cloud.',
+      g_btn:'Continue with Google', why:'Why KiranaBook?',
+      pk1:'Your data saved securely in the cloud', pk2:'Access from any phone, anytime',
+      pk3:'Private — only you see your data', pk4:'Completely free, forever',
+      nl_feat:'Features', nl_how:'How it works', nl_free:'Free forever',
+      nav_signin:'Sign in', nav_start:'Get started free →',
+      h_eyebrow:'Built for Indian Kirana Stores',
+      h_headline:'Your store,<br><em>smarter</em> &amp;<br><span class="ug">more profitable.</span>',
+      h_sub:'Track stock, manage <strong>udhar khata</strong>, record daily sales — all in one beautiful app.',
+      h_cta1:'शुरू करें — Start Free →', h_cta2:'See features',
+      h_trust:'<strong>500+</strong> kirana owners using KiranaBook',
+      f_eyebrow:'Everything you need', f_h2:'Built for the way<br>kirana owners work.',
+      f_sub:'No complicated setup. No training needed. Open, sign in, and start managing better from day one.',
+      ft1_t:'Smart Inventory Tracker', ft1_d:'Add items, update stock with a tap. Automatic low-stock alerts.',
+      ft2_t:'Digital Udhar Khata', ft2_d:'Replace the paper notebook. Track credit per customer, see live balances.',
+      ft3_t:'Daily Sales Log', ft3_d:'Record every sale — cash, UPI, or udhar. Know your daily earnings.',
+      ft4_t:'WhatsApp Reminders', ft4_d:'Send customers a professional udhar statement on WhatsApp in one tap.',
+      ft5_t:'Cloud Sync', ft5_d:'Data saved to cloud under your Google account. Access from any phone.',
+      ft6_t:'Free Forever', ft6_d:'No subscriptions. No hidden fees. Free for every kirana owner in India.',
+      hw_eyebrow:'How it works', hw_h2:'Up and running<br>in 3 minutes.',
+      hs1_t:'Create your free account', hs1_d:'Sign up with Google in one tap. No passwords, no forms.',
+      hs2_t:'Add your items & customers', hs2_d:'Enter stock and set up udhar accounts. Faster than a notebook.',
+      hs3_t:'Run your store smarter daily', hs3_d:'Track sales, get alerts, send WhatsApp reminders.',
+      hw_cta:'Create free account →',
+      t_body:'Pehle udhar ka hisaab notebook mein likhta tha. Ab <strong>sab kuch phone mein hai</strong> — kaun kitna deta hai, WhatsApp pe bhi bhej deta hoon.',
+      t_loc:'Kirana store owner · Pune, Maharashtra',
+      cta_label:'Free forever · Cloud synced · Works on any phone',
+      cta_h2:'Your store deserves<br>a <em>smarter</em> system.',
+      cta_sub:'Join hundreds of kirana owners who have moved from paper notebooks to digital.',
+      cta_btn:'शुरू करें — Start Free Today →',
+      cta_note:'No credit card · No download · Sign in with Google',
+      f_made:'Made with ❤️ for Indian kirana store owners',
+      app_signout:'Sign out',
+      sync_load:'⏳ Loading...', sync_ok:'☁️ Synced', sync_off:'⚠️ Offline', sync_demo:'📱 Demo', sync_saving:'⏳...', sync_err:'⚠️ Error',
+      stat_stock:'Stock value', stat_low:'Low stock', stat_udhar:'Total udhar', stat_sales:"Today's sales", items_unit:' items',
+      tl_inv:'Inventory', tl_udh:'Udhar Khata', tl_sal:'Sales',
+      inv_form:'Add new item to stock', l_iname:'Item name', l_iqty:'Quantity', l_iprice:'Price ₹', l_icat:'Category', l_ilow:'Low stock alert below',
+      i_name_ph:'e.g. Tata Salt 1kg', btn_add_item:'➕ Add to inventory', inv_search_ph:'Search items by name...',
+      inv_list_label:'Stock list', inv_in_stock:'✓ In stock', inv_low_stock:'⚠ Low stock', inv_per_unit:'per unit', inv_value:'Value',
+      inv_empty_t:'No items yet', inv_empty_s:'Add your first item above to get started.',
+      cats:['Grains & Dal','Oil & Ghee','Spices','Snacks','Beverages','Dairy','Cleaning','Other'],
+      udh_form:'Add udhar entry', l_uname:'Customer name', l_uamt:'Amount ₹', l_utype:'Entry type', l_unote:'Note (optional)',
+      u_name_ph:'e.g. Ramesh Sharma', u_note_ph:'e.g. Tata Salt, bread',
+      uopt_d:'🔴 Gave on credit', uopt_c:'🟢 Received payment',
+      btn_add_udhar:'➕ Add entry', udh_list_label:'Customer balances',
+      udh_owes:'Owes', udh_over:'Overpaid', udh_settled:'✓ Settled',
+      udh_wa:'WhatsApp', udh_mark:'✓ Mark paid',
+      udh_empty_t:'No udhar entries yet', udh_empty_s:'Add your first customer credit entry above.',
+      sal_form:'Record a sale', l_sitem:'Item sold', l_sqty:'Quantity', l_spay:'Payment mode',
+      btn_add_sale:'🧾 Record sale', sal_list_label:"Today's sales", sal_qty_label:'Qty: ',
+      sal_empty_t:'No sales recorded today', sal_empty_s:'Record your first sale above.',
+      toast_saved:'☁️ Saved', toast_del:'🗑 Deleted',
+      err_name:'⚠️ Enter an item name', err_cust:'⚠️ Enter a customer name',
+      err_amt:'⚠️ Enter an amount', err_qty:'⚠️ Select item and enter quantity',
+      err_stock:'⚠️ Only {n} in stock!',
+    },
+    hi:{
+      lang_label:'भाषा चुनें / Choose language',
+      modal_signin_h:'वापसी पर स्वागत है', modal_signin_sub:'अपने स्टोर डैशबोर्ड तक पहुंचने के लिए साइन इन करें।',
+      modal_signup_h:'अपना खाता बनाएं', modal_signup_sub:'Google से साइन अप करें — आपका डेटा क्लाउड में सुरक्षित।',
+      g_btn:'Google से जारी रखें', why:'KiranaBook क्यों?',
+      pk1:'आपका डेटा क्लाउड में सुरक्षित', pk2:'किसी भी फोन से कभी भी एक्सेस',
+      pk3:'निजी — केवल आप ही देख सकते हैं', pk4:'पूरी तरह मुफ़्त, हमेशा',
+      nl_feat:'सुविधाएं', nl_how:'कैसे काम करता है', nl_free:'हमेशा मुफ़्त',
+      nav_signin:'साइन इन', nav_start:'मुफ़्त शुरू करें →',
+      h_eyebrow:'भारतीय किराना स्टोर के लिए बनाया गया',
+      h_headline:'अपना स्टोर,<br><em>स्मार्ट</em> और<br><span class="ug">अधिक लाभदायक।</span>',
+      h_sub:'स्टॉक ट्रैक करें, <strong>उधार खाता</strong> मैनेज करें, रोज़ की बिक्री रिकॉर्ड करें — सब एक सुंदर ऐप में।',
+      h_cta1:'शुरू करें — मुफ़्त खाता बनाएं →', h_cta2:'सुविधाएं देखें',
+      h_trust:'<strong>500+</strong> किराना मालिक KiranaBook इस्तेमाल कर रहे हैं',
+      f_eyebrow:'सब कुछ जो आपको चाहिए', f_h2:'किराना मालिकों के<br>काम के हिसाब से बनाया।',
+      f_sub:'कोई जटिल सेटअप नहीं। कोई ट्रेनिंग नहीं। बस खोलें, साइन इन करें, और पहले दिन से बेहतर चलाएं।',
+      ft1_t:'स्मार्ट इन्वेंटरी ट्रैकर', ft1_d:'सामान जोड़ें, एक टैप से स्टॉक अपडेट करें। कम स्टॉक के लिए अपने आप अलर्ट।',
+      ft2_t:'डिजिटल उधार खाता', ft2_d:'कागज़ की नोटबुक बदलें। हर ग्राहक का उधार ट्रैक करें।',
+      ft3_t:'रोज़ की बिक्री लॉग', ft3_d:'हर बिक्री — नकद, UPI, या उधार — रिकॉर्ड करें।',
+      ft4_t:'WhatsApp रिमाइंडर', ft4_d:'एक टैप में ग्राहक को उनका उधार WhatsApp पर भेजें।',
+      ft5_t:'क्लाउड सिंक', ft5_d:'डेटा Google अकाउंट के तहत क्लाउड में सुरक्षित। किसी भी फोन से एक्सेस।',
+      ft6_t:'पूरी तरह मुफ़्त', ft6_d:'कोई सदस्यता नहीं। कोई छुपा शुल्क नहीं। हर किराना मालिक के लिए मुफ़्त।',
+      hw_eyebrow:'कैसे काम करता है', hw_h2:'3 मिनट में<br>तैयार।',
+      hs1_t:'मुफ़्त खाता बनाएं', hs1_d:'एक टैप में Google अकाउंट से साइन अप करें।',
+      hs2_t:'सामान और ग्राहक जोड़ें', hs2_d:'अपना स्टॉक और उधार खाते सेट करें।',
+      hs3_t:'हर दिन स्मार्ट तरीके से चलाएं', hs3_d:'बिक्री ट्रैक करें, कम स्टॉक अलर्ट पाएं, WhatsApp रिमाइंडर भेजें।',
+      hw_cta:'मुफ़्त खाता बनाएं →',
+      t_body:'पहले उधार का हिसाब नोटबुक में लिखता था और भूल जाता था। अब <strong>सब कुछ फोन में है</strong> — कौन कितना देता है, WhatsApp पे भी भेज देता हूं।',
+      t_loc:'किराना स्टोर मालिक · पुणे, महाराष्ट्र',
+      cta_label:'हमेशा मुफ़्त · क्लाउड सिंक · किसी भी फोन पर',
+      cta_h2:'आपके स्टोर को मिले<br>एक <em>स्मार्ट</em> सिस्टम।',
+      cta_sub:'सैकड़ों किराना मालिकों के साथ जुड़ें जो कागज़ की नोटबुक छोड़ कर डिजिटल हो गए हैं।',
+      cta_btn:'शुरू करें — आज मुफ़्त में →',
+      cta_note:'कोई क्रेडिट कार्ड नहीं · कोई डाउनलोड नहीं · Google से साइन इन',
+      f_made:'भारतीय किराना मालिकों के लिए ❤️ से बनाया',
+      app_signout:'साइन आउट',
+      sync_load:'⏳ लोड हो रहा है...', sync_ok:'☁️ सिंक हो गया', sync_off:'⚠️ ऑफलाइन', sync_demo:'📱 डेमो', sync_saving:'⏳...', sync_err:'⚠️ त्रुटि',
+      stat_stock:'स्टॉक मूल्य', stat_low:'कम स्टॉक', stat_udhar:'कुल उधार', stat_sales:'आज की बिक्री', items_unit:' आइटम',
+      tl_inv:'इन्वेंटरी', tl_udh:'उधार खाता', tl_sal:'बिक्री',
+      inv_form:'स्टॉक में नया सामान जोड़ें', l_iname:'सामान का नाम', l_iqty:'मात्रा', l_iprice:'कीमत ₹', l_icat:'श्रेणी', l_ilow:'कम स्टॉक अलर्ट',
+      i_name_ph:'जैसे: टाटा नमक 1kg', btn_add_item:'➕ इन्वेंटरी में जोड़ें', inv_search_ph:'सामान का नाम खोजें...',
+      inv_list_label:'स्टॉक सूची', inv_in_stock:'✓ स्टॉक में है', inv_low_stock:'⚠ कम स्टॉक', inv_per_unit:'प्रति यूनिट', inv_value:'मूल्य',
+      inv_empty_t:'अभी कोई सामान नहीं', inv_empty_s:'शुरू करने के लिए ऊपर अपना पहला सामान जोड़ें।',
+      cats:['अनाज और दाल','तेल और घी','मसाले','नाश्ता','पेय पदार्थ','डेयरी','सफाई','अन्य'],
+      udh_form:'उधार एंट्री जोड़ें', l_uname:'ग्राहक का नाम', l_uamt:'राशि ₹', l_utype:'एंट्री का प्रकार', l_unote:'नोट (वैकल्पिक)',
+      u_name_ph:'जैसे: रमेश शर्मा', u_note_ph:'जैसे: नमक, ब्रेड',
+      uopt_d:'🔴 उधार दिया', uopt_c:'🟢 पैसे मिले',
+      btn_add_udhar:'➕ एंट्री जोड़ें', udh_list_label:'ग्राहक बकाया',
+      udh_owes:'बकाया', udh_over:'अधिक दिया', udh_settled:'✓ हिसाब बराबर',
+      udh_wa:'WhatsApp', udh_mark:'✓ भुगतान हो गया',
+      udh_empty_t:'अभी कोई उधार नहीं', udh_empty_s:'ऊपर अपनी पहली उधार एंट्री जोड़ें।',
+      sal_form:'बिक्री दर्ज करें', l_sitem:'बेचा गया सामान', l_sqty:'मात्रा', l_spay:'भुगतान का तरीका',
+      btn_add_sale:'🧾 बिक्री दर्ज करें', sal_list_label:'आज की बिक्री', sal_qty_label:'मात्रा: ',
+      sal_empty_t:'आज कोई बिक्री दर्ज नहीं', sal_empty_s:'अपनी कमाई ट्रैक करने के लिए ऊपर पहली बिक्री दर्ज करें।',
+      toast_saved:'☁️ सेव हो गया', toast_del:'🗑 हटा दिया',
+      err_name:'⚠️ सामान का नाम दर्ज करें', err_cust:'⚠️ ग्राहक का नाम दर्ज करें',
+      err_amt:'⚠️ राशि दर्ज करें', err_qty:'⚠️ सामान चुनें और मात्रा दर्ज करें',
+      err_stock:'⚠️ केवल {n} स्टॉक में बचे हैं!',
+    }
+  };
+
+  var lang = localStorage.getItem('kb_lang') || 'hi';
+  function t(k){ return (TX[lang]&&TX[lang][k]!==undefined ? TX[lang][k] : TX.en[k]) || k; }
+
+  function applyLang(){
+    /* Modal */
+    var el;
+    function s(id,v){ el=document.getElementById(id); if(el)el.textContent=v; }
+    function h(id,v){ el=document.getElementById(id); if(el)el.innerHTML=v; }
+    function p(id,v){ el=document.getElementById(id); if(el)el.placeholder=v; }
+    document.getElementById('lb-en').className='lang-btn'+(lang==='en'?' on':'');
+    document.getElementById('lb-hi').className='lang-btn'+(lang==='hi'?' on':'');
+    document.getElementById('al-hi').className='app-lang-btn'+(lang==='hi'?' on':'');
+    document.getElementById('al-en').className='app-lang-btn'+(lang==='en'?' on':'');
+    s('m-lang-label',t('lang_label'));
+    s('g-btn-text',t('g_btn'));
+    s('m-why',t('why'));
+    s('pk1',t('pk1')); s('pk2',t('pk2')); s('pk3',t('pk3')); s('pk4',t('pk4'));
+    /* Navbar */
+    s('nl-feat',t('nl_feat')); s('nl-how',t('nl_how')); s('nl-free',t('nl_free'));
+    s('nav-signin',t('nav_signin')); s('nav-start',t('nav_start'));
+    /* Hero */
+    s('h-eyebrow',t('h_eyebrow'));
+    h('h-headline',t('h_headline'));
+    h('h-sub',t('h_sub'));
+    s('h-cta1',t('h_cta1')); s('h-cta2',t('h_cta2'));
+    h('h-trust',t('h_trust'));
+    /* Features */
+    s('f-eyebrow',t('f_eyebrow')); h('f-h2',t('f_h2')); s('f-sub',t('f_sub'));
+    s('ft1-t',t('ft1_t')); s('ft1-d',t('ft1_d'));
+    s('ft2-t',t('ft2_t')); s('ft2-d',t('ft2_d'));
+    s('ft3-t',t('ft3_t')); s('ft3-d',t('ft3_d'));
+    s('ft4-t',t('ft4_t')); s('ft4-d',t('ft4_d'));
+    s('ft5-t',t('ft5_t')); s('ft5-d',t('ft5_d'));
+    s('ft6-t',t('ft6_t')); s('ft6-d',t('ft6_d'));
+    /* How */
+    s('hw-eyebrow',t('hw_eyebrow')); h('hw-h2',t('hw_h2'));
+    s('hs1-t',t('hs1_t')); s('hs1-d',t('hs1_d'));
+    s('hs2-t',t('hs2_t')); s('hs2-d',t('hs2_d'));
+    s('hs3-t',t('hs3_t')); s('hs3-d',t('hs3_d'));
+    s('hw-cta',t('hw_cta'));
+    h('t-body',t('t_body')); s('t-loc',t('t_loc'));
+    /* CTA + Footer */
+    s('cta-label',t('cta_label')); h('cta-h2',t('cta_h2')); s('cta-sub',t('cta_sub'));
+    s('cta-btn',t('cta_btn')); s('cta-note',t('cta_note')); s('f-made',t('f_made'));
+    /* App */
+    s('app-signout',t('app_signout'));
+    s('tl-inv',t('tl_inv')); s('tl-udh',t('tl_udh')); s('tl-sal',t('tl_sal'));
+    s('inv-form-title',t('inv_form')); s('l-iname',t('l_iname')); s('l-iqty',t('l_iqty'));
+    s('l-iprice',t('l_iprice')); s('l-icat',t('l_icat')); s('l-ilow',t('l_ilow'));
+    p('i-name',t('i_name_ph')); s('btn-add-item',t('btn_add_item')); p('i-search',t('inv_search_ph'));
+    s('inv-list-label',t('inv_list_label'));
+    var cats=t('cats'); var cat=document.getElementById('i-cat');
+    if(cat&&cats){for(var i=0;i<cat.options.length&&i<cats.length;i++)cat.options[i].text=cats[i];}
+    s('udh-form-title',t('udh_form')); s('l-uname',t('l_uname')); s('l-uamt',t('l_uamt'));
+    s('l-utype',t('l_utype')); s('l-unote',t('l_unote'));
+    p('u-name',t('u_name_ph')); p('u-note',t('u_note_ph'));
+    s('uopt-d',t('uopt_d')); s('uopt-c',t('uopt_c'));
+    s('btn-add-udhar',t('btn_add_udhar')); s('udh-list-label',t('udh_list_label'));
+    s('sal-form-title',t('sal_form')); s('l-sitem',t('l_sitem')); s('l-sqty',t('l_sqty'));
+    s('l-spay',t('l_spay')); s('btn-add-sale',t('btn_add_sale')); s('sal-list-label',t('sal_list_label'));
   }
-  var sbReady=initSB();
 
-  /* ── Auth ── */
+  window.setLang=function(l){
+    lang=l; localStorage.setItem('kb_lang',l);
+    applyLang();
+    if(document.getElementById('page-app').classList.contains('active')) drawAll();
+  };
+
+  /* ══ SUPABASE ══ */
+  var sb=null, user=null;
+  function initSB(){ if(SUPABASE_URL==='YOUR_SUPABASE_URL')return false; try{sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON);return true;}catch(e){return false;} }
+  var sbOK=initSB();
+
+  /* ══ AUTH ══ */
+  var modalMode='signin';
   window.openModal=function(mode){
-    document.getElementById('modal-h').textContent=mode==='signup'?'Create your account':'Welcome back';
-    document.getElementById('modal-sub').textContent=mode==='signup'
-      ?'Sign up with Google to get your free store — data saved securely in the cloud.'
-      :'Sign in to access your store dashboard. Your data is waiting.';
+    modalMode=mode;
+    document.getElementById('m-title').textContent=mode==='signup'?t('modal_signup_h'):t('modal_signin_h');
+    document.getElementById('m-sub').textContent=mode==='signup'?t('modal_signup_sub'):t('modal_signin_sub');
     document.getElementById('auth-err').style.display='none';
     document.getElementById('auth-modal').classList.add('open');
   };
-  window.closeModal=function(){ document.getElementById('auth-modal').classList.remove('open'); };
+  window.closeModal=function(){document.getElementById('auth-modal').classList.remove('open');};
   window.signInWithGoogle=function(){
-    if(!sbReady){ showErr('Supabase not configured yet.'); return; }
-    var btn=document.getElementById('google-btn');
-    btn.disabled=true; btn.textContent='Redirecting to Google...';
+    if(!sbOK){showErr('Supabase not configured.');return;}
+    var btn=document.getElementById('google-btn'); btn.disabled=true;
+    document.getElementById('g-btn-text').textContent=lang==='hi'?'Google पर जा रहे हैं...':'Redirecting...';
     sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:window.location.href}})
-      .then(function(r){ if(r.error){ showErr(r.error.message); btn.disabled=false; btn.innerHTML=gBtnHTML(); }});
+      .then(function(r){if(r.error){showErr(r.error.message);btn.disabled=false;document.getElementById('g-btn-text').textContent=t('g_btn');}});
   };
-  function gBtnHTML(){ return '<svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.35-8.16 2.35-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg> Continue with Google'; }
-  function showErr(m){ var e=document.getElementById('auth-err'); e.textContent=m; e.style.display='block'; }
-  window.signOut=function(){ if(sb)sb.auth.signOut(); currentUser=null; showPage('home'); };
+  function showErr(m){var e=document.getElementById('auth-err');e.textContent=m;e.style.display='block';}
+  window.signOut=function(){if(sb)sb.auth.signOut();user=null;showPage('home');};
 
-  if(sbReady){
+  if(sbOK){
     sb.auth.onAuthStateChange(function(ev,sess){
-      if(sess&&sess.user){ currentUser=sess.user; closeModal(); loadAndShow(sess.user); }
-      else currentUser=null;
+      if(sess&&sess.user){user=sess.user;closeModal();loadAndShow(sess.user);}
+      else user=null;
     });
-    sb.auth.getSession().then(function(r){ if(r.data&&r.data.session){ currentUser=r.data.session.user; loadAndShow(r.data.session.user); }});
+    sb.auth.getSession().then(function(r){if(r.data&&r.data.session){user=r.data.session.user;loadAndShow(r.data.session.user);}});
   }
 
-  /* ── Data ── */
+  /* ══ DATA ══ */
   var items=[],udhar=[],sales=[];
+  function lsL(k,fb){try{var r=localStorage.getItem('kb_'+k);return r?JSON.parse(r):fb;}catch(e){return fb;}}
+  function lsS(k,v){try{localStorage.setItem('kb_'+k,JSON.stringify(v));}catch(e){}}
+  function syncBadge(k){document.getElementById('sync-badge').textContent=t(k);}
 
-  function lsLoad(k,fb){ try{ var r=localStorage.getItem('kb_'+k); return r?JSON.parse(r):fb; }catch(e){ return fb; } }
-  function lsSave(k,v){ try{ localStorage.setItem('kb_'+k,JSON.stringify(v)); }catch(e){} }
-  function setSyncBadge(t){ document.getElementById('sync-badge').textContent=t; }
-
-  async function loadAndShow(user){
-    showPage('app');
-    var nm=user.user_metadata&&user.user_metadata.full_name?user.user_metadata.full_name:user.email;
+  async function loadAndShow(u){
+    showPage('app'); applyLang();
+    var nm=u.user_metadata&&u.user_metadata.full_name?u.user_metadata.full_name:u.email;
     document.getElementById('user-nm').textContent=nm.split(' ')[0];
     var av=document.getElementById('user-av');
-    if(user.user_metadata&&user.user_metadata.avatar_url) av.innerHTML='<img src="'+user.user_metadata.avatar_url+'" alt="" />';
+    if(u.user_metadata&&u.user_metadata.avatar_url)av.innerHTML='<img src="'+u.user_metadata.avatar_url+'" alt="" />';
     else av.textContent=nm[0].toUpperCase();
-    await loadData(user.id);
-    drawAll();
+    await loadData(u.id); drawAll();
   }
-
   async function loadData(uid){
-    if(!sbReady){ items=lsLoad('items',[]); udhar=lsLoad('udhar',[]); sales=lsLoad('sales',[]); setSyncBadge('📱 Demo'); return; }
-    setSyncBadge('⏳ Loading...');
+    if(!sbOK){items=lsL('items',[]);udhar=lsL('udhar',[]);sales=lsL('sales',[]);syncBadge('sync_demo');return;}
+    syncBadge('sync_load');
     try{
       var[a,b,c]=await Promise.all([
         sb.from('kb_items').select('*').eq('user_id',uid).order('created_at'),
         sb.from('kb_udhar').select('*').eq('user_id',uid).order('created_at'),
         sb.from('kb_sales').select('*').eq('user_id',uid).order('created_at',{ascending:false})
       ]);
-      items=a.data||[]; udhar=b.data||[]; sales=c.data||[];
-      setSyncBadge('☁️ Synced');
-    }catch(e){ setSyncBadge('⚠️ Offline'); items=lsLoad('items_'+uid,[]); udhar=lsLoad('udhar_'+uid,[]); sales=lsLoad('sales_'+uid,[]); }
+      items=a.data||[];udhar=b.data||[];sales=c.data||[];syncBadge('sync_ok');
+    }catch(e){syncBadge('sync_off');items=lsL('items_'+uid,[]);udhar=lsL('udhar_'+uid,[]);sales=lsL('sales_'+uid,[]);}
   }
 
-  /* ── Persist ── */
   var tTimer;
-  function showToast(m){ var t=document.getElementById('toast'); t.textContent=m||'☁️ Saved'; t.style.display='flex'; clearTimeout(tTimer); tTimer=setTimeout(function(){t.style.display='none';},2000); }
-
+  function toast(k){var el=document.getElementById('toast');el.textContent=t(k);el.style.display='block';clearTimeout(tTimer);tTimer=setTimeout(function(){el.style.display='none';},2000);}
   async function pItem(item,isNew){
-    showToast('☁️ Saved');
-    if(!sbReady||!currentUser){lsSave('items',items);return;}
-    setSyncBadge('⏳...');
-    try{
-      if(isNew) await sb.from('kb_items').insert({user_id:currentUser.id,name:item.name,qty:item.qty,price:item.price,cat:item.cat,low:item.low});
-      else await sb.from('kb_items').update({qty:item.qty}).eq('id',item.id).eq('user_id',currentUser.id);
-      setSyncBadge('☁️ Synced');
-    }catch(e){setSyncBadge('⚠️ Error');}
+    toast('toast_saved');if(!sbOK||!user){lsS('items',items);return;}syncBadge('sync_saving');
+    try{if(isNew)await sb.from('kb_items').insert({user_id:user.id,name:item.name,qty:item.qty,price:item.price,cat:item.cat,low:item.low});
+      else await sb.from('kb_items').update({qty:item.qty}).eq('id',item.id).eq('user_id',user.id);syncBadge('sync_ok');}
+    catch(e){syncBadge('sync_err');}
   }
-  async function dItem(id){
-    items=items.filter(function(i){return i.id!==id;}); drawAll();
-    if(!sbReady||!currentUser)return;
-    await sb.from('kb_items').delete().eq('id',id).eq('user_id',currentUser.id);
-    setSyncBadge('☁️ Synced'); showToast('🗑 Deleted');
+  async function delItem(id){
+    items=items.filter(function(i){return i.id!==id;});drawAll();
+    if(!sbOK||!user)return;
+    await sb.from('kb_items').delete().eq('id',id).eq('user_id',user.id);
+    syncBadge('sync_ok');toast('toast_del');
   }
   async function pUdhar(e){
-    showToast('☁️ Saved');
-    if(!sbReady||!currentUser){lsSave('udhar',udhar);return;}
-    try{ await sb.from('kb_udhar').insert({user_id:currentUser.id,customer:e.customer,type:e.type,amount:e.amount,note:e.note,date:e.date}); setSyncBadge('☁️ Synced'); }catch(err){setSyncBadge('⚠️ Error');}
+    toast('toast_saved');if(!sbOK||!user){lsS('udhar',udhar);return;}
+    try{await sb.from('kb_udhar').insert({user_id:user.id,customer:e.customer,type:e.type,amount:e.amount,note:e.note,date:e.date});syncBadge('sync_ok');}
+    catch(err){syncBadge('sync_err');}
   }
   async function pSale(s){
-    showToast('☁️ Saved');
-    if(!sbReady||!currentUser){lsSave('sales',sales);return;}
-    try{ await sb.from('kb_sales').insert({user_id:currentUser.id,name:s.name,cat:s.cat,qty:s.qty,total:s.total,pay:s.pay,time:s.time}); setSyncBadge('☁️ Synced'); }catch(err){setSyncBadge('⚠️ Error');}
+    toast('toast_saved');if(!sbOK||!user){lsS('sales',sales);return;}
+    try{await sb.from('kb_sales').insert({user_id:user.id,name:s.name,cat:s.cat,qty:s.qty,total:s.total,pay:s.pay,time:s.time});syncBadge('sync_ok');}
+    catch(err){syncBadge('sync_err');}
   }
 
-  /* ── Helpers ── */
-  function rupee(n){ return '₹'+Number(n).toLocaleString('en-IN'); }
-  function ini(n){ return n.trim().split(/\s+/).map(function(w){return w[0];}).join('').toUpperCase().slice(0,2); }
-  function udharTotals(){
-    var t={};
-    for(var i=0;i<udhar.length;i++){ var e=udhar[i]; if(!t[e.customer])t[e.customer]=0; t[e.customer]+=e.type==='debit'?Number(e.amount):-Number(e.amount); }
-    return t;
-  }
+  /* ══ HELPERS ══ */
+  function rupee(n){return '₹'+Number(n).toLocaleString('en-IN');}
+  function ini(n){return n.trim().split(/\s+/).map(function(w){return w[0];}).join('').toUpperCase().slice(0,2);}
+  function udharTotals(){var t={};for(var i=0;i<udhar.length;i++){var e=udhar[i];if(!t[e.customer])t[e.customer]=0;t[e.customer]+=e.type==='debit'?Number(e.amount):-Number(e.amount);}return t;}
+  function emojiFor(cat){return EMOJIS[cat]||'📦';}
 
-  /* ── WhatsApp ── */
+  /* ══ WHATSAPP ══ */
   function waShare(cust){
-    var t=udharTotals(),bal=t[cust]||0;
+    var tot=udharTotals(),bal=tot[cust]||0;
     var ents=udhar.filter(function(e){return e.customer===cust;});
     var today=new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'});
     var lines=['🏪 *KiranaBook — Udhar Statement*','📅 Date: '+today,'👤 Customer: *'+cust+'*','─────────────────'];
-    ents.slice(-5).forEach(function(e){ lines.push((e.type==='debit'?'🔴 Credit given':'🟢 Payment received')+': *'+rupee(e.amount)+'*'+(e.note?' ('+e.note+')':'')); });
+    ents.slice(-5).forEach(function(e){lines.push((e.type==='debit'?'🔴 Credit given':'🟢 Payment received')+': *'+rupee(e.amount)+'*'+(e.note?' ('+e.note+')':''));});
     lines.push('─────────────────');
     if(bal>0)lines.push('💰 *Total outstanding: '+rupee(bal)+'*','','Kripya jald se jald bhugtaan karen. 🙏');
     else if(bal<0)lines.push('✅ *Overpaid by '+rupee(-bal)+'* — Thank you!');
@@ -971,13 +872,13 @@
   function drawStats(){
     var sv=0,lc=0;
     items.forEach(function(i){sv+=Number(i.qty)*Number(i.price);if(Number(i.qty)<=Number(i.low))lc++;});
-    var t=udharTotals(),ud=0; Object.keys(t).forEach(function(k){if(t[k]>0)ud+=t[k];});
-    var sd=0; sales.forEach(function(s){sd+=Number(s.total);});
+    var tot=udharTotals(),ud=0;Object.keys(tot).forEach(function(k){if(tot[k]>0)ud+=tot[k];});
+    var sd=0;sales.forEach(function(s){sd+=Number(s.total);});
     var tiles=[
-      {icon:'📦',label:'Stock value',val:rupee(sv),cls:'s-ink'},
-      {icon:'⚠️',label:'Low stock',val:lc+' items',cls:'s-orange'},
-      {icon:'📋',label:'Total udhar',val:rupee(ud),cls:'s-red'},
-      {icon:'💰',label:"Today's sales",val:rupee(sd),cls:'s-green'}
+      {icon:'📦',label:t('stat_stock'),val:rupee(sv),cls:'st-ink'},
+      {icon:'⚠️',label:t('stat_low'),val:lc+t('items_unit'),cls:'st-o'},
+      {icon:'📋',label:t('stat_udhar'),val:rupee(ud),cls:'st-r'},
+      {icon:'💰',label:t('stat_sales'),val:rupee(sd),cls:'st-g'}
     ];
     document.getElementById('stats-row').innerHTML=tiles.map(function(s){
       return '<div class="stat-tile '+s.cls+'"><div class="stat-icon">'+s.icon+'</div><div class="stat-label">'+s.label+'</div><div class="stat-val">'+s.val+'</div></div>';
@@ -991,56 +892,42 @@
     var q=(document.getElementById('i-search').value||'').toLowerCase();
     var list=items.filter(function(i){return i.name.toLowerCase().indexOf(q)>=0;});
     var el=document.getElementById('inv-list');
-    if(!list.length){ el.innerHTML='<div class="empty-state"><div class="empty-icon">📦</div><div class="empty-title">No items yet</div><div class="empty-sub">Add your first inventory item above to get started.</div></div>'; return; }
+    if(!list.length){el.innerHTML='<div class="empty"><div class="empty-icon">📦</div><div class="empty-title">'+t('inv_empty_t')+'</div><div class="empty-sub">'+t('inv_empty_s')+'</div></div>';return;}
     el.innerHTML=list.map(function(it){
       var qty=Number(it.qty),low=Number(it.low),price=Number(it.price),isLow=qty<=low;
-      return '<div class="item-card'+(isLow?' low-stock':'')+'">'+
-        '<div class="item-emoji">'+(EMOJIS[it.cat]||'📦')+'</div>'+
-        '<div class="item-body">'+
-          '<div class="item-name">'+it.name+'</div>'+
-          '<div class="item-meta">'+it.cat+' · '+rupee(price)+' per unit · Stock value: '+rupee(qty*price)+'</div>'+
-          '<span class="stock-badge '+(isLow?'sb-low':'sb-ok')+'">'+(isLow?'⚠ Low stock':'✓ In stock')+'</span>'+
-        '</div>'+
-        '<div class="item-right">'+
-          '<div class="qty-ctrl">'+
-            '<button class="qty-btn" onclick="chQty(\''+it.id+'\',-1)">−</button>'+
-            '<span class="qty-val">'+qty+'</span>'+
-            '<button class="qty-btn" onclick="chQty(\''+it.id+'\',1)">+</button>'+
-          '</div>'+
-          '<button class="del-btn" onclick="dItem(\''+it.id+'\')" title="Delete item">🗑</button>'+
-        '</div>'+
-      '</div>';
+      return '<div class="item-card'+(isLow?' low':'')+'">'+
+        '<div class="item-emoji">'+emojiFor(it.cat)+'</div>'+
+        '<div class="item-body"><div class="item-name">'+it.name+'</div>'+
+        '<div class="item-meta">'+it.cat+' · '+rupee(price)+' '+t('inv_per_unit')+' · '+t('inv_value')+': '+rupee(qty*price)+'</div>'+
+        '<span class="stock-badge '+(isLow?'sb-low':'sb-ok')+'">'+(isLow?t('inv_low_stock'):t('inv_in_stock'))+'</span></div>'+
+        '<div class="item-right"><div class="qty-ctrl">'+
+        '<button class="qty-btn" onclick="chQty(\''+it.id+'\',-1)">−</button>'+
+        '<span class="qty-val">'+qty+'</span>'+
+        '<button class="qty-btn" onclick="chQty(\''+it.id+'\',1)">+</button></div>'+
+        '<button class="del-btn" onclick="delItem(\''+it.id+'\')">🗑</button></div></div>';
     }).join('');
   }
 
   function drawUdhar(){
-    var t=udharTotals();
-    var customers=[...new Set(udhar.map(function(e){return e.customer;}))];
+    var tot=udharTotals();
+    var custs=[...new Set(udhar.map(function(e){return e.customer;}))];
     var el=document.getElementById('udh-list');
-    if(!customers.length){ el.innerHTML='<div class="empty-state"><div class="empty-icon">📒</div><div class="empty-title">No udhar entries yet</div><div class="empty-sub">Add your first customer credit entry above.</div></div>'; return; }
-    el.innerHTML=customers.map(function(cust){
+    if(!custs.length){el.innerHTML='<div class="empty"><div class="empty-icon">📒</div><div class="empty-title">'+t('udh_empty_t')+'</div><div class="empty-sub">'+t('udh_empty_s')+'</div></div>';return;}
+    el.innerHTML=custs.map(function(cust){
       var ents=udhar.filter(function(e){return e.customer===cust;});
-      var bal=t[cust]||0,balColor=bal>0?'var(--red)':bal<0?'var(--blue)':'var(--green)';
-      var balLabel=bal>0?'Owes '+rupee(bal):bal<0?'Overpaid '+rupee(-bal):'✓ Settled';
-      return '<div class="udhar-card">'+
-        '<div class="udhar-head">'+
-          '<div class="cust-avatar">'+ini(cust)+'</div>'+
-          '<div style="flex:1">'+
-            '<div class="cust-name">'+cust+'</div>'+
-            '<div class="cust-bal" style="color:'+balColor+'">'+balLabel+'</div>'+
-          '</div>'+
-          '<div class="udhar-actions">'+
-            '<button class="wa-btn" onclick="waShare(\''+cust+'\')"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> WhatsApp</button>'+
-            (bal>0?'<button class="mark-paid-btn" onclick="markPaid(\''+cust+'\')">✓ Mark paid</button>':'')+
-          '</div>'+
-        '</div>'+
+      var bal=tot[cust]||0,bc=bal>0?'var(--red)':bal<0?'var(--blue)':'var(--green)';
+      var bl=bal>0?t('udh_owes')+' '+rupee(bal):bal<0?t('udh_over')+' '+rupee(-bal):t('udh_settled');
+      return '<div class="udhar-card"><div class="udhar-head">'+
+        '<div class="cust-av">'+ini(cust)+'</div>'+
+        '<div style="flex:1"><div class="cust-name">'+cust+'</div><div class="cust-bal" style="color:'+bc+'">'+bl+'</div></div>'+
+        '<div class="udhar-actions">'+
+        '<button class="wa-btn" onclick="waShare(\''+cust+'\')"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> '+t('udh_wa')+'</button>'+
+        (bal>0?'<button class="mark-paid-btn" onclick="markPaid(\''+cust+'\')">'+t('udh_mark')+'</button>':'')+
+        '</div></div>'+
         ents.slice(-4).map(function(en){
-          return '<div class="udhar-entry-row">'+
-            '<div class="entry-meta"><span class="entry-dot" style="background:'+(en.type==='debit'?'var(--red)':'var(--green)')+'"></span>'+en.date+(en.note?' · '+en.note:'')+'</div>'+
-            '<span style="font-weight:700;color:'+(en.type==='credit'?'var(--green)':'var(--red)')+'">'+(en.type==='debit'?'−':'+')+rupee(en.amount)+'</span>'+
-          '</div>';
-        }).join('')+
-      '</div>';
+          return '<div class="udhar-entry"><div class="entry-meta"><span class="entry-dot" style="background:'+(en.type==='debit'?'var(--red)':'var(--green)')+'"></span>'+en.date+(en.note?' · '+en.note:'')+'</div>'+
+          '<span style="font-weight:700;color:'+(en.type==='credit'?'var(--green)':'var(--red)')+'">'+(en.type==='debit'?'−':'+')+rupee(en.amount)+'</span></div>';
+        }).join('')+'</div>';
     }).join('');
   }
 
@@ -1048,26 +935,20 @@
     var sel=document.getElementById('s-item');
     sel.innerHTML=items.map(function(i){return '<option value="'+i.id+'">'+i.name+'</option>';}).join('');
     var el=document.getElementById('sal-list');
-    if(!sales.length){ el.innerHTML='<div class="empty-state"><div class="empty-icon">📊</div><div class="empty-title">No sales recorded today</div><div class="empty-sub">Record your first sale above to start tracking your earnings.</div></div>'; return; }
+    if(!sales.length){el.innerHTML='<div class="empty"><div class="empty-icon">📊</div><div class="empty-title">'+t('sal_empty_t')+'</div><div class="empty-sub">'+t('sal_empty_s')+'</div></div>';return;}
     el.innerHTML=sales.map(function(s){
-      var payClass='pay-cash'; if(s.pay==='UPI')payClass='pay-upi'; if(s.pay==='Udhar')payClass='pay-udhar';
-      return '<div class="sale-card">'+
-        '<div class="item-emoji">'+(EMOJIS[s.cat]||'📦')+'</div>'+
-        '<div style="flex:1">'+
-          '<div style="font-size:15px;font-weight:700;color:var(--ink);margin-bottom:3px">'+s.name+'</div>'+
-          '<div style="font-size:12px;color:var(--ink-3);display:flex;align-items:center;gap:8px">'+
-            'Qty: '+s.qty+' · '+s.time+
-            '<span class="pay-badge '+payClass+'">'+s.pay+'</span>'+
-          '</div>'+
-        '</div>'+
-        '<div style="font-family:\'Fraunces\',serif;font-size:20px;font-weight:700;color:var(--green)">'+rupee(s.total)+'</div>'+
-      '</div>';
+      var pc=s.pay==='UPI'?'pay-upi':s.pay==='Udhar'?'pay-udhar':'pay-cash';
+      return '<div class="sale-card"><div class="item-emoji">'+emojiFor(s.cat)+'</div>'+
+        '<div style="flex:1"><div style="font-size:15px;font-weight:700;margin-bottom:3px">'+s.name+'</div>'+
+        '<div style="font-size:12px;color:var(--ink-3);display:flex;align-items:center;gap:8px">'+t('sal_qty_label')+s.qty+' · '+s.time+
+        '<span class="pay-badge '+pc+'">'+s.pay+'</span></div></div>'+
+        '<div style="font-family:\'Fraunces\',serif;font-size:20px;font-weight:700;color:var(--green)">'+rupee(s.total)+'</div></div>';
     }).join('');
   }
 
-  function drawAll(){ drawStats(); drawInv(); drawUdhar(); drawSales(); }
+  function drawAll(){drawStats();drawInv();drawUdhar();drawSales();}
 
-  /* ── Navigation ── */
+  /* ══ NAVIGATION ══ */
   window.showTab=function(name){
     ['inv','udh','sal'].forEach(function(t){
       document.getElementById('panel-'+t).className='panel'+(t===name?' on':'');
@@ -1079,20 +960,20 @@
     document.getElementById('page-app').className='page'+(name==='app'?' active':'');
     window.scrollTo(0,0);
   }
-  window.goHome=function(){ showPage('home'); };
+  window.goHome=function(){showPage('home');};
 
-  /* ── Actions ── */
+  /* ══ ACTIONS ══ */
   window.chQty=function(id,d){
     var item=items.find(function(i){return String(i.id)===String(id);});
     if(!item)return; item.qty=Math.max(0,Number(item.qty)+d); drawAll(); pItem(item,false);
   };
-  window.dItem=function(id){ dItem(id); };
+  window.delItem=function(id){delItem(id);};
   window.markPaid=function(cust){
-    var t=udharTotals(),bal=t[cust]||0;
-    if(bal>0){ var e={customer:cust,type:'credit',amount:bal,note:'Full payment received',date:'Today'}; udhar.push(e); drawAll(); pUdhar(e); }
+    var tot=udharTotals(),bal=tot[cust]||0;
+    if(bal>0){var e={customer:cust,type:'credit',amount:bal,note:'Full payment received',date:'Today'};udhar.push(e);drawAll();pUdhar(e);}
   };
 
-  /* ── Button listeners ── */
+  /* ══ LISTENERS ══ */
   document.getElementById('i-search').addEventListener('input',drawInv);
 
   document.getElementById('btn-add-item').addEventListener('click',function(){
@@ -1101,13 +982,13 @@
     var price=parseFloat(document.getElementById('i-price').value)||0;
     var cat=document.getElementById('i-cat').value;
     var low=parseInt(document.getElementById('i-low').value)||10;
-    if(!name){showToast('⚠️ Enter an item name');return;}
+    if(!name){toast('err_name');return;}
     var item={id:'tmp_'+Date.now(),name:name,qty:qty,price:price,cat:cat,low:low};
     items.push(item);
     document.getElementById('i-name').value='';
     document.getElementById('i-qty').value='';
     document.getElementById('i-price').value='';
-    drawAll(); pItem(item,true);
+    drawAll();pItem(item,true);
   });
 
   document.getElementById('btn-add-udhar').addEventListener('click',function(){
@@ -1115,14 +996,14 @@
     var amt=parseFloat(document.getElementById('u-amt').value)||0;
     var type=document.getElementById('u-type').value;
     var note=document.getElementById('u-note').value.trim();
-    if(!name){showToast('⚠️ Enter a customer name');return;}
-    if(!amt){showToast('⚠️ Enter an amount');return;}
+    if(!name){toast('err_cust');return;}
+    if(!amt){toast('err_amt');return;}
     var entry={customer:name,type:type,amount:amt,note:note,date:'Today'};
     udhar.push(entry);
     document.getElementById('u-name').value='';
     document.getElementById('u-amt').value='';
     document.getElementById('u-note').value='';
-    drawUdhar(); drawStats(); pUdhar(entry);
+    drawUdhar();drawStats();pUdhar(entry);
   });
 
   document.getElementById('btn-add-sale').addEventListener('click',function(){
@@ -1130,15 +1011,18 @@
     var qty=parseInt(document.getElementById('s-qty').value)||0;
     var pay=document.getElementById('s-pay').value;
     var item=items.find(function(i){return String(i.id)===String(itemId);});
-    if(!item||qty<=0){showToast('⚠️ Select item and enter quantity');return;}
-    if(Number(item.qty)<qty){showToast('⚠️ Only '+item.qty+' in stock!');return;}
+    if(!item||qty<=0){toast('err_qty');return;}
+    if(Number(item.qty)<qty){toast('err_stock'.replace('{n}',item.qty));return;}
     item.qty=Number(item.qty)-qty;
     var now=new Date();
     var sale={name:item.name,cat:item.cat,qty:qty,total:qty*Number(item.price),pay:pay,time:now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})};
     sales.unshift(sale);
     document.getElementById('s-qty').value='';
-    drawAll(); pItem(item,false); pSale(sale);
+    drawAll();pItem(item,false);pSale(sale);
   });
+
+  /* ══ INIT ══ */
+  applyLang();
 
 })();
 </script>
