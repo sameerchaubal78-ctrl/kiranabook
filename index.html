@@ -317,12 +317,12 @@
     </div>
     <div class="lang-pick-label" id="m-lang-label">भाषा चुनें / Choose language</div>
     <div class="lang-picker">
-      <button class="lang-btn" id="lb-en" onclick="setLang('en')">
+      <button class="lang-btn on" id="lb-en" onclick="setLang('en')">
         <span class="lang-flag">🇬🇧</span>
         <span class="lang-name">English</span>
         <span class="lang-native">English</span>
       </button>
-      <button class="lang-btn on" id="lb-hi" onclick="setLang('hi')">
+      <button class="lang-btn" id="lb-hi" onclick="setLang('hi')">
         <span class="lang-flag">🇮🇳</span>
         <span class="lang-name">हिंदी</span>
         <span class="lang-native">Hindi</span>
@@ -360,7 +360,7 @@
     <div class="nav-auth">
       <div class="app-lang" style="margin-right:4px;">
         <button class="app-lang-btn" id="hl-hi" onclick="setLang('hi')">🇮🇳 हिं</button>
-        <button class="app-lang-btn" id="hl-en" onclick="setLang('en')">🇬🇧 EN</button>
+        <button class="app-lang-btn on" id="hl-en" onclick="setLang('en')">🇬🇧 EN</button>
       </div>
       <button class="btn-ghost" onclick="openModal('signin')" id="nav-signin">साइन इन</button>
       <button class="btn-saffron" onclick="openModal('signup')" id="nav-start">मुफ़्त शुरू करें →</button>
@@ -391,23 +391,23 @@
     <div class="hero-right">
       <div class="mockup-wrap">
         <div class="badge-float bf1">✅ ₹3,240 आज कमाए</div>
-        <div class="badge-float bf2">⚠️ 3 चीज़ें कम स्टॉक में</div>
+        <div class="badge-float bf2" id="m-badge2">⚠️ 3 चीज़ें कम स्टॉक में</div>
         <div class="mockup-card">
-          <div class="mhdr"><div class="mtitle">मेरा किराना स्टोर</div><div class="mdate">आज, 16 मई</div></div>
+          <div class="mhdr"><div class="mtitle" id="m-title">मेरा किराना स्टोर</div><div class="mdate" id="m-date">आज, 16 मई</div></div>
           <div class="mstats">
-            <div class="ms ms-o"><div class="ms-label">स्टॉक मूल्य</div><div class="ms-val">₹42.8k</div></div>
-            <div class="ms ms-g"><div class="ms-label">आज की बिक्री</div><div class="ms-val">₹3,240</div></div>
-            <div class="ms ms-r"><div class="ms-label">कुल उधार</div><div class="ms-val">₹1,870</div></div>
-            <div class="ms ms-b"><div class="ms-label">कम स्टॉक</div><div class="ms-val">3 आइटम</div></div>
+            <div class="ms ms-o"><div class="ms-label" id="m-s1">स्टॉक मूल्य</div><div class="ms-val">₹42.8k</div></div>
+            <div class="ms ms-g"><div class="ms-label" id="m-s2">आज की बिक्री</div><div class="ms-val">₹3,240</div></div>
+            <div class="ms ms-r"><div class="ms-label" id="m-s3">कुल उधार</div><div class="ms-val">₹1,870</div></div>
+            <div class="ms ms-b"><div class="ms-label" id="m-s4">कम स्टॉक</div><div class="ms-val" id="m-s4v">3 आइटम</div></div>
           </div>
           <div class="mitems">
-            <div class="mi"><span>🌾</span><span class="mi-name">Tata Salt 1kg</span><span class="mi-qty">45 बचे</span><span class="mbadge" style="background:var(--green-dim);color:var(--green)">✓ OK</span></div>
-            <div class="mi"><span>🥛</span><span class="mi-name">Amul Butter 100g</span><span class="mi-qty">3 बचे</span><span class="mbadge" style="background:var(--red-dim);color:var(--red)">⚠ कम</span></div>
-            <div class="mi"><span>🌶️</span><span class="mi-name">Red Chilli Powder</span><span class="mi-qty">2 बचे</span><span class="mbadge" style="background:var(--red-dim);color:var(--red)">⚠ कम</span></div>
+            <div class="mi"><span>🌾</span><span class="mi-name">Tata Salt 1kg</span><span class="mi-qty" id="m-q1">45 बचे</span><span class="mbadge" style="background:var(--green-dim);color:var(--green)">✓ OK</span></div>
+            <div class="mi"><span>🥛</span><span class="mi-name">Amul Butter 100g</span><span class="mi-qty" id="m-q2">3 बचे</span><span class="mbadge" style="background:var(--red-dim);color:var(--red)" id="m-low1">⚠ कम</span></div>
+            <div class="mi"><span>🌶️</span><span class="mi-name">Red Chilli Powder</span><span class="mi-qty" id="m-q3">2 बचे</span><span class="mbadge" style="background:var(--red-dim);color:var(--red)" id="m-low2">⚠ कम</span></div>
           </div>
           <div class="mudhar">
-            <div><div style="font-size:10px;color:var(--ink-3);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">ताज़ा उधार</div><div style="font-size:14px;font-weight:700">Ramesh Sharma</div></div>
-            <div style="text-align:right"><div style="font-size:18px;font-weight:800;color:var(--red);font-family:'Fraunces',serif">₹350</div><div style="font-size:10px;color:var(--ink-3)">बकाया</div></div>
+            <div><div style="font-size:10px;color:var(--ink-3);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px" id="m-udhar-label">ताज़ा उधार</div><div style="font-size:14px;font-weight:700">Ramesh Sharma</div></div>
+            <div style="text-align:right"><div style="font-size:18px;font-weight:800;color:var(--red);font-family:'Fraunces',serif">₹350</div><div style="font-size:10px;color:var(--ink-3)" id="m-outstanding">बकाया</div></div>
           </div>
         </div>
       </div>
@@ -478,7 +478,7 @@
     <div class="app-nav-right">
       <div class="app-lang">
         <button class="app-lang-btn" id="al-hi" onclick="setLang('hi')">हिं</button>
-        <button class="app-lang-btn" id="al-en" onclick="setLang('en')">EN</button>
+        <button class="app-lang-btn on" id="al-en" onclick="setLang('en')">EN</button>
       </div>
       <div class="sync-badge" id="sync-badge">☁️ सिंक हो गया</div>
       <div class="user-pill">
@@ -591,6 +591,11 @@
       h_sub:'Track stock, manage <strong>udhar khata</strong>, record daily sales — all in one beautiful app.',
       h_cta1:'शुरू करें — Start Free →', h_cta2:'See features',
       h_trust:'<strong>500+</strong> kirana owners using KiranaBook',
+      m_badge2:'⚠️ 3 items low on stock',
+      m_title:'My Kirana Store', m_date:'Today, 16 May',
+      m_s1:'Stock value', m_s2:"Today's sales", m_s3:'Total udhar', m_s4:'Low stock', m_s4v:'3 items',
+      m_q1:'45 left', m_q2:'3 left', m_q3:'2 left',
+      m_low:'⚠ Low', m_udhar_label:'Latest udhar', m_outstanding:'outstanding',
       f_eyebrow:'Everything you need', f_h2:'Built for the way<br>kirana owners work.',
       f_sub:'No complicated setup. No training needed. Open, sign in, and start managing better from day one.',
       ft1_t:'Smart Inventory Tracker', ft1_d:'Add items, update stock with a tap. Automatic low-stock alerts.',
@@ -650,6 +655,11 @@
       h_sub:'स्टॉक ट्रैक करें, <strong>उधार खाता</strong> मैनेज करें, रोज़ की बिक्री रिकॉर्ड करें — सब एक सुंदर ऐप में।',
       h_cta1:'शुरू करें — मुफ़्त खाता बनाएं →', h_cta2:'सुविधाएं देखें',
       h_trust:'<strong>500+</strong> किराना मालिक KiranaBook इस्तेमाल कर रहे हैं',
+      m_badge2:'⚠️ 3 चीज़ें कम स्टॉक में',
+      m_title:'मेरा किराना स्टोर', m_date:'आज, 16 मई',
+      m_s1:'स्टॉक मूल्य', m_s2:'आज की बिक्री', m_s3:'कुल उधार', m_s4:'कम स्टॉक', m_s4v:'3 आइटम',
+      m_q1:'45 बचे', m_q2:'3 बचे', m_q3:'2 बचे',
+      m_low:'⚠ कम', m_udhar_label:'ताज़ा उधार', m_outstanding:'बकाया',
       f_eyebrow:'सब कुछ जो आपको चाहिए', f_h2:'किराना मालिकों के<br>काम के हिसाब से बनाया।',
       f_sub:'कोई जटिल सेटअप नहीं। कोई ट्रेनिंग नहीं। बस खोलें, साइन इन करें, और पहले दिन से बेहतर चलाएं।',
       ft1_t:'स्मार्ट इन्वेंटरी ट्रैकर', ft1_d:'सामान जोड़ें, एक टैप से स्टॉक अपडेट करें। कम स्टॉक के लिए अपने आप अलर्ट।',
@@ -697,7 +707,7 @@
     }
   };
 
-  var lang = localStorage.getItem('kb_lang') || 'hi';
+  var lang = localStorage.getItem('kb_lang') || 'en';
   function t(k){ return (TX[lang]&&TX[lang][k]!==undefined ? TX[lang][k] : TX.en[k]) || k; }
 
   function applyLang(){
@@ -725,6 +735,13 @@
     h('h-sub',t('h_sub'));
     s('h-cta1',t('h_cta1')); s('h-cta2',t('h_cta2'));
     h('h-trust',t('h_trust'));
+    /* Mockup card */
+    s('m-badge2',t('m_badge2'));
+    s('m-title',t('m_title')); s('m-date',t('m_date'));
+    s('m-s1',t('m_s1')); s('m-s2',t('m_s2')); s('m-s3',t('m_s3')); s('m-s4',t('m_s4')); s('m-s4v',t('m_s4v'));
+    s('m-q1',t('m_q1')); s('m-q2',t('m_q2')); s('m-q3',t('m_q3'));
+    s('m-low1',t('m_low')); s('m-low2',t('m_low'));
+    s('m-udhar-label',t('m_udhar_label')); s('m-outstanding',t('m_outstanding'));
     /* Features */
     s('f-eyebrow',t('f_eyebrow')); h('f-h2',t('f_h2')); s('f-sub',t('f_sub'));
     s('ft1-t',t('ft1_t')); s('ft1-d',t('ft1_d'));
