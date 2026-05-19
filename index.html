@@ -358,6 +358,10 @@
       <li><a href="#features" id="nl-free">हमेशा मुफ़्त</a></li>
     </ul>
     <div class="nav-auth">
+      <div class="app-lang" style="margin-right:4px;">
+        <button class="app-lang-btn" id="hl-hi" onclick="setLang('hi')">🇮🇳 हिं</button>
+        <button class="app-lang-btn" id="hl-en" onclick="setLang('en')">🇬🇧 EN</button>
+      </div>
       <button class="btn-ghost" onclick="openModal('signin')" id="nav-signin">साइन इन</button>
       <button class="btn-saffron" onclick="openModal('signup')" id="nav-start">मुफ़्त शुरू करें →</button>
     </div>
@@ -706,6 +710,8 @@
     document.getElementById('lb-hi').className='lang-btn'+(lang==='hi'?' on':'');
     document.getElementById('al-hi').className='app-lang-btn'+(lang==='hi'?' on':'');
     document.getElementById('al-en').className='app-lang-btn'+(lang==='en'?' on':'');
+    document.getElementById('hl-hi').className='app-lang-btn'+(lang==='hi'?' on':'');
+    document.getElementById('hl-en').className='app-lang-btn'+(lang==='en'?' on':'');
     s('m-lang-label',t('lang_label'));
     s('g-btn-text',t('g_btn'));
     s('m-why',t('why'));
