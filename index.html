@@ -803,18 +803,39 @@
     if(!sbOK){showErr('Supabase not configured.');return;}
     var btn=document.getElementById('google-btn'); btn.disabled=true;
     document.getElementById('g-btn-text').textContent=lang==='hi'?'Google पर जा रहे हैं...':'Redirecting...';
-    sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:window.location.href}})
+    sb.auth.signInWithOAuth({provider:'google',options:{redirectTo: window.location.origin + window.location.pathname}})
       .then(function(r){if(r.error){showErr(r.error.message);btn.disabled=false;document.getElementById('g-btn-text').textContent=t('g_btn');}});
   };
   function showErr(m){var e=document.getElementById('auth-err');e.textContent=m;e.style.display='block';}
   window.signOut=function(){if(sb)sb.auth.signOut();user=null;showPage('home');};
 
   if(sbOK){
-    sb.auth.onAuthStateChange(function(ev,sess){
-      if(sess&&sess.user){user=sess.user;closeModal();loadAndShow(sess.user);}
-      else user=null;
+    // onAuthStateChange fires for both new logins and restored sessions
+    // including when Supabase processes the OAuth hash on redirect back
+    sb.auth.onAuthStateChange(function(ev, sess){
+      if((ev === 'SIGNED_IN' || ev === 'TOKEN_REFRESHED') && sess && sess.user){
+        user = sess.user;
+        closeModal();
+        // Only load app if not already showing it
+        if(!document.getElementById('page-app').classList.contains('active')){
+          loadAndShow(sess.user);
+        }
+      } else if(ev === 'SIGNED_OUT'){
+        user = null;
+        showPage('home');
+      }
     });
-    sb.auth.getSession().then(function(r){if(r.data&&r.data.session){user=r.data.session.user;loadAndShow(r.data.session.user);}});
+
+    // Also check for an existing session on hard page load
+    // (covers cases where onAuthStateChange fires before the listener is ready)
+    sb.auth.getSession().then(function(r){
+      if(r.data && r.data.session && r.data.session.user){
+        user = r.data.session.user;
+        if(!document.getElementById('page-app').classList.contains('active')){
+          loadAndShow(r.data.session.user);
+        }
+      }
+    });
   }
 
   /* ══ DATA ══ */
