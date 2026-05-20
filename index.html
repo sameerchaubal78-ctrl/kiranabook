@@ -199,6 +199,39 @@
     /* APP BODY */
     #page-app{background:var(--paper-2);min-height:100vh;}
     .app-body{max-width:800px;margin:0 auto;padding:2rem 1.5rem;}
+
+    /* Store name banner */
+    .store-banner{text-align:center;margin-bottom:2rem;position:relative;}
+    .store-welcome{font-size:13px;font-weight:600;color:var(--ink-3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;}
+    .store-name-display{font-family:'Fraunces',serif;font-size:36px;font-weight:900;color:var(--ink);letter-spacing:-1px;line-height:1.1;margin-bottom:10px;}
+    .store-name-display em{font-style:italic;color:var(--saffron);}
+    .edit-name-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border:1.5px solid var(--border-2);background:transparent;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;color:var(--ink-3);transition:all .2s;}
+    .edit-name-btn:hover{border-color:var(--saffron);color:var(--saffron);background:var(--saffron-dim);}
+
+    /* Store name modal */
+    .name-modal-overlay{display:none;position:fixed;inset:0;background:rgba(25,18,10,.6);backdrop-filter:blur(4px);z-index:400;align-items:center;justify-content:center;}
+    .name-modal-overlay.open{display:flex;}
+    .name-modal{background:var(--white);border-radius:var(--r-xl);padding:2.25rem;width:100%;max-width:420px;margin:1rem;box-shadow:var(--shadow-lg);animation:mpop .25s cubic-bezier(.34,1.56,.64,1);}
+    .name-modal-title{font-family:'Fraunces',serif;font-size:24px;font-weight:800;margin-bottom:.5rem;}
+    .name-modal-sub{font-size:14px;color:var(--ink-3);margin-bottom:1.5rem;line-height:1.6;}
+    .name-input-wrap{position:relative;margin-bottom:1.25rem;}
+    .store-name-input{width:100%;padding:14px 16px;border:2px solid var(--border-2);border-radius:var(--r-md);font-size:18px;font-family:'Fraunces',serif;font-weight:700;color:var(--ink);background:var(--paper);transition:border-color .15s,box-shadow .15s;text-align:center;}
+    .store-name-input:focus{outline:none;border-color:var(--saffron);box-shadow:0 0 0 4px rgba(232,101,10,.12);background:var(--white);}
+    .store-name-input::placeholder{font-weight:400;font-size:16px;font-family:'Plus Jakarta Sans',sans-serif;color:var(--ink-3);}
+    .name-char-count{text-align:right;font-size:11px;color:var(--ink-3);margin-top:4px;font-weight:500;}
+    .name-save-btn{width:100%;padding:14px;background:var(--saffron);color:#fff;border:none;border-radius:var(--r-md);font-size:15px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s;box-shadow:0 4px 14px rgba(232,101,10,.3);}
+    .name-save-btn:hover{background:var(--saffron-dark);transform:translateY(-1px);}
+    .name-save-btn:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+    .name-cancel-btn{width:100%;padding:12px;background:transparent;color:var(--ink-3);border:1.5px solid var(--border);border-radius:var(--r-md);font-size:14px;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;margin-top:8px;transition:all .2s;}
+    .name-cancel-btn:hover{border-color:var(--ink);color:var(--ink);}
+
+    /* First-time setup overlay */
+    .first-time-overlay{display:none;position:fixed;inset:0;background:rgba(25,18,10,.7);backdrop-filter:blur(6px);z-index:450;align-items:center;justify-content:center;}
+    .first-time-overlay.open{display:flex;}
+    .first-time-card{background:var(--white);border-radius:var(--r-xl);padding:2.75rem;width:100%;max-width:460px;margin:1rem;box-shadow:var(--shadow-lg);animation:mpop .35s cubic-bezier(.34,1.56,.64,1);text-align:center;}
+    .first-time-emoji{font-size:52px;margin-bottom:1rem;}
+    .first-time-title{font-family:'Fraunces',serif;font-size:28px;font-weight:900;margin-bottom:.5rem;color:var(--ink);}
+    .first-time-sub{font-size:15px;color:var(--ink-3);margin-bottom:2rem;line-height:1.65;}
     .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:2rem;}
     .stat-tile{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.25rem 1.5rem;box-shadow:var(--shadow-sm);transition:box-shadow .2s,transform .2s;position:relative;overflow:hidden;}
     .stat-tile:hover{box-shadow:var(--shadow-md);transform:translateY(-2px);}
@@ -468,6 +501,34 @@
   </footer>
 </div><!-- /home -->
 
+<!-- FIRST TIME SETUP OVERLAY -->
+<div class="first-time-overlay" id="first-time-overlay">
+  <div class="first-time-card">
+    <div class="first-time-emoji">🏪</div>
+    <h2 class="first-time-title" id="ft-title">Welcome to KiranaBook!</h2>
+    <p class="first-time-sub" id="ft-sub">Let's start by giving your store a name. This will appear on your dashboard every time you log in.</p>
+    <div class="name-input-wrap">
+      <input class="store-name-input" id="ft-name-input" placeholder="e.g. Sharma General Store" maxlength="40" />
+      <div class="name-char-count"><span id="ft-char-count">0</span>/40</div>
+    </div>
+    <button class="name-save-btn" id="ft-save-btn" onclick="saveStoreName(true)">Save & Open My Store →</button>
+  </div>
+</div>
+
+<!-- STORE NAME EDIT MODAL -->
+<div class="name-modal-overlay" id="name-modal">
+  <div class="name-modal">
+    <h2 class="name-modal-title" id="nm-title">Edit store name</h2>
+    <p class="name-modal-sub" id="nm-sub">This name appears on your dashboard and is saved to your account.</p>
+    <div class="name-input-wrap">
+      <input class="store-name-input" id="nm-name-input" placeholder="e.g. Sharma General Store" maxlength="40" />
+      <div class="name-char-count"><span id="nm-char-count">0</span>/40</div>
+    </div>
+    <button class="name-save-btn" id="nm-save-btn" onclick="saveStoreName(false)">Save store name</button>
+    <button class="name-cancel-btn" onclick="closeNameModal()">Cancel</button>
+  </div>
+</div>
+
 <!-- APP PAGE -->
 <div id="page-app" class="page">
   <nav class="app-nav">
@@ -489,6 +550,12 @@
     </div>
   </nav>
   <div class="app-body">
+    <!-- Store name welcome banner -->
+    <div class="store-banner" id="store-banner">
+      <div class="store-welcome" id="banner-welcome">Welcome back</div>
+      <div class="store-name-display" id="banner-store-name">My Kirana Store</div>
+      <button class="edit-name-btn" onclick="openNameModal()" id="banner-edit-btn">✏️ Edit store name</button>
+    </div>
     <div class="stats-row" id="stats-row"></div>
     <div class="tab-bar">
       <button id="tb-inv" class="tab-btn on" onclick="showTab('inv')">
@@ -639,7 +706,7 @@
       toast_saved:'☁️ Saved', toast_del:'🗑 Deleted',
       err_name:'⚠️ Enter an item name', err_cust:'⚠️ Enter a customer name',
       err_amt:'⚠️ Enter an amount', err_qty:'⚠️ Select item and enter quantity',
-      err_stock:'⚠️ Only {n} in stock!',
+      err_stock:'⚠️ Only {n} in stock!', err_name_store:'⚠️ Please enter a store name',
     },
     hi:{
       lang_label:'भाषा चुनें / Choose language',
@@ -703,7 +770,7 @@
       toast_saved:'☁️ सेव हो गया', toast_del:'🗑 हटा दिया',
       err_name:'⚠️ सामान का नाम दर्ज करें', err_cust:'⚠️ ग्राहक का नाम दर्ज करें',
       err_amt:'⚠️ राशि दर्ज करें', err_qty:'⚠️ सामान चुनें और मात्रा दर्ज करें',
-      err_stock:'⚠️ केवल {n} स्टॉक में बचे हैं!',
+      err_stock:'⚠️ केवल {n} स्टॉक में बचे हैं!', err_name_store:'⚠️ कृपया स्टोर का नाम दर्ज करें',
     }
   };
 
@@ -776,6 +843,8 @@
     s('btn-add-udhar',t('btn_add_udhar')); s('udh-list-label',t('udh_list_label'));
     s('sal-form-title',t('sal_form')); s('l-sitem',t('l_sitem')); s('l-sqty',t('l_sqty'));
     s('l-spay',t('l_spay')); s('btn-add-sale',t('btn_add_sale')); s('sal-list-label',t('sal_list_label'));
+    // Update banner text for language change
+    if(typeof updateBanner === 'function') updateBanner();
   }
 
   window.setLang=function(l){
@@ -840,6 +909,80 @@
 
   /* ══ DATA ══ */
   var items=[],udhar=[],sales=[];
+  var storeName = '';
+
+  /* ══ STORE NAME ══ */
+  function getStoreNameKey(uid){ return 'kb_storename_'+uid; }
+
+  async function loadStoreName(uid){
+    // Try Supabase first
+    if(sbOK){
+      try{
+        var res = await sb.from('kb_store').select('name').eq('user_id',uid).single();
+        if(res.data && res.data.name){
+          storeName = res.data.name;
+          lsS(getStoreNameKey(uid), storeName);
+          return;
+        }
+      }catch(e){}
+    }
+    // Fallback to localStorage
+    storeName = lsL(getStoreNameKey(uid), '');
+  }
+
+  async function persistStoreName(uid, name){
+    lsS(getStoreNameKey(uid), name);
+    if(!sbOK) return;
+    try{
+      // Upsert — insert if not exists, update if exists
+      await sb.from('kb_store').upsert({user_id:uid, name:name}, {onConflict:'user_id'});
+    }catch(e){ console.error('Store name save error:', e); }
+  }
+
+  function updateBanner(){
+    var wel = document.getElementById('banner-welcome');
+    var nm  = document.getElementById('banner-store-name');
+    var btn = document.getElementById('banner-edit-btn');
+    if(wel) wel.textContent = lang==='hi' ? 'आपका स्वागत है' : 'Welcome to';
+    if(nm)  nm.innerHTML = storeName ? '<em>'+storeName+'</em>' : (lang==='hi'?'मेरा किराना स्टोर':'My Kirana Store');
+    if(btn) btn.textContent = lang==='hi' ? '✏️ नाम बदलें' : '✏️ Edit store name';
+  }
+
+  window.openNameModal = function(){
+    var inp = document.getElementById('nm-name-input');
+    var cnt = document.getElementById('nm-char-count');
+    inp.value = storeName;
+    cnt.textContent = storeName.length;
+    document.getElementById('name-modal').classList.add('open');
+    setTimeout(function(){ inp.focus(); inp.select(); }, 100);
+  };
+
+  window.closeNameModal = function(){
+    document.getElementById('name-modal').classList.remove('open');
+  };
+
+  window.saveStoreName = function(isFirstTime){
+    var inputId = isFirstTime ? 'ft-name-input' : 'nm-name-input';
+    var name = document.getElementById(inputId).value.trim();
+    if(!name){ toast('err_name_store'); return; }
+    var saveBtn = document.getElementById(isFirstTime ? 'ft-save-btn' : 'nm-save-btn');
+    saveBtn.disabled = true;
+    saveBtn.textContent = lang==='hi' ? 'सेव हो रहा है...' : 'Saving...';
+    storeName = name;
+    persistStoreName(user.id, name).then(function(){
+      saveBtn.disabled = false;
+      saveBtn.textContent = isFirstTime
+        ? (lang==='hi' ? 'स्टोर खोलें →' : 'Save & Open My Store →')
+        : (lang==='hi' ? 'स्टोर का नाम सेव करें' : 'Save store name');
+      updateBanner();
+      if(isFirstTime){
+        document.getElementById('first-time-overlay').classList.remove('open');
+      } else {
+        closeNameModal();
+        toast('toast_saved');
+      }
+    });
+  };
   function lsL(k,fb){try{var r=localStorage.getItem('kb_'+k);return r?JSON.parse(r):fb;}catch(e){return fb;}}
   function lsS(k,v){try{localStorage.setItem('kb_'+k,JSON.stringify(v));}catch(e){}}
   function syncBadge(k){document.getElementById('sync-badge').textContent=t(k);}
@@ -851,7 +994,28 @@
     var av=document.getElementById('user-av');
     if(u.user_metadata&&u.user_metadata.avatar_url)av.innerHTML='<img src="'+u.user_metadata.avatar_url+'" alt="" />';
     else av.textContent=nm[0].toUpperCase();
-    await loadData(u.id); drawAll();
+
+    // Load store name and data in parallel
+    await Promise.all([loadStoreName(u.id), loadData(u.id)]);
+
+    // If first time (no store name set), show setup screen
+    if(!storeName){
+      var ftTitle = document.getElementById('ft-title');
+      var ftSub   = document.getElementById('ft-sub');
+      var ftBtn   = document.getElementById('ft-save-btn');
+      var ftInp   = document.getElementById('ft-name-input');
+      if(ftTitle) ftTitle.textContent = lang==='hi' ? 'KiranaBook में आपका स्वागत है!' : 'Welcome to KiranaBook!';
+      if(ftSub)   ftSub.textContent   = lang==='hi'
+        ? 'शुरू करने से पहले अपने स्टोर को एक नाम दें। यह आपके डैशबोर्ड पर दिखेगा।'
+        : 'Let\'s start by giving your store a name. This will appear on your dashboard every time you log in.';
+      if(ftBtn)   ftBtn.textContent   = lang==='hi' ? 'सेव करें और स्टोर खोलें →' : 'Save & Open My Store →';
+      if(ftInp)   ftInp.placeholder   = lang==='hi' ? 'जैसे: शर्मा जनरल स्टोर' : 'e.g. Sharma General Store';
+      document.getElementById('first-time-overlay').classList.add('open');
+      setTimeout(function(){ if(ftInp) ftInp.focus(); }, 300);
+    } else {
+      updateBanner();
+    }
+    drawAll();
   }
   async function loadData(uid){
     if(!sbOK){items=lsL('items',[]);udhar=lsL('udhar',[]);sales=lsL('sales',[]);syncBadge('sync_demo');return;}
@@ -1067,6 +1231,21 @@
 
   /* ══ INIT ══ */
   applyLang();
+
+  // Char counters for store name inputs
+  document.getElementById('ft-name-input').addEventListener('input', function(){
+    document.getElementById('ft-char-count').textContent = this.value.length;
+  });
+  document.getElementById('nm-name-input').addEventListener('input', function(){
+    document.getElementById('nm-char-count').textContent = this.value.length;
+  });
+  // Save on Enter key
+  document.getElementById('ft-name-input').addEventListener('keydown', function(e){
+    if(e.key === 'Enter') saveStoreName(true);
+  });
+  document.getElementById('nm-name-input').addEventListener('keydown', function(e){
+    if(e.key === 'Enter') saveStoreName(false);
+  });
 
 })();
 </script>
