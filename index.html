@@ -232,6 +232,32 @@
     .first-time-emoji{font-size:52px;margin-bottom:1rem;}
     .first-time-title{font-family:'Fraunces',serif;font-size:28px;font-weight:900;margin-bottom:.5rem;color:var(--ink);}
     .first-time-sub{font-size:15px;color:var(--ink-3);margin-bottom:2rem;line-height:1.65;}
+    /* Reports */
+    .rep-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:1.5rem;cursor:pointer;transition:all .2s;box-shadow:var(--shadow-sm);}
+    .rep-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px);border-color:var(--saffron);}
+    .rep-card-icon{width:48px;height:48px;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:1rem;}
+    .rep-card-title{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:6px;}
+    .rep-card-desc{font-size:13px;color:var(--ink-3);line-height:1.55;margin-bottom:1rem;}
+    .rep-card-arrow{font-size:13px;font-weight:700;color:var(--saffron);}
+    .rep-table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:1.5rem;}
+    .rep-table th{background:var(--paper-3);padding:10px 12px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--ink-3);border-bottom:2px solid var(--border-2);}
+    .rep-table td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--ink);vertical-align:middle;}
+    .rep-table tr:last-child td{border-bottom:none;}
+    .rep-table tr:hover td{background:var(--paper-2);}
+    .rep-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:1.5rem;}
+    .rep-sum-tile{background:var(--white);border:1px solid var(--border);border-radius:var(--r-md);padding:1rem;box-shadow:var(--shadow-sm);}
+    .rep-sum-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--ink-3);margin-bottom:4px;}
+    .rep-sum-val{font-family:'Fraunces',serif;font-size:22px;font-weight:700;}
+    .rep-section{font-size:14px;font-weight:700;color:var(--ink);margin:1.5rem 0 .75rem;padding-bottom:6px;border-bottom:2px solid var(--border);}
+    .rep-wrap{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.5rem;box-shadow:var(--shadow-sm);overflow-x:auto;}
+    @media print{
+      .app-nav,.tab-bar,.store-banner,.form-card,.search-wrap,.list-label,.app-lang,.user-pill,.signout-btn,.sync-badge{display:none!important;}
+      #rep-selector{display:none!important;}
+      #rep-view{display:block!important;}
+      .panel{display:none!important;}
+      #panel-rep{display:block!important;}
+      body{background:#fff!important;}
+    }
     .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:2rem;}
     .stat-tile{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.25rem 1.5rem;box-shadow:var(--shadow-sm);transition:box-shadow .2s,transform .2s;position:relative;overflow:hidden;}
     .stat-tile:hover{box-shadow:var(--shadow-md);transform:translateY(-2px);}
@@ -567,6 +593,9 @@
       <button id="tb-sal" class="tab-btn" onclick="showTab('sal')">
         <span>📊</span><span id="tl-sal">बिक्री</span><span class="tab-cnt" id="tc-sal">0</span>
       </button>
+      <button id="tb-rep" class="tab-btn" onclick="showTab('rep')">
+        <span>📋</span><span id="tl-rep">Reports</span>
+      </button>
     </div>
 
     <!-- Inventory -->
@@ -633,6 +662,60 @@
       <div class="list-label" id="sal-list-label">आज की बिक्री</div>
       <div id="sal-list"></div>
     </div>
+
+    <!-- Reports Panel -->
+    <div id="panel-rep" class="panel">
+
+      <!-- Report selector cards -->
+      <div id="rep-selector">
+        <div style="font-family:'Fraunces',serif;font-size:22px;font-weight:800;margin-bottom:6px;" id="rep-heading">Reports</div>
+        <div style="font-size:14px;color:var(--ink-3);margin-bottom:1.5rem;" id="rep-subheading">Choose a report to view detailed information for your store.</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+          <div class="rep-card" onclick="showReport('inventory')">
+            <div class="rep-card-icon" style="background:var(--saffron-dim);">📦</div>
+            <div class="rep-card-title" id="rc1-t">Stock Inventory Report</div>
+            <div class="rep-card-desc" id="rc1-d">Full list of all items, quantities, values and stock status.</div>
+            <div class="rep-card-arrow">View Report →</div>
+          </div>
+          <div class="rep-card" onclick="showReport('lowstock')">
+            <div class="rep-card-icon" style="background:var(--red-dim);">⚠️</div>
+            <div class="rep-card-title" id="rc2-t">Low Stock Alert Report</div>
+            <div class="rep-card-desc" id="rc2-d">Items that need urgent restocking before you run out.</div>
+            <div class="rep-card-arrow">View Report →</div>
+          </div>
+          <div class="rep-card" onclick="showReport('udhar')">
+            <div class="rep-card-icon" style="background:var(--blue-dim);">📒</div>
+            <div class="rep-card-title" id="rc3-t">Udhar Khata Report</div>
+            <div class="rep-card-desc" id="rc3-d">Complete customer credit ledger with all transactions and balances.</div>
+            <div class="rep-card-arrow">View Report →</div>
+          </div>
+          <div class="rep-card" onclick="showReport('sales')">
+            <div class="rep-card-icon" style="background:var(--green-dim);">📊</div>
+            <div class="rep-card-title" id="rc4-t">Sales Report</div>
+            <div class="rep-card-desc" id="rc4-d">All sales with payment breakdown by Cash, UPI and Udhar.</div>
+            <div class="rep-card-arrow">View Report →</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Report view (shown when a report is selected) -->
+      <div id="rep-view" style="display:none;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:1.5rem;">
+          <button onclick="backToReports()" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1.5px solid var(--border-2);background:transparent;border-radius:var(--r-sm);font-size:13px;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;color:var(--ink-2);transition:all .2s;" onmouseover="this.style.borderColor='var(--saffron)';this.style.color='var(--saffron)'" onmouseout="this.style.borderColor='var(--border-2)';this.style.color='var(--ink-2)'">
+            ← <span id="rep-back-label">All Reports</span>
+          </button>
+          <div style="flex:1">
+            <div style="font-family:'Fraunces',serif;font-size:20px;font-weight:800;" id="rep-view-title">Report</div>
+            <div style="font-size:12px;color:var(--ink-3);margin-top:2px;" id="rep-view-date"></div>
+          </div>
+          <button onclick="printReport()" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:var(--ink);color:#fff;border:none;border-radius:var(--r-sm);font-size:13px;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;">
+            🖨️ <span id="rep-print-label">Print / Save PDF</span>
+          </button>
+        </div>
+        <div id="rep-content"></div>
+      </div>
+
+    </div>
   </div>
 </div>
 
@@ -687,7 +770,7 @@
       app_signout:'Sign out',
       sync_load:'⏳ Loading...', sync_ok:'☁️ Synced', sync_off:'⚠️ Offline', sync_demo:'📱 Demo', sync_saving:'⏳...', sync_err:'⚠️ Error',
       stat_stock:'Stock value', stat_low:'Low stock', stat_udhar:'Total udhar', stat_sales:"Today's sales", items_unit:' items',
-      tl_inv:'Inventory', tl_udh:'Udhar Khata', tl_sal:'Sales',
+      tl_inv:'Inventory', tl_udh:'Udhar Khata', tl_sal:'Sales', tl_rep:'Reports',
       inv_form:'Add new item to stock', l_iname:'Item name', l_iqty:'Quantity', l_iprice:'Price ₹', l_icat:'Category', l_ilow:'Low stock alert below',
       i_name_ph:'e.g. Tata Salt 1kg', btn_add_item:'➕ Add to inventory', inv_search_ph:'Search items by name...',
       inv_list_label:'Stock list', inv_in_stock:'✓ In stock', inv_low_stock:'⚠ Low stock', inv_per_unit:'per unit', inv_value:'Value',
@@ -751,7 +834,7 @@
       app_signout:'साइन आउट',
       sync_load:'⏳ लोड हो रहा है...', sync_ok:'☁️ सिंक हो गया', sync_off:'⚠️ ऑफलाइन', sync_demo:'📱 डेमो', sync_saving:'⏳...', sync_err:'⚠️ त्रुटि',
       stat_stock:'स्टॉक मूल्य', stat_low:'कम स्टॉक', stat_udhar:'कुल उधार', stat_sales:'आज की बिक्री', items_unit:' आइटम',
-      tl_inv:'इन्वेंटरी', tl_udh:'उधार खाता', tl_sal:'बिक्री',
+      tl_inv:'इन्वेंटरी', tl_udh:'उधार खाता', tl_sal:'बिक्री', tl_rep:'रिपोर्ट',
       inv_form:'स्टॉक में नया सामान जोड़ें', l_iname:'सामान का नाम', l_iqty:'मात्रा', l_iprice:'कीमत ₹', l_icat:'श्रेणी', l_ilow:'कम स्टॉक अलर्ट',
       i_name_ph:'जैसे: टाटा नमक 1kg', btn_add_item:'➕ इन्वेंटरी में जोड़ें', inv_search_ph:'सामान का नाम खोजें...',
       inv_list_label:'स्टॉक सूची', inv_in_stock:'✓ स्टॉक में है', inv_low_stock:'⚠ कम स्टॉक', inv_per_unit:'प्रति यूनिट', inv_value:'मूल्य',
@@ -829,7 +912,7 @@
     s('cta-btn',t('cta_btn')); s('cta-note',t('cta_note')); s('f-made',t('f_made'));
     /* App */
     s('app-signout',t('app_signout'));
-    s('tl-inv',t('tl_inv')); s('tl-udh',t('tl_udh')); s('tl-sal',t('tl_sal'));
+    s('tl-inv',t('tl_inv')); s('tl-udh',t('tl_udh')); s('tl-sal',t('tl_sal')); s('tl-rep',t('tl_rep'));
     s('inv-form-title',t('inv_form')); s('l-iname',t('l_iname')); s('l-iqty',t('l_iqty'));
     s('l-iprice',t('l_iprice')); s('l-icat',t('l_icat')); s('l-ilow',t('l_ilow'));
     p('i-name',t('i_name_ph')); s('btn-add-item',t('btn_add_item')); p('i-search',t('inv_search_ph'));
@@ -1158,10 +1241,17 @@
 
   /* ══ NAVIGATION ══ */
   window.showTab=function(name){
-    ['inv','udh','sal'].forEach(function(t){
+    ['inv','udh','sal','rep'].forEach(function(t){
       document.getElementById('panel-'+t).className='panel'+(t===name?' on':'');
       document.getElementById('tb-'+t).className='tab-btn'+(t===name?' on':'');
     });
+    // Reset report view when switching to reports tab
+    if(name==='rep'){
+      var sel=document.getElementById('rep-selector');
+      var view=document.getElementById('rep-view');
+      if(sel) sel.style.display='block';
+      if(view) view.style.display='none';
+    }
   };
   function showPage(name){
     document.getElementById('page-home').className='page'+(name==='home'?' active':'');
@@ -1229,7 +1319,301 @@
     drawAll();pItem(item,false);pSale(sale);
   });
 
-  /* ══ INIT ══ */
+  /* ══ REPORTS ══ */
+  var currentReport = '';
+
+  function rupeeVal(n){ return Number(n).toLocaleString('en-IN'); }
+
+  window.showReport = function(type){
+    currentReport = type;
+    document.getElementById('rep-selector').style.display = 'none';
+    document.getElementById('rep-view').style.display = 'block';
+    var now = new Date().toLocaleDateString(lang==='hi'?'hi-IN':'en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+    document.getElementById('rep-view-date').textContent = (lang==='hi'?'रिपोर्ट दिनांक: ':'Report date: ') + now;
+    document.getElementById('rep-back-label').textContent = lang==='hi'?'सभी रिपोर्ट':'All Reports';
+    document.getElementById('rep-print-label').textContent = lang==='hi'?'प्रिंट / PDF सेव करें':'Print / Save PDF';
+    if(type==='inventory') buildInventoryReport();
+    else if(type==='lowstock') buildLowStockReport();
+    else if(type==='udhar') buildUdharReport();
+    else if(type==='sales') buildSalesReport();
+  };
+
+  window.backToReports = function(){
+    document.getElementById('rep-selector').style.display = 'block';
+    document.getElementById('rep-view').style.display = 'none';
+    currentReport = '';
+  };
+
+  window.printReport = function(){ window.print(); };
+
+  function buildInventoryReport(){
+    var hi = lang==='hi';
+    document.getElementById('rep-view-title').textContent = hi?'स्टॉक इन्वेंटरी रिपोर्ट':'Stock Inventory Report';
+    var totalVal=0, totalItems=items.length, inStockCount=0, lowCount=0;
+    items.forEach(function(i){
+      totalVal+=Number(i.qty)*Number(i.price);
+      if(Number(i.qty)>Number(i.low)) inStockCount++; else lowCount++;
+    });
+
+    var cats={};
+    items.forEach(function(i){
+      if(!cats[i.cat]) cats[i.cat]={count:0,qty:0,val:0};
+      cats[i.cat].count++;
+      cats[i.cat].qty+=Number(i.qty);
+      cats[i.cat].val+=Number(i.qty)*Number(i.price);
+    });
+
+    var html = '<div class="rep-summary">'
+      +'<div class="rep-sum-tile"><div class="rep-sum-label">'+(hi?'कुल आइटम':'Total Items')+'</div><div class="rep-sum-val">'+totalItems+'</div></div>'
+      +'<div class="rep-sum-tile"><div class="rep-sum-label">'+(hi?'कुल स्टॉक मूल्य':'Total Stock Value')+'</div><div class="rep-sum-val" style="color:var(--saffron)">₹'+rupeeVal(totalVal)+'</div></div>'
+      +'<div class="rep-sum-tile"><div class="rep-sum-label">'+(hi?'स्टॉक में है':'In Stock')+'</div><div class="rep-sum-val" style="color:var(--green)">'+inStockCount+'</div></div>'
+      +'<div class="rep-sum-tile"><div class="rep-sum-label">'+(hi?'कम स्टॉक':'Low Stock')+'</div><div class="rep-sum-val" style="color:var(--red)">'+lowCount+'</div></div>'
+      +'</div>';
+
+    html += '<div class="rep-section">'+(hi?'सभी सामान की सूची':'Complete Item List')+'</div>';
+    html += '<div class="rep-wrap"><table class="rep-table"><thead><tr>'
+      +'<th>#</th><th>'+(hi?'सामान का नाम':'Item Name')+'</th><th>'+(hi?'श्रेणी':'Category')+'</th>'
+      +'<th>'+(hi?'मात्रा':'Qty')+'</th><th>'+(hi?'कीमत ₹':'Price ₹')+'</th>'
+      +'<th>'+(hi?'कुल मूल्य':'Total Value')+'</th><th>'+(hi?'अलर्ट स्तर':'Alert Level')+'</th><th>'+(hi?'स्थिति':'Status')+'</th>'
+      +'</tr></thead><tbody>';
+
+    items.forEach(function(it, idx){
+      var qty=Number(it.qty), low=Number(it.low), price=Number(it.price), isLow=qty<=low;
+      html += '<tr>'
+        +'<td style="color:var(--ink-3)">'+(idx+1)+'</td>'
+        +'<td><strong>'+it.name+'</strong></td>'
+        +'<td>'+it.cat+'</td>'
+        +'<td><strong style="font-size:15px">'+qty+'</strong></td>'
+        +'<td>₹'+rupeeVal(price)+'</td>'
+        +'<td><strong>₹'+rupeeVal(qty*price)+'</strong></td>'
+        +'<td style="color:var(--ink-3)">'+low+'</td>'
+        +'<td><span style="font-size:11px;padding:3px 9px;border-radius:12px;font-weight:700;background:'+(isLow?'var(--red-dim)':'var(--green-dim)')+';color:'+(isLow?'var(--red)':'var(--green)')+';">'+(isLow?(hi?'⚠ कम स्टॉक':'⚠ Low Stock'):(hi?'✓ स्टॉक में':'✓ In Stock'))+'</span></td>'
+        +'</tr>';
+    });
+
+    if(!items.length) html+='<tr><td colspan="8" style="text-align:center;color:var(--ink-3);padding:2rem">'+(hi?'कोई सामान नहीं':'No items found')+'</td></tr>';
+    html += '</tbody></table></div>';
+
+    // Category summary
+    html += '<div class="rep-section">'+(hi?'श्रेणी के अनुसार सारांश':'Summary by Category')+'</div>';
+    html += '<div class="rep-wrap"><table class="rep-table"><thead><tr>'
+      +'<th>'+(hi?'श्रेणी':'Category')+'</th><th>'+(hi?'आइटम':'Items')+'</th>'
+      +'<th>'+(hi?'कुल मात्रा':'Total Qty')+'</th><th>'+(hi?'कुल मूल्य':'Total Value')+'</th>'
+      +'</tr></thead><tbody>';
+    Object.keys(cats).forEach(function(cat){
+      var c=cats[cat];
+      html+='<tr><td><strong>'+cat+'</strong></td><td>'+c.count+'</td><td>'+c.qty+'</td><td><strong>₹'+rupeeVal(c.val)+'</strong></td></tr>';
+    });
+    html += '</tbody></table></div>';
+    document.getElementById('rep-content').innerHTML = html;
+  }
+
+  function buildLowStockReport(){
+    var hi = lang==='hi';
+    document.getElementById('rep-view-title').textContent = hi?'कम स्टॉक अलर्ट रिपोर्ट':'Low Stock Alert Report';
+    var lowItems = items.filter(function(i){ return Number(i.qty)<=Number(i.low); });
+    var outItems = items.filter(function(i){ return Number(i.qty)===0; });
+    var criticalItems = items.filter(function(i){ return Number(i.qty)>0 && Number(i.qty)<=Number(i.low); });
+
+    var html = '<div class="rep-summary">'
+      +'<div class="rep-sum-tile"><div class="rep-sum-label">'+(hi?'कम स्टॉक आइटम':'Low Stock Items')+'</div><div class="rep-sum-val" style="color:var(--red)">'+lowItems.length+'</div></div>'
+      +'<div class="rep-sum-tile"><div class="rep-sum-label">'+(hi?'स्टॉक खत्म':'Out of Stock')+'</div><div class="rep-sum-val" style="color:var(--red)">'+outItems.length+'</div></div>'
+      +'<div class="rep-sum-tile"><div class="rep-sum-label">'+(hi?'गंभीर स्तर':'Critical Level')+'</div><div class="rep-sum-val" style="color:var(--saffron)">'+criticalItems.length+'</div></div>'
+      +'<div class="rep-sum-tile"><div class="rep-sum-label">'+(hi?'कुल आइटम':'Total Items')+'</div><div class="rep-sum-val">'+items.length+'</div></div>'
+      +'</div>';
+
+    if(!lowItems.length){
+      html += '<div style="text-align:center;padding:3rem;background:var(--green-dim);border-radius:var(--r-lg);border:1px solid rgba(15,102,64,.2)">'
+        +'<div style="font-size:40px;margin-bottom:12px">✅</div>'
+        +'<div style="font-family:Fraunces,serif;font-size:20px;font-weight:700;color:var(--green)">'+(hi?'सभी आइटम पर्याप्त स्टॉक में हैं!':'All items are well stocked!')+'</div>'
+        +'<div style="font-size:14px;color:var(--ink-3);margin-top:6px">'+(hi?'कोई कम स्टॉक आइटम नहीं':'No low stock items at this time')+'</div>'
+        +'</div>';
+      document.getElementById('rep-content').innerHTML = html;
+      return;
+    }
+
+    if(outItems.length){
+      html += '<div class="rep-section" style="color:var(--red)">'+(hi?'🚨 स्टॉक खत्म — तुरंत मंगाएं':'🚨 Out of Stock — Order Immediately')+'</div>';
+      html += '<div class="rep-wrap"><table class="rep-table"><thead><tr>'
+        +'<th>'+(hi?'सामान':'Item')+'</th><th>'+(hi?'श्रेणी':'Category')+'</th>'
+        +'<th>'+(hi?'कीमत':'Price')+'</th><th>'+(hi?'अलर्ट स्तर':'Alert Level')+'</th><th>'+(hi?'स्थिति':'Status')+'</th>'
+        +'</tr></thead><tbody>';
+      outItems.forEach(function(it){
+        html+='<tr style="background:#FFF5F5">'
+          +'<td><strong>'+it.name+'</strong></td><td>'+it.cat+'</td>'
+          +'<td>₹'+rupeeVal(it.price)+'</td><td>'+it.low+'</td>'
+          +'<td><span style="font-size:11px;padding:3px 9px;border-radius:12px;font-weight:700;background:var(--red-dim);color:var(--red)">🚨 '+(hi?'खत्म':'Out of Stock')+'</span></td>'
+          +'</tr>';
+      });
+      html += '</tbody></table></div>';
+    }
+
+    if(criticalItems.length){
+      html += '<div class="rep-section" style="color:var(--saffron-dark)">'+(hi?'⚠️ गंभीर स्तर — जल्दी मंगाएं':'⚠️ Critical Level — Order Soon')+'</div>';
+      html += '<div class="rep-wrap"><table class="rep-table"><thead><tr>'
+        +'<th>'+(hi?'सामान':'Item')+'</th><th>'+(hi?'श्रेणी':'Category')+'</th>'
+        +'<th>'+(hi?'मात्रा बची':'Qty Left')+'</th><th>'+(hi?'अलर्ट स्तर':'Alert At')+'</th>'
+        +'<th>'+(hi?'कीमत':'Price')+'</th><th>'+(hi?'कितनी मंगाएं (सुझाव)':'Suggested Order')+'</th>'
+        +'</tr></thead><tbody>';
+      criticalItems.forEach(function(it){
+        var suggestedOrder = Math.max(Number(it.low)*3 - Number(it.qty), Number(it.low)*2);
+        html+='<tr>'
+          +'<td><strong>'+it.name+'</strong></td><td>'+it.cat+'</td>'
+          +'<td><strong style="color:var(--saffron-dark)">'+it.qty+'</strong></td><td>'+it.low+'</td>'
+          +'<td>₹'+rupeeVal(it.price)+'</td>'
+          +'<td><strong style="color:var(--green)">'+suggestedOrder+' '+(hi?'यूनिट':'units')+'</strong></td>'
+          +'</tr>';
+      });
+      html += '</tbody></table></div>';
+    }
+    document.getElementById('rep-content').innerHTML = html;
+  }
+
+  function buildUdharReport(){
+    var hi = lang==='hi';
+    document.getElementById('rep-view-title').textContent = hi?'उधार खाता रिपोर्ट':'Udhar Khata Report';
+    var tot = udharTotals();
+    var custs = [...new Set(udhar.map(function(e){ return e.customer; }))];
+    var totalOwed=0, totalOverpaid=0, settledCount=0;
+    custs.forEach(function(c){
+      var b=tot[c]||0;
+      if(b>0) totalOwed+=b;
+      else if(b<0) totalOverpaid+=(-b);
+      else settledCount++;
+    });
+
+    var html = '<div class="rep-summary">'
+      +'<div class="rep-sum-tile"><div class="rep-sum-label">'+(hi?'कुल ग्राहक':'Total Customers')+'</div><div class="rep-sum-val">'+custs.length+'</div></div>'
+      +'<div class="rep-sum-tile"><div class="rep-sum-label">'+(hi?'कुल बकाया':'Total Outstanding')+'</div><div class="rep-sum-val" style="color:var(--red)">₹'+rupeeVal(totalOwed)+'</div></div>'
+      +'<div class="rep-sum-tile"><div class="rep-sum-label">'+(hi?'हिसाब बराबर':'Settled')+'</div><div class="rep-sum-val" style="color:var(--green)">'+settledCount+'</div></div>'
+      +'<div class="rep-sum-tile"><div class="rep-sum-label">'+(hi?'कुल एंट्री':'Total Entries')+'</div><div class="rep-sum-val">'+udhar.length+'</div></div>'
+      +'</div>';
+
+    // Outstanding customers first
+    var owingCusts = custs.filter(function(c){ return (tot[c]||0)>0; });
+    var settledCusts = custs.filter(function(c){ return (tot[c]||0)<=0; });
+
+    if(owingCusts.length){
+      html += '<div class="rep-section" style="color:var(--red)">'+(hi?'बकाया ग्राहक':'Customers with Outstanding Balance')+'</div>';
+      owingCusts.forEach(function(cust){
+        var ents = udhar.filter(function(e){ return e.customer===cust; });
+        var bal = tot[cust]||0;
+        html += '<div class="rep-wrap" style="margin-bottom:14px">'
+          +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--border)">'
+          +'<div style="font-size:16px;font-weight:700">'+cust+'</div>'
+          +'<div style="font-family:Fraunces,serif;font-size:20px;font-weight:700;color:var(--red)">₹'+rupeeVal(bal)+' '+(hi?'बकाया':'outstanding')+'</div>'
+          +'</div>'
+          +'<table class="rep-table"><thead><tr>'
+          +'<th>'+(hi?'दिनांक':'Date')+'</th><th>'+(hi?'प्रकार':'Type')+'</th>'
+          +'<th>'+(hi?'नोट':'Note')+'</th><th style="text-align:right">'+(hi?'राशि':'Amount')+'</th>'
+          +'</tr></thead><tbody>';
+        ents.forEach(function(e){
+          html+='<tr>'
+            +'<td>'+e.date+'</td>'
+            +'<td><span style="font-size:11px;padding:2px 8px;border-radius:10px;font-weight:700;background:'+(e.type==='debit'?'var(--red-dim)':'var(--green-dim)')+';color:'+(e.type==='debit'?'var(--red)':'var(--green)')+';">'+(e.type==='debit'?(hi?'उधार दिया':'Credit Given'):(hi?'पैसे मिले':'Payment'))+'</span></td>'
+            +'<td style="color:var(--ink-3)">'+(e.note||'—')+'</td>'
+            +'<td style="text-align:right;font-weight:700;color:'+(e.type==='debit'?'var(--red)':'var(--green)')+'">'+( e.type==='debit'?'−':'+')+' ₹'+rupeeVal(e.amount)+'</td>'
+            +'</tr>';
+        });
+        html+='<tr style="background:var(--paper-3)"><td colspan="3"><strong>'+(hi?'कुल बकाया':'Net Outstanding')+'</strong></td><td style="text-align:right;font-weight:700;color:var(--red);font-size:15px">₹'+rupeeVal(bal)+'</td></tr>';
+        html += '</tbody></table></div>';
+      });
+    }
+
+    if(settledCusts.length){
+      html += '<div class="rep-section" style="color:var(--green)">'+(hi?'हिसाब बराबर ग्राहक':'Settled Customers')+'</div>';
+      html += '<div class="rep-wrap"><table class="rep-table"><thead><tr>'
+        +'<th>'+(hi?'ग्राहक':'Customer')+'</th><th>'+(hi?'कुल एंट्री':'Total Entries')+'</th><th>'+(hi?'स्थिति':'Status')+'</th>'
+        +'</tr></thead><tbody>';
+      settledCusts.forEach(function(cust){
+        var ents=udhar.filter(function(e){return e.customer===cust;});
+        var bal=tot[cust]||0;
+        html+='<tr><td><strong>'+cust+'</strong></td><td>'+ents.length+'</td>'
+          +'<td><span style="font-size:11px;padding:3px 9px;border-radius:12px;font-weight:700;background:var(--green-dim);color:var(--green)">✓ '+(bal<0?'Overpaid ₹'+rupeeVal(-bal):(hi?'हिसाब बराबर':'Settled'))+'</span></td></tr>';
+      });
+      html += '</tbody></table></div>';
+    }
+
+    if(!custs.length){
+      html += '<div style="text-align:center;padding:3rem;color:var(--ink-3)"><div style="font-size:40px;margin-bottom:12px">📒</div><div style="font-size:16px">'+(hi?'कोई उधार एंट्री नहीं':'No udhar entries found')+'</div></div>';
+    }
+    document.getElementById('rep-content').innerHTML = html;
+  }
+
+  function buildSalesReport(){
+    var hi = lang==='hi';
+    document.getElementById('rep-view-title').textContent = hi?'बिक्री रिपोर्ट':'Sales Report';
+
+    var totalSales=0, cashTotal=0, upiTotal=0, udharSalesTotal=0;
+    var itemSales={};
+    sales.forEach(function(s){
+      totalSales+=Number(s.total);
+      if(s.pay==='Cash') cashTotal+=Number(s.total);
+      else if(s.pay==='UPI') upiTotal+=Number(s.total);
+      else if(s.pay==='Udhar') udharSalesTotal+=Number(s.total);
+      if(!itemSales[s.name]) itemSales[s.name]={qty:0,total:0,cat:s.cat};
+      itemSales[s.name].qty+=Number(s.qty);
+      itemSales[s.name].total+=Number(s.total);
+    });
+
+    var html = '<div class="rep-summary">'
+      +'<div class="rep-sum-tile"><div class="rep-sum-label">'+(hi?'कुल बिक्री':'Total Sales')+'</div><div class="rep-sum-val" style="color:var(--green)">₹'+rupeeVal(totalSales)+'</div></div>'
+      +'<div class="rep-sum-tile"><div class="rep-sum-label">'+(hi?'नकद':'Cash')+'</div><div class="rep-sum-val" style="color:var(--green)">₹'+rupeeVal(cashTotal)+'</div></div>'
+      +'<div class="rep-sum-tile"><div class="rep-sum-label">UPI</div><div class="rep-sum-val" style="color:var(--blue)">₹'+rupeeVal(upiTotal)+'</div></div>'
+      +'<div class="rep-sum-tile"><div class="rep-sum-label">'+(hi?'उधार बिक्री':'Udhar Sales')+'</div><div class="rep-sum-val" style="color:var(--saffron-dark)">₹'+rupeeVal(udharSalesTotal)+'</div></div>'
+      +'</div>';
+
+    // Top selling items
+    var topItems = Object.keys(itemSales).map(function(name){
+      return {name:name, qty:itemSales[name].qty, total:itemSales[name].total, cat:itemSales[name].cat};
+    }).sort(function(a,b){ return b.total-a.total; });
+
+    if(topItems.length){
+      html += '<div class="rep-section">'+(hi?'सबसे ज़्यादा बिकने वाले आइटम':'Best Selling Items')+'</div>';
+      html += '<div class="rep-wrap"><table class="rep-table"><thead><tr>'
+        +'<th>#</th><th>'+(hi?'सामान':'Item')+'</th><th>'+(hi?'श्रेणी':'Category')+'</th>'
+        +'<th>'+(hi?'बेची मात्रा':'Qty Sold')+'</th><th>'+(hi?'कुल राजस्व':'Total Revenue')+'</th>'
+        +'<th>'+(hi?'योगदान %':'% of Sales')+'</th>'
+        +'</tr></thead><tbody>';
+      topItems.forEach(function(it, idx){
+        var pct = totalSales>0?((it.total/totalSales)*100).toFixed(1):0;
+        html+='<tr>'
+          +'<td style="color:var(--ink-3);font-weight:700">'+(idx===0?'🥇':idx===1?'🥈':idx===2?'🥉':idx+1)+'</td>'
+          +'<td><strong>'+it.name+'</strong></td><td>'+it.cat+'</td>'
+          +'<td><strong>'+it.qty+'</strong></td>'
+          +'<td><strong style="color:var(--green)">₹'+rupeeVal(it.total)+'</strong></td>'
+          +'<td><div style="display:flex;align-items:center;gap:8px"><div style="height:6px;border-radius:3px;background:var(--saffron);width:'+Math.min(pct,100)+'px"></div>'+pct+'%</div></td>'
+          +'</tr>';
+      });
+      html += '</tbody></table></div>';
+    }
+
+    // All transactions
+    html += '<div class="rep-section">'+(hi?'सभी लेनदेन':'All Transactions')+'</div>';
+    html += '<div class="rep-wrap"><table class="rep-table"><thead><tr>'
+      +'<th>#</th><th>'+(hi?'सामान':'Item')+'</th><th>'+(hi?'समय':'Time')+'</th>'
+      +'<th>'+(hi?'मात्रा':'Qty')+'</th><th>'+(hi?'भुगतान':'Payment')+'</th><th style="text-align:right">'+(hi?'राशि':'Amount')+'</th>'
+      +'</tr></thead><tbody>';
+    if(!sales.length){
+      html+='<tr><td colspan="6" style="text-align:center;color:var(--ink-3);padding:2rem">'+(hi?'कोई बिक्री दर्ज नहीं':'No sales recorded yet')+'</td></tr>';
+    }
+    sales.forEach(function(s,idx){
+      var pc=s.pay==='UPI'?'var(--blue)':s.pay==='Udhar'?'var(--saffron-dark)':'var(--green)';
+      html+='<tr>'
+        +'<td style="color:var(--ink-3)">'+(idx+1)+'</td>'
+        +'<td><strong>'+s.name+'</strong></td><td>'+s.time+'</td>'
+        +'<td>'+s.qty+'</td>'
+        +'<td><span style="font-size:11px;padding:2px 8px;border-radius:10px;font-weight:700;background:var(--paper-3);color:'+pc+'">'+s.pay+'</span></td>'
+        +'<td style="text-align:right;font-weight:700;color:var(--green)">₹'+rupeeVal(s.total)+'</td>'
+        +'</tr>';
+    });
+    html += '</tbody><tfoot><tr style="background:var(--paper-3)">'
+      +'<td colspan="5"><strong>'+(hi?'कुल राजस्व':'Total Revenue')+'</strong></td>'
+      +'<td style="text-align:right;font-weight:700;font-size:15px;color:var(--green)">₹'+rupeeVal(totalSales)+'</td>'
+      +'</tfoot></table></div>';
+
+    document.getElementById('rep-content').innerHTML = html;
+  }
   applyLang();
 
   // Char counters for store name inputs
