@@ -210,6 +210,31 @@
       .mosaic-h2{font-size:28px;}
     }
 
+    /* STORE NAME */
+    .store-name-wrap{display:flex;align-items:center;gap:10px;margin-bottom:1.75rem;}
+    .store-name-display{font-family:'Fraunces',serif;font-size:22px;font-weight:800;color:var(--ink);}
+    .store-name-edit{background:none;border:none;font-size:14px;color:var(--saffron);cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;padding:4px 8px;border-radius:var(--r-sm);transition:background .15s;}
+    .store-name-edit:hover{background:var(--saffron-dim);}
+    .store-name-input-wrap{display:none;align-items:center;gap:8px;margin-bottom:1.75rem;}
+    .store-name-input{padding:9px 14px;border:1.5px solid var(--saffron);border-radius:var(--r-sm);font-size:16px;font-family:'Fraunces',serif;font-weight:700;color:var(--ink);background:var(--white);width:240px;}
+    .store-name-input:focus{outline:none;box-shadow:0 0 0 3px rgba(232,101,10,.12);}
+    .store-name-save{padding:9px 16px;background:var(--saffron);color:#fff;border:none;border-radius:var(--r-sm);font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;}
+
+    /* REPORTS */
+    .report-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:1.5rem;}
+    .report-tile{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.5rem;box-shadow:var(--shadow-sm);}
+    .report-tile-title{font-size:13px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:1rem;display:flex;align-items:center;gap:8px;}
+    .report-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:13px;}
+    .report-bar-label{width:90px;color:var(--ink-2);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .report-bar-track{flex:1;height:8px;background:var(--paper-3);border-radius:4px;overflow:hidden;}
+    .report-bar-fill{height:100%;border-radius:4px;background:var(--saffron);transition:width .6s ease;}
+    .report-bar-val{width:52px;text-align:right;font-weight:700;color:var(--ink);font-size:12px;}
+    .pay-donut-row{display:flex;align-items:center;gap:12px;margin-bottom:10px;font-size:13px;}
+    .pay-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+    .pay-donut-label{flex:1;color:var(--ink-2);}
+    .pay-donut-val{font-weight:700;color:var(--ink);}
+    .report-empty{text-align:center;padding:2rem;color:var(--ink-3);font-size:13px;}
+
     /* APP NAV */
     .app-nav{display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:64px;background:rgba(255,253,249,.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;box-shadow:0 1px 0 var(--border),0 4px 16px rgba(25,18,10,.04);}
     .app-logo{display:flex;align-items:center;gap:9px;cursor:pointer;}
@@ -471,52 +496,57 @@
     </div>
     <div class="mosaic-grid">
 
-      <!-- Cell 1: tall — kirana storefront -->
+      <!-- Cell 1: tall — real Indian kirana storefront (Zoshua Colah, Unsplash) -->
       <div class="mosaic-cell tall">
         <img
-          src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&q=90&auto=format&fit=crop"
-          alt="Kirana store interior"
+          src="https://images.unsplash.com/photo-1624831466206-5b15053baabb?w=800&q=92&auto=format&fit=crop&crop=center"
+          alt="Indian kirana store"
           loading="lazy"
+          onerror="this.src='https://images.unsplash.com/photo-1512403762066-73452496b7db?w=800&q=92&auto=format&fit=crop'"
         />
         <div class="mosaic-caption">Sharma Ji Kirana Store — Varanasi</div>
       </div>
 
-      <!-- Cell 2: man with tablet/inventory -->
+      <!-- Cell 2: Indian spice market / grocery shelves -->
       <div class="mosaic-cell">
         <img
-          src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=700&q=90&auto=format&fit=crop&crop=top"
-          alt="Store owner using digital inventory"
+          src="https://images.unsplash.com/photo-1512403762066-73452496b7db?w=700&q=92&auto=format&fit=crop&crop=top"
+          alt="Indian grocery spice market"
           loading="lazy"
+          onerror="this.src='https://images.unsplash.com/photo-1624831466206-5b15053baabb?w=700&q=92&auto=format&fit=crop'"
         />
         <div class="mosaic-caption">Next-gen kirana — digital from day one</div>
       </div>
 
-      <!-- Cell 3: confident store owner -->
+      <!-- Cell 3: colourful Indian market produce -->
       <div class="mosaic-cell">
         <img
-          src="https://images.unsplash.com/photo-1542838132-92c53300491e?w=700&q=90&auto=format&fit=crop&crop=top"
-          alt="Confident kirana store owner"
+          src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=700&q=92&auto=format&fit=crop&crop=center"
+          alt="Colourful Indian market"
           loading="lazy"
+          onerror="this.src='https://images.unsplash.com/photo-1506368249639-73a05d6f6488?w=700&q=92&auto=format&fit=crop'"
         />
         <div class="mosaic-caption">Confident. Organised. Profitable.</div>
       </div>
 
-      <!-- Cell 4: family shopping -->
+      <!-- Cell 4: Indian grocery store shelves packed with goods -->
       <div class="mosaic-cell">
         <img
-          src="https://images.unsplash.com/photo-1604719312566-8912e9227c6a?w=700&q=90&auto=format&fit=crop&crop=top"
-          alt="Family shopping at kirana store"
+          src="https://images.unsplash.com/photo-1506368249639-73a05d6f6488?w=700&q=92&auto=format&fit=crop&crop=top"
+          alt="Packed kirana store shelves"
           loading="lazy"
+          onerror="this.src='https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=700&q=92&auto=format&fit=crop'"
         />
         <div class="mosaic-caption">Families who shop here, keep coming back</div>
       </div>
 
-      <!-- Cell 5: owner and customer smiling -->
+      <!-- Cell 5: warm Indian shopkeeper interaction -->
       <div class="mosaic-cell">
         <img
-          src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=700&q=90&auto=format&fit=crop&crop=top"
-          alt="Store owner building customer trust"
+          src="https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=700&q=92&auto=format&fit=crop&crop=top"
+          alt="Kirana store owner and customer"
           loading="lazy"
+          onerror="this.src='https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=700&q=92&auto=format&fit=crop'"
         />
         <div class="mosaic-caption">Trust built one transaction at a time</div>
       </div>
@@ -586,6 +616,15 @@
   </nav>
   <div class="app-body">
     <div class="stats-row" id="stats-row"></div>
+    <!-- Store Name -->
+    <div class="store-name-wrap" id="store-name-wrap">
+      <div class="store-name-display" id="store-name-display">My Kirana Store</div>
+      <button class="store-name-edit" onclick="editStoreName()">✏️ Edit name</button>
+    </div>
+    <div class="store-name-input-wrap" id="store-name-input-wrap">
+      <input id="store-name-input" class="store-name-input" type="text" placeholder="Enter your store name..." maxlength="50" />
+      <button class="store-name-save" onclick="saveStoreName()">Save</button>
+    </div>
     <div class="tab-bar">
       <button id="tb-inv" class="tab-btn on" onclick="showTab('inv')">
         <span>📦</span><span id="tl-inv">इन्वेंटरी</span><span class="tab-cnt" id="tc-inv">0</span>
@@ -595,6 +634,9 @@
       </button>
       <button id="tb-sal" class="tab-btn" onclick="showTab('sal')">
         <span>📊</span><span id="tl-sal">बिक्री</span><span class="tab-cnt" id="tc-sal">0</span>
+      </button>
+      <button id="tb-rep" class="tab-btn" onclick="showTab('rep')">
+        <span>📈</span><span id="tl-rep">Reports</span>
       </button>
     </div>
 
@@ -662,6 +704,27 @@
       <div class="list-label" id="sal-list-label">आज की बिक्री</div>
       <div id="sal-list"></div>
     </div>
+      <!-- Reports -->
+      <div id="panel-rep" class="panel">
+        <div class="report-grid">
+          <div class="report-tile">
+            <div class="report-tile-title">📦 Top Items by Value</div>
+            <div id="rep-top-items"><div class="report-empty">No inventory yet</div></div>
+          </div>
+          <div class="report-tile">
+            <div class="report-tile-title">💳 Payment Breakdown</div>
+            <div id="rep-pay-split"><div class="report-empty">No sales yet</div></div>
+          </div>
+          <div class="report-tile">
+            <div class="report-tile-title">📋 Top Udhar Customers</div>
+            <div id="rep-top-udhar"><div class="report-empty">No udhar yet</div></div>
+          </div>
+          <div class="report-tile">
+            <div class="report-tile-title">🌾 Sales by Category</div>
+            <div id="rep-cat-sales"><div class="report-empty">No sales yet</div></div>
+          </div>
+        </div>
+      </div>
   </div>
 </div>
 
@@ -858,7 +921,7 @@
     s('cta-btn',t('cta_btn')); s('cta-note',t('cta_note')); s('f-made',t('f_made'));
     /* App */
     s('app-signout',t('app_signout'));
-    s('tl-inv',t('tl_inv')); s('tl-udh',t('tl_udh')); s('tl-sal',t('tl_sal'));
+    s('tl-inv',t('tl_inv')); s('tl-udh',t('tl_udh')); s('tl-sal',t('tl_sal')); s('tl-rep','Reports');
     s('inv-form-title',t('inv_form')); s('l-iname',t('l_iname')); s('l-iqty',t('l_iqty'));
     s('l-iprice',t('l_iprice')); s('l-icat',t('l_icat')); s('l-ilow',t('l_ilow'));
     p('i-name',t('i_name_ph')); s('btn-add-item',t('btn_add_item')); p('i-search',t('inv_search_ph'));
@@ -947,7 +1010,7 @@
     var av=document.getElementById('user-av');
     if(u.user_metadata&&u.user_metadata.avatar_url)av.innerHTML='<img src="'+u.user_metadata.avatar_url+'" alt="" />';
     else av.textContent=nm[0].toUpperCase();
-    await loadData(u.id); drawAll();
+    await loadData(u.id); loadStoreName(); drawAll();
   }
   async function loadData(uid){
     if(!sbOK){items=lsL('items',[]);udhar=lsL('udhar',[]);sales=lsL('sales',[]);syncBadge('sync_demo');return;}
@@ -1090,10 +1153,13 @@
 
   /* ══ NAVIGATION ══ */
   window.showTab=function(name){
-    ['inv','udh','sal'].forEach(function(t){
-      document.getElementById('panel-'+t).className='panel'+(t===name?' on':'');
-      document.getElementById('tb-'+t).className='tab-btn'+(t===name?' on':'');
+    ['inv','udh','sal','rep'].forEach(function(t){
+      var p=document.getElementById('panel-'+t);
+      if(p) p.className='panel'+(t===name?' on':'');
+      var b=document.getElementById('tb-'+t);
+      if(b) b.className='tab-btn'+(t===name?' on':'');
     });
+    if(name==='rep') drawReports();
   };
   function showPage(name){
     document.getElementById('page-home').className='page'+(name==='home'?' active':'');
@@ -1160,6 +1226,89 @@
     document.getElementById('s-qty').value='';
     drawAll();pItem(item,false);pSale(sale);
   });
+
+  /* ══ STORE NAME ══ */
+  function loadStoreName(){
+    var nm=localStorage.getItem('kb_store_name')||'My Kirana Store';
+    document.getElementById('store-name-display').textContent=nm;
+  }
+  window.editStoreName=function(){
+    var cur=document.getElementById('store-name-display').textContent;
+    document.getElementById('store-name-input').value=cur;
+    document.getElementById('store-name-wrap').style.display='none';
+    var wrap=document.getElementById('store-name-input-wrap');
+    wrap.style.display='flex';
+    document.getElementById('store-name-input').focus();
+  };
+  window.saveStoreName=function(){
+    var val=document.getElementById('store-name-input').value.trim()||'My Kirana Store';
+    localStorage.setItem('kb_store_name',val);
+    document.getElementById('store-name-display').textContent=val;
+    document.getElementById('store-name-input-wrap').style.display='none';
+    document.getElementById('store-name-wrap').style.display='flex';
+  };
+  document.getElementById('store-name-input').addEventListener('keydown',function(e){
+    if(e.key==='Enter') window.saveStoreName();
+    if(e.key==='Escape'){ document.getElementById('store-name-input-wrap').style.display='none'; document.getElementById('store-name-wrap').style.display='flex'; }
+  });
+
+  /* ══ REPORTS ══ */
+  function drawReports(){
+    // Top 5 items by stock value
+    var sorted=[].concat(items).sort(function(a,b){return (Number(b.qty)*Number(b.price))-(Number(a.qty)*Number(a.price));}).slice(0,5);
+    var maxVal=sorted.length?Number(sorted[0].qty)*Number(sorted[0].price):1;
+    var elItems=document.getElementById('rep-top-items');
+    if(!sorted.length){elItems.innerHTML='<div class="report-empty">No inventory yet</div>';}
+    else{elItems.innerHTML=sorted.map(function(it){
+      var v=Number(it.qty)*Number(it.price);
+      var pct=maxVal?Math.round(v/maxVal*100):0;
+      return '<div class="report-bar-row"><span class="report-bar-label" title="'+it.name+'">'+it.name.slice(0,12)+'</span>'+
+        '<div class="report-bar-track"><div class="report-bar-fill" style="width:'+pct+'%"></div></div>'+
+        '<span class="report-bar-val">'+rupee(v)+'</span></div>';
+    }).join('');}
+
+    // Payment split
+    var payTotals={Cash:0,UPI:0,Udhar:0};
+    sales.forEach(function(s){payTotals[s.pay]=(payTotals[s.pay]||0)+Number(s.total);});
+    var totalSales=payTotals.Cash+payTotals.UPI+payTotals.Udhar;
+    var elPay=document.getElementById('rep-pay-split');
+    if(!totalSales){elPay.innerHTML='<div class="report-empty">No sales yet</div>';}
+    else{var colors={Cash:'#2E7D32',UPI:'#1565C0',Udhar:'#E8650A'};
+    elPay.innerHTML=Object.keys(payTotals).map(function(k){
+      if(!payTotals[k])return '';
+      var pct=Math.round(payTotals[k]/totalSales*100);
+      return '<div class="pay-donut-row"><div class="pay-dot" style="background:'+colors[k]+'"></div>'+
+        '<span class="pay-donut-label">'+k+' ('+pct+'%)</span>'+
+        '<span class="pay-donut-val">'+rupee(payTotals[k])+'</span></div>';
+    }).join('');}
+
+    // Top udhar customers
+    var tots=udharTotals();
+    var custs=Object.keys(tots).filter(function(k){return tots[k]>0;}).sort(function(a,b){return tots[b]-tots[a];}).slice(0,5);
+    var maxUdh=custs.length?tots[custs[0]]:1;
+    var elUdh=document.getElementById('rep-top-udhar');
+    if(!custs.length){elUdh.innerHTML='<div class="report-empty">No outstanding udhar</div>';}
+    else{elUdh.innerHTML=custs.map(function(c){
+      var pct=Math.round(tots[c]/maxUdh*100);
+      return '<div class="report-bar-row"><span class="report-bar-label" title="'+c+'">'+c.slice(0,12)+'</span>'+
+        '<div class="report-bar-track"><div class="report-bar-fill" style="width:'+pct+'%;background:var(--red)"></div></div>'+
+        '<span class="report-bar-val">'+rupee(tots[c])+'</span></div>';
+    }).join('');}
+
+    // Sales by category
+    var catTot={};
+    sales.forEach(function(s){catTot[s.cat]=(catTot[s.cat]||0)+Number(s.total);});
+    var cats=Object.keys(catTot).sort(function(a,b){return catTot[b]-catTot[a];}).slice(0,5);
+    var maxCat=cats.length?catTot[cats[0]]:1;
+    var elCat=document.getElementById('rep-cat-sales');
+    if(!cats.length){elCat.innerHTML='<div class="report-empty">No sales yet</div>';}
+    else{elCat.innerHTML=cats.map(function(c){
+      var pct=Math.round(catTot[c]/maxCat*100);
+      return '<div class="report-bar-row"><span class="report-bar-label">'+emojiFor(c)+' '+c.slice(0,10)+'</span>'+
+        '<div class="report-bar-track"><div class="report-bar-fill" style="width:'+pct+'%;background:var(--green)"></div></div>'+
+        '<span class="report-bar-val">'+rupee(catTot[c])+'</span></div>';
+    }).join('');}
+  }
 
   /* ══ INIT ══ */
   applyLang();
