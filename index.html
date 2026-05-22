@@ -4,6 +4,18 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>KiranaBook — Smart Store Manager</title>
+  <!-- ═══ SECURITY HEADERS ═══ -->
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self';
+             script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net;
+             style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+             font-src 'self' https://fonts.gstatic.com;
+             img-src 'self' data: https://lh3.googleusercontent.com https://avatars.githubusercontent.com;
+             connect-src 'self' https://*.supabase.co;
+             frame-ancestors 'none';" />
+  <meta http-equiv="X-Frame-Options" content="DENY" />
+  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,900;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
@@ -11,7 +23,7 @@
     var SUPABASE_URL  = 'https://mixrbhloeesotpbpinrt.supabase.co';
     var SUPABASE_ANON = 'sb_publishable_rApZB0cGwexMB4rQcEsrEA_e7qayOPn';
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.min.js" integrity="sha256-FcDNxBDYQl2N34LjkUXRnKiU7AFHyuqLxMJJ7cJjUA=" crossorigin="anonymous"></script>
   <style>
     :root {
       --saffron:#E8650A; --saffron-dim:#FDF0E8; --saffron-dark:#B54D04;
@@ -945,8 +957,26 @@
     sb.auth.signInWithOAuth({provider:'google',options:{redirectTo: window.location.origin + window.location.pathname}})
       .then(function(r){if(r.error){showErr(r.error.message);btn.disabled=false;document.getElementById('g-btn-text').textContent=t('g_btn');}});
   };
-  function showErr(m){var e=document.getElementById('auth-err');e.textContent=m;e.style.display='block';}
-  window.signOut=function(){if(sb)sb.auth.signOut();user=null;showPage('home');};
+  function showErr(m){
+    var raw=String(m||'').slice(0,300);
+    var safe;
+    if(/popup|closed|cancelled|cancel/i.test(raw)) safe='Sign-in was cancelled. Please try again.';
+    else if(/network|fetch|failed to fetch/i.test(raw)) safe='Network error. Please check your connection.';
+    else if(/rate.?limit/i.test(raw)) safe='Too many attempts. Please wait a moment and try again.';
+    else safe='Sign-in failed. Please try again.';
+    var e=document.getElementById('auth-err');e.textContent=safe;e.style.display='block';
+  }
+  window.signOut=function(){
+    if(sb)sb.auth.signOut();
+    /* Wipe all in-memory data so next user on shared device sees nothing */
+    user=null; items=[]; udhar=[]; sales=[];
+    /* Clear user-scoped localStorage entries */
+    Object.keys(localStorage).forEach(function(k){
+      if(k.startsWith('kb_items_')||k.startsWith('kb_udhar_')||k.startsWith('kb_sales_'))
+        localStorage.removeItem(k);
+    });
+    showPage('home');
+  };
 
   if(sbOK){
     // onAuthStateChange fires for both new logins and restored sessions
@@ -988,8 +1018,13 @@
     var nm=u.user_metadata&&u.user_metadata.full_name?u.user_metadata.full_name:u.email;
     document.getElementById('user-nm').textContent=nm.split(' ')[0];
     var av=document.getElementById('user-av');
-    if(u.user_metadata&&u.user_metadata.avatar_url)av.innerHTML='<img src="'+u.user_metadata.avatar_url+'" alt="" />';
-    else av.textContent=nm[0].toUpperCase();
+    if(u.user_metadata&&u.user_metadata.avatar_url){
+      var avUrl=String(u.user_metadata.avatar_url||'');
+      if(/^https:\/\//i.test(avUrl)){
+        var img=document.createElement('img');img.src=avUrl;img.alt='';img.referrerPolicy='no-referrer';
+        av.innerHTML='';av.appendChild(img);
+      } else { av.textContent=nm[0].toUpperCase(); }
+    } else { av.textContent=nm[0].toUpperCase(); }
     await loadData(u.id); loadStoreName(); drawAll();
   }
   async function loadData(uid){
@@ -1036,6 +1071,15 @@
   function udharTotals(){var t={};for(var i=0;i<udhar.length;i++){var e=udhar[i];if(!t[e.customer])t[e.customer]=0;t[e.customer]+=e.type==='debit'?Number(e.amount):-Number(e.amount);}return t;}
   function emojiFor(cat){return EMOJIS[cat]||'📦';}
 
+  /* ── XSS & INPUT SANITISATION HELPERS ── */
+  function escapeHtml(s){
+    if(s===null||s===undefined)return '';
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;').replace(/'/g,'&#x27;').replace(/\//g,'&#x2F;');
+  }
+  function safeNum(v,def){var n=Number(v);return(isFinite(n)&&n>=0)?n:(def||0);}
+  function safeId(s){return String(s||'').replace(/[^a-zA-Z0-9_\-]/g,'');}
+
   /* ══ WHATSAPP ══ */
   function waShare(cust){
     var tot=udharTotals(),bal=tot[cust]||0;
@@ -1064,7 +1108,7 @@
       {icon:'💰',label:t('stat_sales'),val:rupee(sd),cls:'st-g'}
     ];
     document.getElementById('stats-row').innerHTML=tiles.map(function(s){
-      return '<div class="stat-tile '+s.cls+'"><div class="stat-icon">'+s.icon+'</div><div class="stat-label">'+s.label+'</div><div class="stat-val">'+s.val+'</div></div>';
+      return '<div class="stat-tile '+escapeHtml(s.cls)+'"><div class="stat-icon">'+escapeHtml(s.icon)+'</div><div class="stat-label">'+escapeHtml(s.label)+'</div><div class="stat-val">'+escapeHtml(s.val)+'</div></div>';
     }).join('');
     document.getElementById('tc-inv').textContent=items.length;
     document.getElementById('tc-udh').textContent=[...new Set(udhar.map(function(e){return e.customer;}))].length;
@@ -1075,58 +1119,110 @@
     var q=(document.getElementById('i-search').value||'').toLowerCase();
     var list=items.filter(function(i){return i.name.toLowerCase().indexOf(q)>=0;});
     var el=document.getElementById('inv-list');
-    if(!list.length){el.innerHTML='<div class="empty"><div class="empty-icon">📦</div><div class="empty-title">'+t('inv_empty_t')+'</div><div class="empty-sub">'+t('inv_empty_s')+'</div></div>';return;}
-    el.innerHTML=list.map(function(it){
-      var qty=Number(it.qty),low=Number(it.low),price=Number(it.price),isLow=qty<=low;
-      return '<div class="item-card'+(isLow?' low':'')+'">'+
+    el.innerHTML='';
+    if(!list.length){
+      var emp=document.createElement('div');emp.className='empty';
+      emp.innerHTML='<div class="empty-icon">📦</div><div class="empty-title">'+escapeHtml(t('inv_empty_t'))+'</div><div class="empty-sub">'+escapeHtml(t('inv_empty_s'))+'</div>';
+      el.appendChild(emp);return;
+    }
+    var frag=document.createDocumentFragment();
+    list.forEach(function(it){
+      var qty=safeNum(it.qty),low=safeNum(it.low),price=safeNum(it.price),isLow=qty<=low;
+      var sid=safeId(it.id);
+      var card=document.createElement('div');
+      card.className='item-card'+(isLow?' low':'');
+      card.innerHTML=
         '<div class="item-emoji">'+emojiFor(it.cat)+'</div>'+
-        '<div class="item-body"><div class="item-name">'+it.name+'</div>'+
-        '<div class="item-meta">'+it.cat+' · '+rupee(price)+' '+t('inv_per_unit')+' · '+t('inv_value')+': '+rupee(qty*price)+'</div>'+
-        '<span class="stock-badge '+(isLow?'sb-low':'sb-ok')+'">'+(isLow?t('inv_low_stock'):t('inv_in_stock'))+'</span></div>'+
+        '<div class="item-body"><div class="item-name">'+escapeHtml(it.name)+'</div>'+
+        '<div class="item-meta">'+escapeHtml(it.cat)+' · '+rupee(price)+' '+escapeHtml(t('inv_per_unit'))+' · '+escapeHtml(t('inv_value'))+': '+rupee(qty*price)+'</div>'+
+        '<span class="stock-badge '+(isLow?'sb-low':'sb-ok')+'">'+(isLow?escapeHtml(t('inv_low_stock')):escapeHtml(t('inv_in_stock')))+'</span></div>'+
         '<div class="item-right"><div class="qty-ctrl">'+
-        '<button class="qty-btn" onclick="chQty(\''+it.id+'\',-1)">−</button>'+
+        '<button class="qty-btn" data-id="'+escapeHtml(sid)+'" data-d="-1">−</button>'+
         '<span class="qty-val">'+qty+'</span>'+
-        '<button class="qty-btn" onclick="chQty(\''+it.id+'\',1)">+</button></div>'+
-        '<button class="del-btn" onclick="delItem(\''+it.id+'\')">🗑</button></div></div>';
-    }).join('');
+        '<button class="qty-btn" data-id="'+escapeHtml(sid)+'" data-d="1">+</button></div>'+
+        '<button class="del-btn" data-id="'+escapeHtml(sid)+'">🗑</button></div>';
+      card.querySelectorAll('.qty-btn').forEach(function(btn){
+        btn.addEventListener('click',function(){chQty(btn.dataset.id,Number(btn.dataset.d));});
+      });
+      card.querySelector('.del-btn').addEventListener('click',function(){delItem(sid);});
+      frag.appendChild(card);
+    });
+    el.appendChild(frag);
   }
 
   function drawUdhar(){
     var tot=udharTotals();
     var custs=[...new Set(udhar.map(function(e){return e.customer;}))];
     var el=document.getElementById('udh-list');
-    if(!custs.length){el.innerHTML='<div class="empty"><div class="empty-icon">📒</div><div class="empty-title">'+t('udh_empty_t')+'</div><div class="empty-sub">'+t('udh_empty_s')+'</div></div>';return;}
-    el.innerHTML=custs.map(function(cust){
+    el.innerHTML='';
+    if(!custs.length){
+      var emp=document.createElement('div');emp.className='empty';
+      emp.innerHTML='<div class="empty-icon">📒</div><div class="empty-title">'+escapeHtml(t('udh_empty_t'))+'</div><div class="empty-sub">'+escapeHtml(t('udh_empty_s'))+'</div>';
+      el.appendChild(emp);return;
+    }
+    var WA_SVG='<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>';
+    var frag=document.createDocumentFragment();
+    custs.forEach(function(cust){
       var ents=udhar.filter(function(e){return e.customer===cust;});
       var bal=tot[cust]||0,bc=bal>0?'var(--red)':bal<0?'var(--blue)':'var(--green)';
-      var bl=bal>0?t('udh_owes')+' '+rupee(bal):bal<0?t('udh_over')+' '+rupee(-bal):t('udh_settled');
-      return '<div class="udhar-card"><div class="udhar-head">'+
-        '<div class="cust-av">'+ini(cust)+'</div>'+
-        '<div style="flex:1"><div class="cust-name">'+cust+'</div><div class="cust-bal" style="color:'+bc+'">'+bl+'</div></div>'+
+      var bl=bal>0?escapeHtml(t('udh_owes'))+' '+rupee(bal):bal<0?escapeHtml(t('udh_over'))+' '+rupee(-bal):escapeHtml(t('udh_settled'));
+      var card=document.createElement('div');card.className='udhar-card';
+      var entriesHtml=ents.slice(-4).map(function(en){
+        return '<div class="udhar-entry"><div class="entry-meta">'+
+          '<span class="entry-dot" style="background:'+(en.type==='debit'?'var(--red)':'var(--green)')+'"></span>'+
+          escapeHtml(en.date)+(en.note?' · '+escapeHtml(en.note):'')+
+          '</div><span style="font-weight:700;color:'+(en.type==='credit'?'var(--green)':'var(--red)')+'">'+(en.type==='debit'?'−':'+')+rupee(safeNum(en.amount))+'</span></div>';
+      }).join('');
+      card.innerHTML=
+        '<div class="udhar-head">'+
+        '<div class="cust-av">'+escapeHtml(ini(cust))+'</div>'+
+        '<div style="flex:1"><div class="cust-name">'+escapeHtml(cust)+'</div>'+
+        '<div class="cust-bal" style="color:'+bc+'">'+bl+'</div></div>'+
         '<div class="udhar-actions">'+
-        '<button class="wa-btn" onclick="waShare(\''+cust+'\')"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> '+t('udh_wa')+'</button>'+
-        (bal>0?'<button class="mark-paid-btn" onclick="markPaid(\''+cust+'\')">'+t('udh_mark')+'</button>':'')+
-        '</div></div>'+
-        ents.slice(-4).map(function(en){
-          return '<div class="udhar-entry"><div class="entry-meta"><span class="entry-dot" style="background:'+(en.type==='debit'?'var(--red)':'var(--green)')+'"></span>'+en.date+(en.note?' · '+en.note:'')+'</div>'+
-          '<span style="font-weight:700;color:'+(en.type==='credit'?'var(--green)':'var(--red)')+'">'+(en.type==='debit'?'−':'+')+rupee(en.amount)+'</span></div>';
-        }).join('')+'</div>';
-    }).join('');
+        '<button class="wa-btn" type="button">'+WA_SVG+' '+escapeHtml(t('udh_wa'))+'</button>'+
+        (bal>0?'<button class="mark-paid-btn" type="button">'+escapeHtml(t('udh_mark'))+'</button>':'')+
+        '</div></div>'+entriesHtml;
+      /* safe event listeners — no inline onclick with raw customer name */
+      card.querySelector('.wa-btn').addEventListener('click',(function(c){return function(){waShare(c);};})(cust));
+      if(bal>0){var mp=card.querySelector('.mark-paid-btn');if(mp)mp.addEventListener('click',(function(c){return function(){markPaid(c);};})(cust));}
+      frag.appendChild(card);
+    });
+    el.appendChild(frag);
   }
 
   function drawSales(){
+    /* Rebuild item selector safely using DOM — no innerHTML with user data */
     var sel=document.getElementById('s-item');
-    sel.innerHTML=items.map(function(i){return '<option value="'+i.id+'">'+i.name+'</option>';}).join('');
+    sel.innerHTML='';
+    items.forEach(function(i){
+      var opt=document.createElement('option');
+      opt.value=safeId(i.id);
+      opt.textContent=i.name; /* textContent auto-escapes */
+      sel.appendChild(opt);
+    });
     var el=document.getElementById('sal-list');
-    if(!sales.length){el.innerHTML='<div class="empty"><div class="empty-icon">📊</div><div class="empty-title">'+t('sal_empty_t')+'</div><div class="empty-sub">'+t('sal_empty_s')+'</div></div>';return;}
-    el.innerHTML=sales.map(function(s){
-      var pc=s.pay==='UPI'?'pay-upi':s.pay==='Udhar'?'pay-udhar':'pay-cash';
-      return '<div class="sale-card"><div class="item-emoji">'+emojiFor(s.cat)+'</div>'+
-        '<div style="flex:1"><div style="font-size:15px;font-weight:700;margin-bottom:3px">'+s.name+'</div>'+
-        '<div style="font-size:12px;color:var(--ink-3);display:flex;align-items:center;gap:8px">'+t('sal_qty_label')+s.qty+' · '+s.time+
-        '<span class="pay-badge '+pc+'">'+s.pay+'</span></div></div>'+
-        '<div style="font-family:\'Fraunces\',serif;font-size:20px;font-weight:700;color:var(--green)">'+rupee(s.total)+'</div></div>';
-    }).join('');
+    el.innerHTML='';
+    if(!sales.length){
+      var emp=document.createElement('div');emp.className='empty';
+      emp.innerHTML='<div class="empty-icon">📊</div><div class="empty-title">'+escapeHtml(t('sal_empty_t'))+'</div><div class="empty-sub">'+escapeHtml(t('sal_empty_s'))+'</div>';
+      el.appendChild(emp);return;
+    }
+    var frag=document.createDocumentFragment();
+    sales.forEach(function(s){
+      /* Whitelist payment mode — never trust stored value directly */
+      var pay=['Cash','UPI','Udhar'].indexOf(s.pay)>=0?s.pay:'Cash';
+      var pc=pay==='UPI'?'pay-upi':pay==='Udhar'?'pay-udhar':'pay-cash';
+      var card=document.createElement('div');card.className='sale-card';
+      card.innerHTML=
+        '<div class="item-emoji">'+emojiFor(s.cat)+'</div>'+
+        '<div style="flex:1"><div style="font-size:15px;font-weight:700;margin-bottom:3px">'+escapeHtml(s.name)+'</div>'+
+        '<div style="font-size:12px;color:var(--ink-3);display:flex;align-items:center;gap:8px">'+
+        escapeHtml(t('sal_qty_label'))+safeNum(s.qty)+' · '+escapeHtml(s.time)+
+        '<span class="pay-badge '+pc+'">'+escapeHtml(pay)+'</span></div></div>'+
+        '<div style="font-family:'Fraunces',serif;font-size:20px;font-weight:700;color:var(--green)">'+rupee(safeNum(s.total))+'</div>';
+      frag.appendChild(card);
+    });
+    el.appendChild(frag);
   }
 
   function drawAll(){drawStats();drawInv();drawUdhar();drawSales();}
@@ -1163,11 +1259,13 @@
   document.getElementById('i-search').addEventListener('input',drawInv);
 
   document.getElementById('btn-add-item').addEventListener('click',function(){
-    var name=document.getElementById('i-name').value.trim();
-    var qty=parseInt(document.getElementById('i-qty').value)||0;
-    var price=parseFloat(document.getElementById('i-price').value)||0;
-    var cat=document.getElementById('i-cat').value;
-    var low=parseInt(document.getElementById('i-low').value)||10;
+    var name=document.getElementById('i-name').value.trim().slice(0,100);
+    var qty=Math.max(0,Math.min(999999,parseInt(document.getElementById('i-qty').value)||0));
+    var price=Math.max(0,Math.min(999999,parseFloat(document.getElementById('i-price').value)||0));
+    var catEl=document.getElementById('i-cat');
+    var validCats=Array.from(catEl.options).map(function(o){return o.value;});
+    var cat=validCats.indexOf(catEl.value)>=0?catEl.value:validCats[0];
+    var low=Math.max(0,Math.min(99999,parseInt(document.getElementById('i-low').value)||10));
     if(!name){toast('err_name');return;}
     var item={id:'tmp_'+Date.now(),name:name,qty:qty,price:price,cat:cat,low:low};
     items.push(item);
@@ -1178,10 +1276,11 @@
   });
 
   document.getElementById('btn-add-udhar').addEventListener('click',function(){
-    var name=document.getElementById('u-name').value.trim();
-    var amt=parseFloat(document.getElementById('u-amt').value)||0;
-    var type=document.getElementById('u-type').value;
-    var note=document.getElementById('u-note').value.trim();
+    var name=document.getElementById('u-name').value.trim().slice(0,80);
+    var amt=Math.max(0,Math.min(9999999,parseFloat(document.getElementById('u-amt').value)||0));
+    var rawType=document.getElementById('u-type').value;
+    var type=['debit','credit'].indexOf(rawType)>=0?rawType:'debit';
+    var note=document.getElementById('u-note').value.trim().slice(0,200);
     if(!name){toast('err_cust');return;}
     if(!amt){toast('err_amt');return;}
     var entry={customer:name,type:type,amount:amt,note:note,date:'Today'};
@@ -1221,7 +1320,7 @@
     document.getElementById('store-name-input').focus();
   };
   window.saveStoreName=function(){
-    var val=document.getElementById('store-name-input').value.trim()||'My Kirana Store';
+    var val=(document.getElementById('store-name-input').value.trim()||'My Kirana Store').slice(0,60);
     localStorage.setItem('kb_store_name',val);
     document.getElementById('store-name-display').textContent=val;
     document.getElementById('store-name-input-wrap').style.display='none';
@@ -1242,7 +1341,7 @@
     else{elItems.innerHTML=sorted.map(function(it){
       var v=Number(it.qty)*Number(it.price);
       var pct=maxVal?Math.round(v/maxVal*100):0;
-      return '<div class="report-bar-row"><span class="report-bar-label" title="'+it.name+'">'+it.name.slice(0,12)+'</span>'+
+      return '<div class="report-bar-row"><span class="report-bar-label" title="'+escapeHtml(it.name)+'">'+escapeHtml(it.name.slice(0,12))+'</span>'+
         '<div class="report-bar-track"><div class="report-bar-fill" style="width:'+pct+'%"></div></div>'+
         '<span class="report-bar-val">'+rupee(v)+'</span></div>';
     }).join('');}
@@ -1270,7 +1369,7 @@
     if(!custs.length){elUdh.innerHTML='<div class="report-empty">No outstanding udhar</div>';}
     else{elUdh.innerHTML=custs.map(function(c){
       var pct=Math.round(tots[c]/maxUdh*100);
-      return '<div class="report-bar-row"><span class="report-bar-label" title="'+c+'">'+c.slice(0,12)+'</span>'+
+      return '<div class="report-bar-row"><span class="report-bar-label" title="'+escapeHtml(c)+'">'+escapeHtml(c.slice(0,12))+'</span>'+
         '<div class="report-bar-track"><div class="report-bar-fill" style="width:'+pct+'%;background:var(--red)"></div></div>'+
         '<span class="report-bar-val">'+rupee(tots[c])+'</span></div>';
     }).join('');}
