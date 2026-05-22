@@ -210,15 +210,17 @@
       .mosaic-h2{font-size:28px;}
     }
 
-    /* STORE NAME */
-    .store-name-wrap{display:flex;align-items:center;gap:10px;margin-bottom:1.75rem;}
-    .store-name-display{font-family:'Fraunces',serif;font-size:22px;font-weight:800;color:var(--ink);}
-    .store-name-edit{background:none;border:none;font-size:14px;color:var(--saffron);cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;padding:4px 8px;border-radius:var(--r-sm);transition:background .15s;}
+    /* STORE NAME WELCOME BANNER */
+    .store-welcome-bar{width:100%;background:linear-gradient(90deg,var(--saffron-dim) 0%,rgba(255,253,249,0) 100%);border-bottom:1px solid rgba(232,101,10,.15);padding:8px 2rem;display:flex;align-items:center;justify-content:center;gap:10px;}
+    .store-welcome-tag{display:inline-flex;align-items:center;gap:6px;background:var(--saffron);color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:.6px;text-transform:uppercase;flex-shrink:0;}
+    .store-name-wrap{display:flex;align-items:center;gap:8px;}
+    .store-name-display{font-family:'Fraunces',serif;font-size:18px;font-weight:800;color:var(--ink);}
+    .store-name-edit{background:none;border:none;font-size:13px;color:var(--saffron);cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;padding:3px 7px;border-radius:var(--r-sm);transition:background .15s;}
     .store-name-edit:hover{background:var(--saffron-dim);}
-    .store-name-input-wrap{display:none;align-items:center;gap:8px;margin-bottom:1.75rem;}
-    .store-name-input{padding:9px 14px;border:1.5px solid var(--saffron);border-radius:var(--r-sm);font-size:16px;font-family:'Fraunces',serif;font-weight:700;color:var(--ink);background:var(--white);width:240px;}
+    .store-name-input-wrap{display:none;align-items:center;gap:8px;justify-content:center;padding:8px 2rem;border-bottom:1px solid rgba(232,101,10,.15);background:var(--saffron-dim);}
+    .store-name-input{padding:7px 12px;border:1.5px solid var(--saffron);border-radius:var(--r-sm);font-size:15px;font-family:'Fraunces',serif;font-weight:700;color:var(--ink);background:var(--white);width:220px;}
     .store-name-input:focus{outline:none;box-shadow:0 0 0 3px rgba(232,101,10,.12);}
-    .store-name-save{padding:9px 16px;background:var(--saffron);color:#fff;border:none;border-radius:var(--r-sm);font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;}
+    .store-name-save{padding:7px 14px;background:var(--saffron);color:#fff;border:none;border-radius:var(--r-sm);font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;}
 
     /* REPORTS */
     .report-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:1.5rem;}
@@ -589,17 +591,20 @@
       <button class="signout-btn" id="app-signout" onclick="signOut()">साइन आउट</button>
     </div>
   </nav>
-  <div class="app-body">
-    <div class="stats-row" id="stats-row"></div>
-    <!-- Store Name -->
-    <div class="store-name-wrap" id="store-name-wrap">
+  <!-- Welcome Banner -->
+  <div class="store-welcome-bar" id="store-name-wrap">
+    <span class="store-welcome-tag">👋 Welcome</span>
+    <div class="store-name-wrap">
       <div class="store-name-display" id="store-name-display">My Kirana Store</div>
       <button class="store-name-edit" onclick="editStoreName()">✏️ Edit name</button>
     </div>
-    <div class="store-name-input-wrap" id="store-name-input-wrap">
-      <input id="store-name-input" class="store-name-input" type="text" placeholder="Enter your store name..." maxlength="50" />
-      <button class="store-name-save" onclick="saveStoreName()">Save</button>
-    </div>
+  </div>
+  <div class="store-name-input-wrap" id="store-name-input-wrap">
+    <input id="store-name-input" class="store-name-input" type="text" placeholder="Enter your store name..." maxlength="50" />
+    <button class="store-name-save" onclick="saveStoreName()">Save</button>
+  </div>
+  <div class="app-body">
+    <div class="stats-row" id="stats-row"></div>
     <div class="tab-bar">
       <button id="tb-inv" class="tab-btn on" onclick="showTab('inv')">
         <span>📦</span><span id="tl-inv">इन्वेंटरी</span><span class="tab-cnt" id="tc-inv">0</span>
