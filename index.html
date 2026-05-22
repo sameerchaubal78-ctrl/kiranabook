@@ -4,15 +4,23 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>KiranaBook — Smart Store Manager</title>
-  <!-- ═══ SECURITY HEADERS ═══ -->
-  <meta http-equiv="Content-Security-Policy"
-    content="default-src 'self';
-             script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net;
-             style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-             font-src 'self' https://fonts.gstatic.com;
-             img-src 'self' data: https://lh3.googleusercontent.com https://avatars.githubusercontent.com;
-             connect-src 'self' https://*.supabase.co https://accounts.google.com https://*.googleapis.com;
-             frame-ancestors 'none';" />
+  <!-- ═══ SECURITY HEADERS ═══
+       NOTE: Content-Security-Policy must be set as a real HTTP header in vercel.json
+       A <meta> CSP conflicts with Vercel's own server headers and blocks inline scripts.
+       The vercel.json file for this project should contain:
+       {
+         "headers": [{
+           "source": "/(.*)",
+           "headers": [
+             { "key": "X-Frame-Options", "value": "DENY" },
+             { "key": "X-Content-Type-Options", "value": "nosniff" },
+             { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+             { "key": "Permissions-Policy", "value": "geolocation=(), microphone=(), camera=()" },
+             { "key": "Content-Security-Policy", "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://lh3.googleusercontent.com; connect-src 'self' https://*.supabase.co https://accounts.google.com https://*.googleapis.com; frame-ancestors 'none';" }
+           ]
+         }]
+       }
+  ═══ -->
   <meta http-equiv="X-Frame-Options" content="DENY" />
   <meta http-equiv="X-Content-Type-Options" content="nosniff" />
   <meta name="referrer" content="strict-origin-when-cross-origin" />
