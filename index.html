@@ -390,6 +390,9 @@
 </head>
 <body>
 
+<!-- JS ERROR BANNER (hidden unless JS crashes) -->
+<div id="js-err-banner" style="display:none;position:fixed;top:0;left:0;right:0;z-index:99999;background:#c0392b;color:#fff;padding:10px 16px;font-size:13px;font-family:monospace;"></div>
+
 <!-- AUTH MODAL -->
 <div class="overlay" id="auth-modal">
   <div class="modal">
@@ -732,6 +735,13 @@
 <div id="toast"></div>
 
 <script>
+/* ── error visibility ── */
+window.onerror = function(msg,src,line,col,err){
+  var b = document.getElementById('js-err-banner');
+  if(b){ b.textContent = '⚠️ JS Error: ' + msg + ' (line '+line+')'; b.style.display='block'; }
+  return false;
+};
+
 (function(){
   var EMOJIS={'Grains & Dal':'🌾','अनाज और दाल':'🌾','Oil & Ghee':'🫙','तेल और घी':'🫙','Spices':'🌶️','मसाले':'🌶️','Snacks':'🍿','नाश्ता':'🍿','Beverages':'🧃','पेय पदार्थ':'🧃','Dairy':'🥛','डेयरी':'🥛','Cleaning':'🧹','सफाई':'🧹','Other':'📦','अन्य':'📦'};
 
@@ -1402,6 +1412,11 @@
 
   /* ══ INIT ══ */
   applyLang();
+  /* Self-test: if we reach here, JS ran successfully */
+  (function(){
+    var b = document.getElementById('js-err-banner');
+    if(b) b.style.display = 'none';
+  })();
 
 })();
 </script>
