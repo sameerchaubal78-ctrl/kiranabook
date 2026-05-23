@@ -162,6 +162,52 @@
     .footer-logo{font-family:'Fraunces',serif;font-size:18px;font-weight:700;color:var(--ink);}
     .footer-logo span{color:var(--saffron);}
 
+    /* PRICING */
+    .pricing{padding:6rem 3.5rem;background:var(--paper);border-top:1px solid var(--border);}
+    .pricing-toggle{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:3.5rem;}
+    .pricing-toggle-track{display:flex;background:var(--paper-3);border:1px solid var(--border);border-radius:20px;padding:4px;}
+    .ptoggle-btn{padding:7px 20px;border-radius:16px;border:none;background:transparent;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;color:var(--ink-3);transition:all .2s;}
+    .ptoggle-btn.on{background:var(--white);color:var(--ink);box-shadow:var(--shadow-sm);}
+    .pricing-save-pill{background:#E6F5EE;color:var(--green);font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;border:1px solid rgba(15,102,64,.2);}
+    .pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;max-width:960px;margin:0 auto;}
+    .price-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-xl);padding:2.25rem 2rem;position:relative;transition:box-shadow .25s,transform .25s;}
+    .price-card:hover{box-shadow:var(--shadow-md);transform:translateY(-4px);}
+    .price-card.featured{border-color:var(--saffron);box-shadow:0 0 0 3px rgba(232,101,10,.12),var(--shadow-md);transform:translateY(-6px);}
+    .price-card.featured:hover{transform:translateY(-10px);box-shadow:0 0 0 3px rgba(232,101,10,.18),var(--shadow-lg);}
+    .price-popular{position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:var(--saffron);color:#fff;font-size:11px;font-weight:700;padding:4px 16px;border-radius:20px;white-space:nowrap;letter-spacing:.5px;}
+    .price-plan{font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink-3);margin-bottom:.75rem;}
+    .price-plan-hi{font-size:14px;font-weight:700;color:var(--ink-2);margin-bottom:.25rem;}
+    .price-amt{display:flex;align-items:flex-end;gap:4px;margin:1.25rem 0 .25rem;}
+    .price-num{font-family:'Fraunces',serif;font-size:52px;font-weight:900;line-height:1;color:var(--ink);}
+    .price-num.free-num{font-size:42px;color:var(--green);}
+    .price-period{font-size:14px;color:var(--ink-3);margin-bottom:6px;font-weight:500;}
+    .price-annual-note{font-size:12px;color:var(--ink-3);margin-bottom:1.5rem;min-height:18px;}
+    .price-annual-note span{color:var(--green);font-weight:600;}
+    .price-chai{font-size:12px;color:var(--saffron-dark);background:var(--saffron-dim);padding:5px 12px;border-radius:20px;display:inline-block;margin-bottom:1.5rem;font-weight:600;border:1px solid rgba(232,101,10,.2);}
+    .price-divider{height:1px;background:var(--border);margin-bottom:1.5rem;}
+    .price-features{display:flex;flex-direction:column;gap:10px;margin-bottom:2rem;}
+    .pf{display:flex;align-items:flex-start;gap:10px;font-size:13.5px;color:var(--ink-2);line-height:1.4;}
+    .pf-icon{width:20px;height:20px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;margin-top:1px;}
+    .pf-on .pf-icon{background:var(--green-dim);color:var(--green);}
+    .pf-off{color:var(--ink-3);}
+    .pf-off .pf-icon{background:var(--paper-3);color:var(--ink-3);}
+    .pf-highlight{font-weight:700;color:var(--ink);}
+    .price-cta{width:100%;padding:13px;border-radius:var(--r-md);font-size:14px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s;}
+    .price-cta-free{background:var(--paper-2);border:1.5px solid var(--border-2);color:var(--ink-2);}
+    .price-cta-free:hover{background:var(--paper-3);border-color:var(--ink-3);}
+    .price-cta-main{background:var(--saffron);border:none;color:#fff;box-shadow:0 4px 14px rgba(232,101,10,.3);}
+    .price-cta-main:hover{background:var(--saffron-dark);transform:translateY(-1px);box-shadow:0 6px 18px rgba(232,101,10,.4);}
+    .price-cta-outline{background:transparent;border:1.5px solid var(--border-2);color:var(--ink-2);}
+    .price-cta-outline:hover{border-color:var(--saffron);color:var(--saffron);background:var(--saffron-dim);}
+    .pricing-foot{text-align:center;margin-top:2.5rem;font-size:13px;color:var(--ink-3);}
+    .pricing-foot a{color:var(--saffron);text-decoration:none;font-weight:600;}
+    @media(max-width:900px){
+      .pricing-grid{grid-template-columns:1fr;max-width:400px;}
+      .price-card.featured{transform:none;}
+      .price-card.featured:hover{transform:translateY(-4px);}
+      .pricing{padding:4rem 1.5rem;}
+    }
+
     /* AUTH MODAL */
     .overlay{display:none;position:fixed;inset:0;background:rgba(25,18,10,.65);backdrop-filter:blur(6px);z-index:500;align-items:center;justify-content:center;}
     .overlay.open{display:flex;}
@@ -443,7 +489,7 @@
     <ul class="nav-links">
       <li><a href="#features" class="notranslate" id="nl-feat">सुविधाएं</a></li>
       <li><a href="#how" class="notranslate" id="nl-how">कैसे काम करता है</a></li>
-      <li><a href="#features" class="notranslate" id="nl-free">हमेशा मुफ़्त</a></li>
+      <li><a href="#pricing" class="notranslate" id="nl-pricing">कीमत</a></li>
     </ul>
     <div class="nav-auth">
       <div class="app-lang" style="margin-right:4px;">
@@ -581,6 +627,102 @@
       </div>
     </div>
   </section>
+
+  <!-- PRICING -->
+  <section class="pricing" id="pricing">
+    <div style="text-align:center;margin-bottom:3rem;">
+      <div class="notranslate sec-eyebrow" id="pr-eyebrow">सरल किराना-दोस्त कीमत</div>
+      <h2 class="notranslate sec-h2" id="pr-h2">एक चाय से भी<br><em style="font-style:italic;color:var(--saffron)">सस्ता।</em></h2>
+      <p class="notranslate sec-sub" style="margin:0 auto 0;" id="pr-sub">शुरू करें मुफ़्त में। जब आपको ज़रूरत हो तभी अपग्रेड करें। कोई छुपा हुआ चार्ज नहीं।</p>
+    </div>
+
+    <!-- Monthly / Annual toggle -->
+    <div class="pricing-toggle">
+      <div class="pricing-toggle-track">
+        <button class="ptoggle-btn on" id="ptog-mo" onclick="setPricingCycle('monthly')" id="ptog-mo">
+          <span class="notranslate" id="ptog-mo-lbl">मासिक</span>
+        </button>
+        <button class="ptoggle-btn" id="ptog-yr" onclick="setPricingCycle('annual')">
+          <span class="notranslate" id="ptog-yr-lbl">सालाना</span>
+        </button>
+      </div>
+      <div class="notranslate pricing-save-pill" id="pr-save-pill">🎉 2 महीने मुफ़्त</div>
+    </div>
+
+    <div class="pricing-grid">
+
+      <!-- FREE -->
+      <div class="price-card">
+        <div class="notranslate price-plan" id="pc1-plan">FREE</div>
+        <div class="notranslate price-plan-hi" id="pc1-plan-hi">मुफ़्त</div>
+        <div class="price-amt">
+          <div class="notranslate price-num free-num">₹0</div>
+        </div>
+        <div class="notranslate price-period" id="pc1-period">हमेशा के लिए मुफ़्त</div>
+        <div class="price-annual-note">&nbsp;</div>
+        <div class="price-divider"></div>
+        <div class="price-features">
+          <div class="pf pf-on"><div class="pf-icon">✓</div><span class="notranslate" id="pf1-1">50 आइटम तक स्टॉक</span></div>
+          <div class="pf pf-on"><div class="pf-icon">✓</div><span class="notranslate" id="pf1-2">उधार खाता (10 ग्राहक)</span></div>
+          <div class="pf pf-on"><div class="pf-icon">✓</div><span class="notranslate" id="pf1-3">रोज़ की बिक्री रिकॉर्ड</span></div>
+          <div class="pf pf-on"><div class="pf-icon">✓</div><span class="notranslate" id="pf1-4">1 महीने की रिपोर्ट</span></div>
+          <div class="pf pf-off"><div class="pf-icon">–</div><span class="notranslate" id="pf1-5">WhatsApp रिमाइंडर नहीं</span></div>
+          <div class="pf pf-off"><div class="pf-icon">–</div><span class="notranslate" id="pf1-6">डेटा एक्सपोर्ट नहीं</span></div>
+        </div>
+        <button class="notranslate price-cta price-cta-free" onclick="openModal('signup')" id="pc1-cta">मुफ़्त शुरू करें</button>
+      </div>
+
+      <!-- DUKANDAAR (FEATURED) -->
+      <div class="price-card featured">
+        <div class="price-popular notranslate" id="pr-popular">⭐ सबसे लोकप्रिय</div>
+        <div class="notranslate price-plan" id="pc2-plan">DUKANDAAR</div>
+        <div class="notranslate price-plan-hi" id="pc2-plan-hi">दुकानदार</div>
+        <div class="price-amt">
+          <div class="notranslate price-num" id="pc2-price">₹99</div>
+          <div class="notranslate price-period" id="pc2-period" style="margin-bottom:8px;">/माह</div>
+        </div>
+        <div class="notranslate price-annual-note" id="pc2-annual-note"><span>₹799/साल पर सेव करें ₹389</span></div>
+        <div class="notranslate price-chai" id="pc2-chai">☕ 3 चाय से भी सस्ता रोज़</div>
+        <div class="price-divider"></div>
+        <div class="price-features">
+          <div class="pf pf-on"><div class="pf-icon">✓</div><span class="notranslate" id="pf2-1"><span class="pf-highlight">असीमित</span> स्टॉक आइटम</span></div>
+          <div class="pf pf-on"><div class="pf-icon">✓</div><span class="notranslate" id="pf2-2"><span class="pf-highlight">असीमित</span> उधार ग्राहक</span></div>
+          <div class="pf pf-on"><div class="pf-icon">✓</div><span class="notranslate" id="pf2-3">12 महीने की पूरी रिपोर्ट</span></div>
+          <div class="pf pf-on"><div class="pf-icon">✓</div><span class="notranslate" id="pf2-4">WhatsApp उधार रिमाइंडर</span></div>
+          <div class="pf pf-on"><div class="pf-icon">✓</div><span class="notranslate" id="pf2-5">कम स्टॉक SMS अलर्ट</span></div>
+          <div class="pf pf-off"><div class="pf-icon">–</div><span class="notranslate" id="pf2-6">मल्टी-डिवाइस नहीं</span></div>
+        </div>
+        <button class="notranslate price-cta price-cta-main" onclick="openModal('signup')" id="pc2-cta">दुकानदार प्लान शुरू करें →</button>
+      </div>
+
+      <!-- MALIK -->
+      <div class="price-card">
+        <div class="notranslate price-plan" id="pc3-plan">MALIK</div>
+        <div class="notranslate price-plan-hi" id="pc3-plan-hi">मालिक</div>
+        <div class="price-amt">
+          <div class="notranslate price-num" id="pc3-price">₹199</div>
+          <div class="notranslate price-period" id="pc3-period" style="margin-bottom:8px;">/माह</div>
+        </div>
+        <div class="notranslate price-annual-note" id="pc3-annual-note"><span>₹1,499/साल पर सेव करें ₹889</span></div>
+        <div class="price-divider" style="margin-top:2.5rem;"></div>
+        <div class="price-features">
+          <div class="pf pf-on"><div class="pf-icon">✓</div><span class="notranslate" id="pf3-1">दुकानदार की सब सुविधाएं</span></div>
+          <div class="pf pf-on"><div class="pf-icon">✓</div><span class="notranslate" id="pf3-2"><span class="pf-highlight">3 डिवाइस</span> पर एक साथ</span></div>
+          <div class="pf pf-on"><div class="pf-icon">✓</div><span class="notranslate" id="pf3-3">Excel में डेटा एक्सपोर्ट</span></div>
+          <div class="pf pf-on"><div class="pf-icon">✓</div><span class="notranslate" id="pf3-4">प्रायोरिटी सपोर्ट</span></div>
+          <div class="pf pf-on"><div class="pf-icon">✓</div><span class="notranslate" id="pf3-5">नए फ़ीचर पहले मिलेंगे</span></div>
+          <div class="pf pf-on"><div class="pf-icon">✓</div><span class="notranslate" id="pf3-6">GST बिल जनरेटर</span></div>
+        </div>
+        <button class="notranslate price-cta price-cta-outline" onclick="openModal('signup')" id="pc3-cta">मालिक प्लान शुरू करें</button>
+      </div>
+
+    </div>
+
+    <div class="pricing-foot">
+      <span class="notranslate" id="pr-foot">सभी प्लान में 14 दिन का फ्री ट्रायल। कोई क्रेडिट कार्ड नहीं चाहिए।</span>
+    </div>
+  </section>
+
 
   <section class="cta-band">
     <div class="notranslate cta-label" id="cta-label">हमेशा मुफ़्त · क्लाउड सिंक · किसी भी फोन पर</div>
@@ -756,8 +898,33 @@ window.onerror = function(msg,src,line,col,err){
       g_btn:'Continue with Google', why:'Why KiranaBook?',
       pk1:'Your data saved securely in the cloud', pk2:'Access from any phone, anytime',
       pk3:'Private — only you see your data', pk4:'Completely free, forever',
-      nl_feat:'Features', nl_how:'How it works', nl_free:'Free forever',
+      nl_feat:'Features', nl_how:'How it works', nl_free:'Free forever', nl_pricing:'Pricing',
       nav_signin:'Sign in', nav_start:'Get started free →',
+      pr_eyebrow:'Simple kirana-friendly pricing', pr_h2:'Cheaper than<br><em style="font-style:italic;color:var(--saffron)">a cup of chai.</em>',
+      pr_sub:'Start free. Upgrade only when you need to. No hidden charges.',
+      ptog_mo:'Monthly', ptog_yr:'Annual', pr_save_pill:'🎉 2 Months Free',
+      pr_popular:'⭐ Most Popular',
+      pc1_plan:'FREE', pc1_plan_hi:'Free', pc1_period:'Free forever',
+      pf1_1:'Stock up to 50 items', pf1_2:'Udhar khata (10 customers)',
+      pf1_3:'Daily sales recording', pf1_4:'1 month reports',
+      pf1_5:'No WhatsApp reminders', pf1_6:'No data export',
+      pc1_cta:'Start for free',
+      pc2_plan:'DUKANDAAR', pc2_plan_hi:'Shopkeeper',
+      pc2_annual_note:'<span>Save ₹389 at ₹799/year</span>',
+      pc2_chai:'☕ Less than 3 cups of chai a day',
+      pf2_1:'<span class="pf-highlight">Unlimited</span> stock items',
+      pf2_2:'<span class="pf-highlight">Unlimited</span> udhar customers',
+      pf2_3:'12 months full reports', pf2_4:'WhatsApp udhar reminders',
+      pf2_5:'Low stock SMS alerts', pf2_6:'No multi-device',
+      pc2_cta:'Start Dukandaar Plan →',
+      pc3_plan:'MALIK', pc3_plan_hi:'Owner',
+      pc3_annual_note:'<span>Save ₹889 at ₹1,499/year</span>',
+      pf3_1:'Everything in Dukandaar',
+      pf3_2:'<span class="pf-highlight">3 devices</span> simultaneously',
+      pf3_3:'Export data to Excel', pf3_4:'Priority support',
+      pf3_5:'New features first', pf3_6:'GST bill generator',
+      pc3_cta:'Start Malik Plan',
+      pr_foot:'14-day free trial on all paid plans. No credit card required.',
       h_eyebrow:'Built for Indian Kirana Stores',
       h_headline:'Your store,<br><em>smarter</em> &amp;<br><span class="ug">more profitable.</span>',
       h_sub:'Track stock, manage <strong>udhar khata</strong>, record daily sales — all in one beautiful app.',
@@ -820,8 +987,33 @@ window.onerror = function(msg,src,line,col,err){
       g_btn:'Google से जारी रखें', why:'KiranaBook क्यों?',
       pk1:'आपका डेटा क्लाउड में सुरक्षित', pk2:'किसी भी फोन से कभी भी एक्सेस',
       pk3:'निजी — केवल आप ही देख सकते हैं', pk4:'पूरी तरह मुफ़्त, हमेशा',
-      nl_feat:'सुविधाएं', nl_how:'कैसे काम करता है', nl_free:'हमेशा मुफ़्त',
+      nl_feat:'सुविधाएं', nl_how:'कैसे काम करता है', nl_free:'हमेशा मुफ़्त', nl_pricing:'कीमत',
       nav_signin:'साइन इन', nav_start:'मुफ़्त शुरू करें →',
+      pr_eyebrow:'सरल किराना-दोस्त कीमत', pr_h2:'एक चाय से भी<br><em style="font-style:italic;color:var(--saffron)">सस्ता।</em>',
+      pr_sub:'शुरू करें मुफ़्त में। जब ज़रूरत हो तभी अपग्रेड करें। कोई छुपा हुआ चार्ज नहीं।',
+      ptog_mo:'मासिक', ptog_yr:'सालाना', pr_save_pill:'🎉 2 महीने मुफ़्त',
+      pr_popular:'⭐ सबसे लोकप्रिय',
+      pc1_plan:'FREE', pc1_plan_hi:'मुफ़्त', pc1_period:'हमेशा के लिए मुफ़्त',
+      pf1_1:'50 आइटम तक स्टॉक', pf1_2:'उधार खाता (10 ग्राहक)',
+      pf1_3:'रोज़ की बिक्री रिकॉर्ड', pf1_4:'1 महीने की रिपोर्ट',
+      pf1_5:'WhatsApp रिमाइंडर नहीं', pf1_6:'डेटा एक्सपोर्ट नहीं',
+      pc1_cta:'मुफ़्त शुरू करें',
+      pc2_plan:'DUKANDAAR', pc2_plan_hi:'दुकानदार',
+      pc2_annual_note:'<span>₹799/साल पर सेव करें ₹389</span>',
+      pc2_chai:'☕ 3 चाय से भी सस्ता रोज़',
+      pf2_1:'<span class="pf-highlight">असीमित</span> स्टॉक आइटम',
+      pf2_2:'<span class="pf-highlight">असीमित</span> उधार ग्राहक',
+      pf2_3:'12 महीने की पूरी रिपोर्ट', pf2_4:'WhatsApp उधार रिमाइंडर',
+      pf2_5:'कम स्टॉक SMS अलर्ट', pf2_6:'मल्टी-डिवाइस नहीं',
+      pc2_cta:'दुकानदार प्लान शुरू करें →',
+      pc3_plan:'MALIK', pc3_plan_hi:'मालिक',
+      pc3_annual_note:'<span>₹1,499/साल पर सेव करें ₹889</span>',
+      pf3_1:'दुकानदार की सब सुविधाएं',
+      pf3_2:'<span class="pf-highlight">3 डिवाइस</span> पर एक साथ',
+      pf3_3:'Excel में डेटा एक्सपोर्ट', pf3_4:'प्रायोरिटी सपोर्ट',
+      pf3_5:'नए फ़ीचर पहले मिलेंगे', pf3_6:'GST बिल जनरेटर',
+      pc3_cta:'मालिक प्लान शुरू करें',
+      pr_foot:'सभी पेड प्लान में 14 दिन का फ्री ट्रायल। कोई क्रेडिट कार्ड नहीं चाहिए।',
       h_eyebrow:'भारतीय किराना स्टोर के लिए बनाया गया',
       h_headline:'अपना स्टोर,<br><em>स्मार्ट</em> और<br><span class="ug">अधिक लाभदायक।</span>',
       h_sub:'स्टॉक ट्रैक करें, <strong>उधार खाता</strong> मैनेज करें, रोज़ की बिक्री रिकॉर्ड करें — सब एक सुंदर ऐप में।',
@@ -900,7 +1092,7 @@ window.onerror = function(msg,src,line,col,err){
     s('m-why',t('why'));
     s('pk1',t('pk1')); s('pk2',t('pk2')); s('pk3',t('pk3')); s('pk4',t('pk4'));
     /* Navbar */
-    s('nl-feat',t('nl_feat')); s('nl-how',t('nl_how')); s('nl-free',t('nl_free'));
+    s('nl-feat',t('nl_feat')); s('nl-how',t('nl_how'));
     s('nav-signin',t('nav_signin')); s('nav-start',t('nav_start'));
     /* Hero */
     s('h-eyebrow',t('h_eyebrow'));
@@ -930,6 +1122,35 @@ window.onerror = function(msg,src,line,col,err){
     s('hs3-t',t('hs3_t')); s('hs3-d',t('hs3_d'));
     s('hw-cta',t('hw_cta'));
     h('t-body',t('t_body')); s('t-loc',t('t_loc'));
+    /* Pricing */
+    s('pr-eyebrow',t('pr_eyebrow')); h('pr-h2',t('pr_h2')); s('pr-sub',t('pr_sub'));
+    s('ptog-mo-lbl',t('ptog_mo')); s('ptog-yr-lbl',t('ptog_yr')); s('pr-save-pill',t('pr_save_pill'));
+    s('pr-popular',t('pr_popular'));
+    s('pc1-plan',t('pc1_plan')); s('pc1-plan-hi',t('pc1_plan_hi')); s('pc1-period',t('pc1_period'));
+    s('pf1-1',t('pf1_1')); s('pf1-2',t('pf1_2')); s('pf1-3',t('pf1_3'));
+    s('pf1-4',t('pf1_4')); s('pf1-5',t('pf1_5')); s('pf1-6',t('pf1_6')); s('pc1-cta',t('pc1_cta'));
+    s('pc2-plan',t('pc2_plan')); s('pc2-plan-hi',t('pc2_plan_hi'));
+    h('pc2-annual-note',t('pc2_annual_note')); s('pc2-chai',t('pc2_chai'));
+    h('pf2-1',t('pf2_1')); h('pf2-2',t('pf2_2')); s('pf2-3',t('pf2_3'));
+    s('pf2-4',t('pf2_4')); s('pf2-5',t('pf2_5')); s('pf2-6',t('pf2_6')); s('pc2-cta',t('pc2_cta'));
+    s('pc3-plan',t('pc3_plan')); s('pc3-plan-hi',t('pc3_plan_hi'));
+    h('pc3-annual-note',t('pc3_annual_note'));
+    h('pf3-1',t('pf3_1')); h('pf3-2',t('pf3_2')); s('pf3-3',t('pf3_3'));
+    s('pf3-4',t('pf3_4')); s('pf3-5',t('pf3_5')); s('pf3-6',t('pf3_6')); s('pc3-cta',t('pc3_cta'));
+    s('pr-foot',t('pr_foot'));
+    s('nl-pricing',t('nl_pricing'));
+    /* Pricing toggle prices */
+    if(window._pCycle==='annual'){
+      var pEl=document.getElementById('pc2-price'); if(pEl) pEl.innerHTML='₹<span style="font-size:30px;vertical-align:top;padding-top:12px;display:inline-block;">799</span>';
+      var pEl2=document.getElementById('pc3-price'); if(pEl2) pEl2.innerHTML='₹<span style="font-size:30px;vertical-align:top;padding-top:12px;display:inline-block;">1,499</span>';
+      var p2p=document.getElementById('pc2-period'); if(p2p) p2p.textContent=lang==='hi'?'/साल':'/year';
+      var p3p=document.getElementById('pc3-period'); if(p3p) p3p.textContent=lang==='hi'?'/साल':'/year';
+    } else {
+      var pEl=document.getElementById('pc2-price'); if(pEl) pEl.textContent='₹99';
+      var pEl2=document.getElementById('pc3-price'); if(pEl2) pEl2.textContent='₹199';
+      var p2p=document.getElementById('pc2-period'); if(p2p) p2p.textContent=lang==='hi'?'/माह':'/mo';
+      var p3p=document.getElementById('pc3-period'); if(p3p) p3p.textContent=lang==='hi'?'/माह':'/mo';
+    }
     /* CTA + Footer */
     s('cta-label',t('cta_label')); h('cta-h2',t('cta_h2')); s('cta-sub',t('cta_sub'));
     s('cta-btn',t('cta_btn')); s('cta-note',t('cta_note')); s('f-made',t('f_made'));
@@ -950,6 +1171,16 @@ window.onerror = function(msg,src,line,col,err){
     s('sal-form-title',t('sal_form')); s('l-sitem',t('l_sitem')); s('l-sqty',t('l_sqty'));
     s('l-spay',t('l_spay')); s('btn-add-sale',t('btn_add_sale')); s('sal-list-label',t('sal_list_label'));
   }
+
+  window._pCycle = 'monthly';
+  window.setPricingCycle = function(cycle){
+    window._pCycle = cycle;
+    var moBtn = document.getElementById('ptog-mo');
+    var yrBtn = document.getElementById('ptog-yr');
+    if(moBtn) moBtn.className = 'ptoggle-btn' + (cycle==='monthly'?' on':'');
+    if(yrBtn) yrBtn.className = 'ptoggle-btn' + (cycle==='annual'?' on':'');
+    applyLang(); /* re-run to update prices */
+  };
 
   window.setLang=function(l){
     lang=l; localStorage.setItem('kb_lang',l);
