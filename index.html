@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en" translate="no">
 <head>
   <meta charset="UTF-8" />
+  <meta name="google" content="notranslate" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>KiranaBook — Smart Store Manager</title>
   <!-- ═══ SECURITY HEADERS ═══
@@ -867,6 +868,7 @@
   };
 
   var lang = localStorage.getItem('kb_lang') || 'en';
+  document.documentElement.lang = lang;
   function t(k){ return (TX[lang]&&TX[lang][k]!==undefined ? TX[lang][k] : TX.en[k]) || k; }
 
   function applyLang(){
@@ -939,6 +941,7 @@
 
   window.setLang=function(l){
     lang=l; localStorage.setItem('kb_lang',l);
+    document.documentElement.lang=l; /* update html[lang] for screen readers */
     applyLang();
     if(document.getElementById('page-app').classList.contains('active')) drawAll();
   };
