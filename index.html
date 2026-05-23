@@ -340,6 +340,7 @@
     .store-name-input:focus{outline:none;box-shadow:0 0 0 3px rgba(232,101,10,.12);}
     .store-name-save{padding:7px 14px;background:var(--saffron);color:#fff;border:none;border-radius:var(--r-sm);font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;}
 
+    @keyframes spin{to{transform:rotate(360deg)}}
     /* PLAN BADGE */
     .plan-badge-bar{width:100%;background:var(--paper-2);border-bottom:1px solid var(--border);padding:6px 2rem;display:flex;align-items:center;justify-content:center;gap:8px;font-size:12px;}
     .plan-badge{display:inline-flex;align-items:center;gap:6px;padding:3px 12px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;}
@@ -1344,7 +1345,13 @@ window.onerror = function(msg,src,line,col,err){
 
   /* ══ SUPABASE ══ */
   var sb=null, user=null;
-  function initSB(){ if(SUPABASE_URL==='YOUR_SUPABASE_URL')return false; try{sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON);return true;}catch(e){console.error('Supabase init error:',e.message);window._sbInitErr=e.message;return false;} }
+  function initSB(){ if(SUPABASE_URL==='YOUR_SUPABASE_URL')return false; try{sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON,{
+      auth:{
+        detectSessionInUrl:true,
+        persistSession:true,
+        autoRefreshToken:true
+      }
+    });return true;}catch(e){console.error('Supabase init error:',e.message);window._sbInitErr=e.message;return false;} }
   var sbOK = initSB();
   if(!sbOK) console.error('Supabase init failed:', window._sbInitErr);
 
@@ -1413,6 +1420,8 @@ window.onerror = function(msg,src,line,col,err){
     sb.auth.onAuthStateChange(function(ev, sess){
       if((ev === 'SIGNED_IN' || ev === 'TOKEN_REFRESHED') && sess && sess.user){
         user = sess.user;
+        /* Remove OAuth loading screen if present */
+        var ol = document.getElementById('oauth-loading'); if(ol) ol.remove();
         closeModal();
         // Only load app if not already showing it
         if(!document.getElementById('page-app').classList.contains('active')){
@@ -1847,6 +1856,16 @@ window.onerror = function(msg,src,line,col,err){
   }
 
   /* ══ INIT ══ */
+  /* If redirected back from OAuth, show processing state */
+  if(window.location.hash && window.location.hash.indexOf('access_token')!==-1){
+    var loadingEl = document.createElement('div');
+    loadingEl.id = 'oauth-loading';
+    loadingEl.style.cssText = 'position:fixed;inset:0;background:rgba(255,253,249,.95);display:flex;align-items:center;justify-content:center;z-index:99999;font-family:Plus Jakarta Sans,sans-serif;flex-direction:column;gap:16px;';
+    loadingEl.innerHTML = '<div style="width:40px;height:40px;border:3px solid #FDF0E8;border-top-color:#E8650A;border-radius:50%;animation:spin 0.8s linear infinite;"></div><div style="font-size:16px;font-weight:600;color:#1A1209;">Signing you in...</div>';
+    document.body.appendChild(loadingEl);
+    /* Remove after 5 seconds as fallback */
+    setTimeout(function(){ var el=document.getElementById('oauth-loading'); if(el) el.remove(); }, 5000);
+  }
   applyLang();
   /* Self-test: if we reach here, JS ran successfully */
   (function(){
