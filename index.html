@@ -498,7 +498,7 @@
 
 <!-- COOKIE / PRIVACY NOTICE (DPDP Act 2023) -->
 <div id="cookie-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9998;background:var(--ink);color:rgba(255,255,255,.85);padding:14px 2rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;font-size:13px;border-top:2px solid var(--saffron);">
-  <span id="cookie-txt">🍪 हम आपके अनुभव को बेहतर बनाने के लिए localStorage का उपयोग करते हैं। <a id="cookie-pp-link" href="#privacy" onclick="showPolicy('privacy')" style="color:var(--saffron);text-decoration:underline;">Privacy Policy</a></span>
+  <span id="cookie-txt">🍪 We use localStorage to improve your experience. <a href="#" onclick="showPolicy('privacy');return false;" style="color:var(--saffron);text-decoration:underline;" id="cookie-pp-link">Privacy Policy</a></span>
   <div style="display:flex;gap:10px;flex-shrink:0;">
     <button onclick="acceptCookies()" style="padding:8px 20px;background:var(--saffron);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;">Got it ✓</button>
   </div>
@@ -1213,6 +1213,13 @@ window.onerror = function(msg,src,line,col,err){
     /* Navbar */
     s('nl-feat',t('nl_feat')); s('nl-how',t('nl_how'));
     if(typeof updatePlanBadge==='function') updatePlanBadge();
+    /* Cookie banner text */
+    var cTxt=document.getElementById('cookie-txt');
+    if(cTxt) cTxt.innerHTML=lang==='hi'
+      ? '🍪 हम आपके अनुभव को बेहतर बनाने के लिए localStorage का उपयोग करते हैं। <a href="#" onclick="showPolicy(\'privacy\');return false;" style="color:var(--saffron);text-decoration:underline;">Privacy Policy</a>'
+      : '🍪 We use localStorage to improve your experience. <a href="#" onclick="showPolicy(\'privacy\');return false;" style="color:var(--saffron);text-decoration:underline;">Privacy Policy</a>';
+    var cBtn=document.querySelector('#cookie-banner button');
+    if(cBtn) cBtn.textContent=lang==='hi'?'समझ गया ✓':'Got it ✓';
     s('nav-signin',t('nav_signin')); s('nav-start',t('nav_start'));
     /* Hero */
     s('h-eyebrow',t('h_eyebrow'));
