@@ -1243,7 +1243,7 @@ window.onerror = function(msg,src,line,col,err){
         '<div style="font-size:12px;color:var(--ink-3);display:flex;align-items:center;gap:8px">'+
         escapeHtml(t('sal_qty_label'))+safeNum(s.qty)+' · '+escapeHtml(s.time)+
         '<span class="pay-badge '+pc+'">'+escapeHtml(pay)+'</span></div></div>'+
-        '<div style="font-family:'Fraunces',serif;font-size:20px;font-weight:700;color:var(--green)">'+rupee(safeNum(s.total))+'</div>';
+        '<div style="font-family:\'Fraunces\',serif;font-size:20px;font-weight:700;color:var(--green)">'+rupee(safeNum(s.total))+'</div>';
       frag.appendChild(card);
     });
     el.appendChild(frag);
