@@ -4,9 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="google" content="notranslate" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-  <meta http-equiv="Pragma" content="no-cache" />
-  <meta http-equiv="Expires" content="0" />
+
   <!-- ═══ SEO ═══ -->
   <meta name="description" content="KiranaBook — Smart store manager for Indian kirana owners. Track stock, manage udhar khata, record daily sales. Free forever. Made in India." />
   <meta name="keywords" content="kirana store app, udhar khata app, inventory management india, kirana book, small business app india, दुकान ऐप" />
@@ -83,37 +81,7 @@
     var SUPABASE_URL  = 'https://mixrbhloeesotpbpinrt.supabase.co';
     var SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1peHJiaGxvZWVzb3RwYnBpbnJ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTY4MDYwMDAsImV4cCI6MjAzMjM4MjAwMH0.V8ePKfkuSMhsjkd2zG8o-6eHQjsiELJ_COkNsgI4ORk';
   </script>
-  <script>
-/* Load Supabase with CDN fallback chain */
-(function(){
-  function loadScript(src, onload, onerror){
-    var s = document.createElement('script');
-    s.src = src; s.crossOrigin = 'anonymous';
-    s.onload = onload; s.onerror = onerror;
-    document.head.appendChild(s);
-  }
-  var cdns = [
-    'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js',
-    'https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.min.js',
-    'https://cdnjs.cloudflare.com/ajax/libs/supabase-js/2.49.1/umd/supabase.min.js'
-  ];
-  var idx = 0;
-  function tryNext(){
-    if(idx >= cdns.length){
-      window._sbCDNFailed = true;
-      console.error('All Supabase CDNs failed to load');
-      return;
-    }
-    loadScript(cdns[idx++], function(){
-      console.log('Supabase loaded from: ' + cdns[idx-1]);
-    }, function(){
-      console.warn('CDN failed, trying next: ' + cdns[idx-1]);
-      tryNext();
-    });
-  }
-  tryNext();
-})();
-</script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" crossorigin="anonymous"></script>
   <style>
     * { -webkit-translate: none; }
     .notranslate { translate: none; }
@@ -1377,20 +1345,8 @@ window.onerror = function(msg,src,line,col,err){
   /* ══ SUPABASE ══ */
   var sb=null, user=null;
   function initSB(){ if(SUPABASE_URL==='YOUR_SUPABASE_URL')return false; try{sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON);return true;}catch(e){console.error('Supabase init error:',e.message);window._sbInitErr=e.message;return false;} }
-  /* Wait for supabase CDN to load before initialising */
-  var sbOK = false;
-  function tryInitSB(attempts){
-    if(typeof supabase !== 'undefined'){
-      sbOK = initSB();
-      if(!sbOK) console.error('initSB failed:', window._sbInitErr);
-    } else if(attempts > 0){
-      setTimeout(function(){ tryInitSB(attempts-1); }, 200);
-    } else {
-      window._sbInitErr = 'supabase CDN failed to load after 4 seconds';
-      console.error(window._sbInitErr);
-    }
-  }
-  tryInitSB(20); /* try every 200ms for up to 4 seconds */
+  var sbOK = initSB();
+  if(!sbOK) console.error('Supabase init failed:', window._sbInitErr);
 
   /* ══ AUTH ══ */
   var modalMode='signin';
@@ -1404,12 +1360,6 @@ window.onerror = function(msg,src,line,col,err){
   window.closeModal=function(){document.getElementById('auth-modal').classList.remove('open');};
   window.signInWithGoogle=function(){
     if(!sbOK){
-      /* If still waiting for CDN, retry once after short delay */
-      if(typeof supabase === 'undefined'){
-        showErr('Loading... please try again in a moment.');
-        setTimeout(function(){ tryInitSB(5); }, 500);
-        return;
-      }
       showErr('Sign-in setup failed: '+(window._sbInitErr||'please refresh the page'));
       return;
     }
