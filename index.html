@@ -80,7 +80,7 @@
     var SUPABASE_URL  = 'https://mixrbhloeesotpbpinrt.supabase.co';
     var SUPABASE_ANON = 'sb_publishable_rApZB0cGwexMB4rQcEsrEA_e7qayOPn';
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.min.js" crossorigin="anonymous"></script>
   <style>
     * { -webkit-translate: none; }
     .notranslate { translate: none; }
@@ -1359,8 +1359,24 @@ window.onerror = function(msg,src,line,col,err){
     if(!sbOK){showErr('Supabase not configured.');return;}
     var btn=document.getElementById('google-btn'); btn.disabled=true;
     document.getElementById('g-btn-text').textContent=lang==='hi'?'Google पर जा रहे हैं...':'Redirecting...';
-    sb.auth.signInWithOAuth({provider:'google',options:{redirectTo: window.location.origin + window.location.pathname}})
-      .then(function(r){if(r.error){showErr(r.error.message);btn.disabled=false;document.getElementById('g-btn-text').textContent=t('g_btn');}});
+    sb.auth.signInWithOAuth({
+      provider:'google',
+      options:{
+        redirectTo: window.location.origin,
+        queryParams: { access_type: 'offline', prompt: 'consent' }
+      }
+    }).then(function(r){
+      if(r.error){
+        showErr(r.error.message);
+        btn.disabled=false;
+        document.getElementById('g-btn-text').textContent=t('g_btn');
+      }
+      /* If no error, Supabase redirects to Google — no further action needed */
+    }).catch(function(e){
+      showErr(e.message||'Unexpected error');
+      btn.disabled=false;
+      document.getElementById('g-btn-text').textContent=t('g_btn');
+    });
   };
   function showErr(m){
     var raw=String(m||'').slice(0,300);
@@ -1368,7 +1384,9 @@ window.onerror = function(msg,src,line,col,err){
     if(/popup|closed|cancelled|cancel/i.test(raw)) safe='Sign-in was cancelled. Please try again.';
     else if(/network|fetch|failed to fetch/i.test(raw)) safe='Network error. Please check your connection.';
     else if(/rate.?limit/i.test(raw)) safe='Too many attempts. Please wait a moment and try again.';
-    else safe='Sign-in failed. Please try again.';
+    else if(/redirect/i.test(raw)) safe='Redirect URL mismatch. Please contact support.';
+    else if(/oauth/i.test(raw)) safe='Google sign-in error: '+raw.slice(0,80);
+    else safe='Sign-in failed: '+raw.slice(0,80);
     var e=document.getElementById('auth-err');e.textContent=safe;e.style.display='block';
   }
   window.signOut=function(){
