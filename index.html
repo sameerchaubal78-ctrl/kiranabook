@@ -78,9 +78,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,900;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <script>
     var SUPABASE_URL  = 'https://mixrbhloeesotpbpinrt.supabase.co';
-    var SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1peHJiaGxvZWVzb3RwYnBpbnJ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5NDE4ODksImV4cCI6MjA5NDUxNzg4OX0.V8ePKfkuSMhsjkd2zG8o-6eHQjsiELJ_COkNsgI4ORk';
+    var SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1peHJiaGxvZWVzb3RwYnBpbnJ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTY4MDYwMDAsImV4cCI6MjAzMjM4MjAwMH0.V8ePKfkuSMhsjkd2zG8o-6eHQjsiELJ_COkNsgI4ORk';
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" crossorigin="anonymous"></script>
   <style>
     * { -webkit-translate: none; }
     .notranslate { translate: none; }
@@ -1342,7 +1342,7 @@ window.onerror = function(msg,src,line,col,err){
 
   /* ══ SUPABASE ══ */
   var sb=null, user=null;
-  function initSB(){ if(SUPABASE_URL==='YOUR_SUPABASE_URL')return false; try{sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON);return true;}catch(e){return false;} }
+  function initSB(){ if(SUPABASE_URL==='YOUR_SUPABASE_URL')return false; try{sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON);return true;}catch(e){console.error('Supabase init error:',e.message);window._sbInitErr=e.message;return false;} }
   var sbOK=initSB();
 
   /* ══ AUTH ══ */
@@ -1356,7 +1356,7 @@ window.onerror = function(msg,src,line,col,err){
   };
   window.closeModal=function(){document.getElementById('auth-modal').classList.remove('open');};
   window.signInWithGoogle=function(){
-    if(!sbOK){showErr('Supabase not configured.');return;}
+    if(!sbOK){showErr('Supabase init failed: '+(window._sbInitErr||'check API key format'));return;}
     var btn=document.getElementById('google-btn'); btn.disabled=true;
     document.getElementById('g-btn-text').textContent=lang==='hi'?'Google पर जा रहे हैं...':'Redirecting...';
     sb.auth.signInWithOAuth({
