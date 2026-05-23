@@ -291,6 +291,16 @@
     .store-name-input:focus{outline:none;box-shadow:0 0 0 3px rgba(232,101,10,.12);}
     .store-name-save{padding:7px 14px;background:var(--saffron);color:#fff;border:none;border-radius:var(--r-sm);font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;}
 
+    /* PLAN BADGE */
+    .plan-badge-bar{width:100%;background:var(--paper-2);border-bottom:1px solid var(--border);padding:6px 2rem;display:flex;align-items:center;justify-content:center;gap:8px;font-size:12px;}
+    .plan-badge{display:inline-flex;align-items:center;gap:6px;padding:3px 12px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;}
+    .plan-free{background:var(--paper-3);color:var(--ink-3);border:1px solid var(--border-2);}
+    .plan-dukandaar{background:var(--saffron-dim);color:var(--saffron-dark);border:1px solid rgba(232,101,10,.25);}
+    .plan-malik{background:linear-gradient(90deg,#1A1209,#2D1F0F);color:#F5C97A;border:1px solid rgba(245,201,122,.25);}
+    .plan-badge-txt{font-size:12px;color:var(--ink-3);font-weight:500;}
+    .plan-upgrade-btn{font-size:11px;font-weight:700;color:var(--saffron);background:none;border:none;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;padding:2px 8px;border-radius:10px;transition:background .15s;}
+    .plan-upgrade-btn:hover{background:var(--saffron-dim);}
+
     /* REPORTS */
     .report-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:1.5rem;}
     .report-tile{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.5rem;box-shadow:var(--shadow-sm);}
@@ -767,6 +777,12 @@
       <button class="store-name-edit" onclick="editStoreName()">✏️ Edit name</button>
     </div>
   </div>
+  <!-- Plan Badge Bar -->
+  <div class="plan-badge-bar" id="plan-badge-bar">
+    <div class="plan-badge plan-free" id="plan-badge">🆓 FREE</div>
+    <span class="plan-badge-txt" id="plan-badge-txt">मुफ़्त प्लान</span>
+    <button class="plan-upgrade-btn" id="plan-upgrade-btn" onclick="goHome();setTimeout(function(){var p=document.getElementById('pricing');if(p)p.scrollIntoView({behavior:'smooth'});},200)">⚡ अपग्रेड करें</button>
+  </div>
   <div class="store-name-input-wrap" id="store-name-input-wrap">
     <input id="store-name-input" class="store-name-input" type="text" placeholder="Enter your store name..." maxlength="50" />
     <button class="store-name-save" onclick="saveStoreName()">Save</button>
@@ -1093,6 +1109,7 @@ window.onerror = function(msg,src,line,col,err){
     s('pk1',t('pk1')); s('pk2',t('pk2')); s('pk3',t('pk3')); s('pk4',t('pk4'));
     /* Navbar */
     s('nl-feat',t('nl_feat')); s('nl-how',t('nl_how'));
+    if(typeof updatePlanBadge==='function') updatePlanBadge();
     s('nav-signin',t('nav_signin')); s('nav-start',t('nav_start'));
     /* Hero */
     s('h-eyebrow',t('h_eyebrow'));
@@ -1268,8 +1285,36 @@ window.onerror = function(msg,src,line,col,err){
   function lsS(k,v){try{localStorage.setItem('kb_'+k,JSON.stringify(v));}catch(e){}}
   function syncBadge(k){document.getElementById('sync-badge').textContent=t(k);}
 
+  /* Plan data — replace with real Supabase subscription lookup once payments are live */
+  window.USER_PLAN = 'free'; /* values: 'free' | 'dukandaar' | 'malik' */
+
+  window.updatePlanBadge = function updatePlanBadge(){
+    var badge  = document.getElementById('plan-badge');
+    var txt    = document.getElementById('plan-badge-txt');
+    var upBtn  = document.getElementById('plan-upgrade-btn');
+    if(!badge) return;
+    var isHi = lang === 'hi';
+    if(USER_PLAN === 'malik'){
+      badge.className = 'plan-badge plan-malik';
+      badge.textContent = '👑 MALIK';
+      txt.textContent = isHi ? 'मालिक प्लान — सभी सुविधाएं' : 'Malik Plan — All features';
+      upBtn.style.display = 'none';
+    } else if(USER_PLAN === 'dukandaar'){
+      badge.className = 'plan-badge plan-dukandaar';
+      badge.textContent = '🏪 DUKANDAAR';
+      txt.textContent = isHi ? 'दुकानदार प्लान' : 'Dukandaar Plan';
+      upBtn.style.display = 'none';
+    } else {
+      badge.className = 'plan-badge plan-free';
+      badge.textContent = '🆓 FREE';
+      txt.textContent = isHi ? 'मुफ़्त प्लान — 50 आइटम तक' : 'Free Plan — up to 50 items';
+      upBtn.style.display = 'inline-flex';
+      upBtn.textContent = isHi ? '⚡ अपग्रेड करें' : '⚡ Upgrade';
+    }
+  }
+
   async function loadAndShow(u){
-    showPage('app'); applyLang();
+    showPage('app'); applyLang(); updatePlanBadge();
     var nm=u.user_metadata&&u.user_metadata.full_name?u.user_metadata.full_name:u.email;
     document.getElementById('user-nm').textContent=nm.split(' ')[0];
     var av=document.getElementById('user-av');
