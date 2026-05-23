@@ -1,0 +1,35 @@
+{
+  "name": "KiranaBook — Smart Store Manager",
+  "short_name": "KiranaBook",
+  "description": "Smart store manager for Indian kirana owners. Track stock, manage udhar khata, record daily sales.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFFDF9",
+  "theme_color": "#E8650A",
+  "orientation": "portrait-primary",
+  "lang": "en-IN",
+  "categories": ["business", "finance", "productivity"],
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23E8650A'/><text y='.9em' font-size='72' x='50%' dominant-baseline='auto' text-anchor='middle' dy='0.1em'>%F0%9F%8F%AA</text></svg>",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Add Stock Item",
+      "short_name": "Add Item",
+      "description": "Quickly add a new item to inventory",
+      "url": "/#inventory"
+    },
+    {
+      "name": "Record Sale",
+      "short_name": "New Sale",
+      "description": "Record a new sale",
+      "url": "/#sales"
+    }
+  ]
+}
