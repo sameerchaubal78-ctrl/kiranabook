@@ -34,6 +34,8 @@
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" crossorigin="anonymous"></script>
   <style>
+    * { -webkit-translate: none; }
+    .notranslate { translate: none; }
     :root {
       --saffron:#E8650A; --saffron-dim:#FDF0E8; --saffron-dark:#B54D04;
       --green:#0F6640; --green-dim:#E6F5EE;
@@ -388,7 +390,7 @@
     }
   </style>
 </head>
-<body>
+<body class="notranslate">
 
 <!-- JS ERROR BANNER (hidden unless JS crashes) -->
 <div id="js-err-banner" style="display:none;position:fixed;top:0;left:0;right:0;z-index:99999;background:#c0392b;color:#fff;padding:10px 16px;font-size:13px;font-family:monospace;"></div>
@@ -401,7 +403,7 @@
       <div class="modal-logo-mark">🏪</div>
       <div class="modal-logo-text">Kirana<span>Book</span></div>
     </div>
-    <div class="lang-pick-label" id="m-lang-label">भाषा चुनें / Choose language</div>
+    <div class="notranslate lang-pick-label" id="m-lang-label">भाषा चुनें / Choose language</div>
     <div class="lang-picker">
       <button class="lang-btn on" id="lb-en" onclick="setLang('en')">
         <span class="lang-flag">🇬🇧</span>
@@ -414,11 +416,11 @@
         <span class="lang-native">Hindi</span>
       </button>
     </div>
-    <h2 class="modal-h" id="m-title">वापसी पर स्वागत है</h2>
-    <p class="modal-sub" id="m-sub">अपने स्टोर डैशबोर्ड तक पहुंचने के लिए साइन इन करें।</p>
+    <h2 class="notranslate modal-h" id="m-title">वापसी पर स्वागत है</h2>
+    <p class="notranslate modal-sub" id="m-sub">अपने स्टोर डैशबोर्ड तक पहुंचने के लिए साइन इन करें।</p>
     <button class="google-btn" id="google-btn" onclick="signInWithGoogle()">
       <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.35-8.16 2.35-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-      <span id="g-btn-text">Google से जारी रखें</span>
+      <span class="notranslate" id="g-btn-text">Google से जारी रखें</span>
     </button>
     <div class="auth-err" id="auth-err"></div>
     <div class="modal-div"><span id="m-why">KiranaBook क्यों?</span></div>
@@ -439,29 +441,29 @@
       <div class="logo-text">Kirana<span>Book</span></div>
     </div>
     <ul class="nav-links">
-      <li><a href="#features" id="nl-feat">सुविधाएं</a></li>
-      <li><a href="#how" id="nl-how">कैसे काम करता है</a></li>
-      <li><a href="#features" id="nl-free">हमेशा मुफ़्त</a></li>
+      <li><a href="#features" class="notranslate" id="nl-feat">सुविधाएं</a></li>
+      <li><a href="#how" class="notranslate" id="nl-how">कैसे काम करता है</a></li>
+      <li><a href="#features" class="notranslate" id="nl-free">हमेशा मुफ़्त</a></li>
     </ul>
     <div class="nav-auth">
       <div class="app-lang" style="margin-right:4px;">
         <button class="app-lang-btn" id="hl-hi" onclick="setLang('hi')">🇮🇳 हिं</button>
         <button class="app-lang-btn on" id="hl-en" onclick="setLang('en')">🇬🇧 EN</button>
       </div>
-      <button class="btn-ghost" onclick="openModal('signin')" id="nav-signin">साइन इन</button>
-      <button class="btn-saffron" onclick="openModal('signup')" id="nav-start">मुफ़्त शुरू करें →</button>
+      <button class="notranslate btn-ghost" onclick="openModal('signin')" id="nav-signin">साइन इन</button>
+      <button class="notranslate btn-saffron" onclick="openModal('signup')" id="nav-start">मुफ़्त शुरू करें →</button>
     </div>
   </nav>
 
   <section class="hero">
     <div class="hero-bg"></div><div class="hero-grid"></div>
     <div class="hero-left">
-      <div class="hero-eyebrow" id="h-eyebrow">भारतीय किराना स्टोर के लिए बनाया गया</div>
-      <h1 class="hero-h1" id="h-headline">अपना स्टोर,<br><em>स्मार्ट</em> और<br><span class="ug">अधिक लाभदायक।</span></h1>
-      <p class="hero-sub" id="h-sub">स्टॉक ट्रैक करें, <strong>उधार खाता</strong> मैनेज करें, रोज़ की बिक्री रिकॉर्ड करें — सब एक सुंदर ऐप में। आपका डेटा क्लाउड में सुरक्षित।</p>
+      <div class="notranslate hero-eyebrow" id="h-eyebrow">भारतीय किराना स्टोर के लिए बनाया गया</div>
+      <h1 class="notranslate hero-h1" id="h-headline">अपना स्टोर,<br><em>स्मार्ट</em> और<br><span class="ug">अधिक लाभदायक।</span></h1>
+      <p class="notranslate hero-sub" id="h-sub">स्टॉक ट्रैक करें, <strong>उधार खाता</strong> मैनेज करें, रोज़ की बिक्री रिकॉर्ड करें — सब एक सुंदर ऐप में। आपका डेटा क्लाउड में सुरक्षित।</p>
       <div class="hero-ctas">
-        <button class="btn-hero" onclick="openModal('signup')" id="h-cta1">शुरू करें — मुफ़्त खाता बनाएं →</button>
-        <button class="btn-outline" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})" id="h-cta2">सुविधाएं देखें</button>
+        <button class="notranslate btn-hero" onclick="openModal('signup')" id="h-cta1">शुरू करें — मुफ़्त खाता बनाएं →</button>
+        <button class="notranslate btn-outline" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})" id="h-cta2">सुविधाएं देखें</button>
       </div>
       <div class="social-proof">
         <div class="avatars">
@@ -471,20 +473,20 @@
           <span style="background:#F4C0D1;color:#72243E;">P</span>
           <span style="background:#EDE4FB;color:#6B35B8;">K</span>
         </div>
-        <div class="social-text" id="h-trust"><strong>500+</strong> किराना मालिक KiranaBook इस्तेमाल कर रहे हैं</div>
+        <div class="notranslate social-text" id="h-trust"><strong>500+</strong> किराना मालिक KiranaBook इस्तेमाल कर रहे हैं</div>
       </div>
     </div>
     <div class="hero-right">
       <div class="mockup-wrap">
         <div class="badge-float bf1">✅ ₹3,240 आज कमाए</div>
-        <div class="badge-float bf2" id="m-badge2">⚠️ 3 चीज़ें कम स्टॉक में</div>
+        <div class="notranslate badge-float bf2" id="m-badge2">⚠️ 3 चीज़ें कम स्टॉक में</div>
         <div class="mockup-card">
-          <div class="mhdr"><div class="mtitle" id="mock-title">मेरा किराना स्टोर</div><div class="mdate" id="m-date">आज, 16 मई</div></div>
+          <div class="mhdr"><div class="notranslate mtitle" id="mock-title">मेरा किराना स्टोर</div><div class="mdate" id="m-date">आज, 16 मई</div></div>
           <div class="mstats">
-            <div class="ms ms-o"><div class="ms-label" id="m-s1">स्टॉक मूल्य</div><div class="ms-val">₹42.8k</div></div>
-            <div class="ms ms-g"><div class="ms-label" id="m-s2">आज की बिक्री</div><div class="ms-val">₹3,240</div></div>
-            <div class="ms ms-r"><div class="ms-label" id="m-s3">कुल उधार</div><div class="ms-val">₹1,870</div></div>
-            <div class="ms ms-b"><div class="ms-label" id="m-s4">कम स्टॉक</div><div class="ms-val" id="m-s4v">3 आइटम</div></div>
+            <div class="ms ms-o"><div class="notranslate ms-label" id="m-s1">स्टॉक मूल्य</div><div class="ms-val">₹42.8k</div></div>
+            <div class="ms ms-g"><div class="notranslate ms-label" id="m-s2">आज की बिक्री</div><div class="ms-val">₹3,240</div></div>
+            <div class="ms ms-r"><div class="notranslate ms-label" id="m-s3">कुल उधार</div><div class="ms-val">₹1,870</div></div>
+            <div class="ms ms-b"><div class="notranslate ms-label" id="m-s4">कम स्टॉक</div><div class="ms-val" id="m-s4v">3 आइटम</div></div>
           </div>
           <div class="mitems">
             <div class="mi"><span>🌾</span><span class="mi-name">Tata Salt 1kg</span><span class="mi-qty" id="m-q1">45 बचे</span><span class="mbadge" style="background:var(--green-dim);color:var(--green)">✓ OK</span></div>
@@ -501,16 +503,16 @@
   </section>
 
   <section class="features" id="features">
-    <div class="sec-eyebrow" id="f-eyebrow">सब कुछ जो आपको चाहिए</div>
-    <h2 class="sec-h2" id="f-h2">किराना मालिकों के<br>काम के हिसाब से बनाया।</h2>
-    <p class="sec-sub" id="f-sub">कोई जटिल सेटअप नहीं। कोई ट्रेनिंग नहीं। बस खोलें, साइन इन करें, और पहले दिन से बेहतर स्टोर चलाएं।</p>
+    <div class="notranslate sec-eyebrow" id="f-eyebrow">सब कुछ जो आपको चाहिए</div>
+    <h2 class="notranslate sec-h2" id="f-h2">किराना मालिकों के<br>काम के हिसाब से बनाया।</h2>
+    <p class="notranslate sec-sub" id="f-sub">कोई जटिल सेटअप नहीं। कोई ट्रेनिंग नहीं। बस खोलें, साइन इन करें, और पहले दिन से बेहतर स्टोर चलाएं।</p>
     <div class="feat-grid">
-      <div class="feat-card"><div class="feat-icon fi-o">📦</div><div class="feat-title" id="ft1-t">स्मार्ट इन्वेंटरी ट्रैकर</div><div class="feat-desc" id="ft1-d">सामान जोड़ें, एक टैप से स्टॉक अपडेट करें। कम स्टॉक के लिए अपने आप अलर्ट।</div></div>
-      <div class="feat-card"><div class="feat-icon fi-g">📒</div><div class="feat-title" id="ft2-t">डिजिटल उधार खाता</div><div class="feat-desc" id="ft2-d">कागज़ की नोटबुक बदलें। हर ग्राहक का उधार ट्रैक करें, पेमेंट रिकॉर्ड करें।</div></div>
-      <div class="feat-card"><div class="feat-icon fi-b">📊</div><div class="feat-title" id="ft3-t">रोज़ की बिक्री लॉग</div><div class="feat-desc" id="ft3-d">हर बिक्री — नकद, UPI, या उधार — रिकॉर्ड करें। बिना हिसाब किताब के रोज़ की कमाई जानें।</div></div>
-      <div class="feat-card"><div class="feat-icon fi-o">💬</div><div class="feat-title" id="ft4-t">WhatsApp रिमाइंडर</div><div class="feat-desc" id="ft4-d">एक टैप में ग्राहक को उनका उधार WhatsApp पर भेजें। बिना किसी झिझक के।</div></div>
-      <div class="feat-card"><div class="feat-icon fi-g">☁️</div><div class="feat-title" id="ft5-t">क्लाउड सिंक</div><div class="feat-desc" id="ft5-d">आपका डेटा Google अकाउंट के तहत क्लाउड में सुरक्षित। किसी भी फोन से एक्सेस करें।</div></div>
-      <div class="feat-card"><div class="feat-icon fi-b">🆓</div><div class="feat-title" id="ft6-t">पूरी तरह मुफ़्त</div><div class="feat-desc" id="ft6-d">कोई सदस्यता नहीं। कोई छुपा शुल्क नहीं। KiranaBook भारत के हर किराना मालिक के लिए मुफ़्त है।</div></div>
+      <div class="feat-card"><div class="feat-icon fi-o">📦</div><div class="notranslate feat-title" id="ft1-t">स्मार्ट इन्वेंटरी ट्रैकर</div><div class="notranslate feat-desc" id="ft1-d">सामान जोड़ें, एक टैप से स्टॉक अपडेट करें। कम स्टॉक के लिए अपने आप अलर्ट।</div></div>
+      <div class="feat-card"><div class="feat-icon fi-g">📒</div><div class="notranslate feat-title" id="ft2-t">डिजिटल उधार खाता</div><div class="notranslate feat-desc" id="ft2-d">कागज़ की नोटबुक बदलें। हर ग्राहक का उधार ट्रैक करें, पेमेंट रिकॉर्ड करें।</div></div>
+      <div class="feat-card"><div class="feat-icon fi-b">📊</div><div class="notranslate feat-title" id="ft3-t">रोज़ की बिक्री लॉग</div><div class="notranslate feat-desc" id="ft3-d">हर बिक्री — नकद, UPI, या उधार — रिकॉर्ड करें। बिना हिसाब किताब के रोज़ की कमाई जानें।</div></div>
+      <div class="feat-card"><div class="feat-icon fi-o">💬</div><div class="notranslate feat-title" id="ft4-t">WhatsApp रिमाइंडर</div><div class="notranslate feat-desc" id="ft4-d">एक टैप में ग्राहक को उनका उधार WhatsApp पर भेजें। बिना किसी झिझक के।</div></div>
+      <div class="feat-card"><div class="feat-icon fi-g">☁️</div><div class="notranslate feat-title" id="ft5-t">क्लाउड सिंक</div><div class="notranslate feat-desc" id="ft5-d">आपका डेटा Google अकाउंट के तहत क्लाउड में सुरक्षित। किसी भी फोन से एक्सेस करें।</div></div>
+      <div class="feat-card"><div class="feat-icon fi-b">🆓</div><div class="notranslate feat-title" id="ft6-t">पूरी तरह मुफ़्त</div><div class="notranslate feat-desc" id="ft6-d">कोई सदस्यता नहीं। कोई छुपा शुल्क नहीं। KiranaBook भारत के हर किराना मालिक के लिए मुफ़्त है।</div></div>
     </div>
   </section>
 
@@ -557,40 +559,40 @@
 
   <section class="how" id="how">
     <div class="how-left">
-      <div class="sec-eyebrow" id="hw-eyebrow">कैसे काम करता है</div>
-      <h2 class="sec-h2" id="hw-h2">3 मिनट में<br>तैयार।</h2>
+      <div class="notranslate sec-eyebrow" id="hw-eyebrow">कैसे काम करता है</div>
+      <h2 class="notranslate sec-h2" id="hw-h2">3 मिनट में<br>तैयार।</h2>
       <div class="how-steps">
-        <div class="how-step"><div class="how-num">1</div><div><div class="step-title" id="hs1-t">मुफ़्त खाता बनाएं</div><div class="step-desc" id="hs1-d">एक टैप में Google अकाउंट से साइन अप करें। कोई पासवर्ड नहीं, कोई फॉर्म नहीं।</div></div></div>
-        <div class="how-step"><div class="how-num">2</div><div><div class="step-title" id="hs2-t">सामान और ग्राहक जोड़ें</div><div class="step-desc" id="hs2-d">अपना स्टॉक और उधार खाते सेट करें। नोटबुक से भी तेज़।</div></div></div>
-        <div class="how-step"><div class="how-num">3</div><div><div class="step-title" id="hs3-t">हर दिन स्मार्ट तरीके से चलाएं</div><div class="step-desc" id="hs3-d">बिक्री ट्रैक करें, कम स्टॉक अलर्ट पाएं, WhatsApp रिमाइंडर भेजें।</div></div></div>
+        <div class="how-step"><div class="how-num">1</div><div><div class="notranslate step-title" id="hs1-t">मुफ़्त खाता बनाएं</div><div class="notranslate step-desc" id="hs1-d">एक टैप में Google अकाउंट से साइन अप करें। कोई पासवर्ड नहीं, कोई फॉर्म नहीं।</div></div></div>
+        <div class="how-step"><div class="how-num">2</div><div><div class="notranslate step-title" id="hs2-t">सामान और ग्राहक जोड़ें</div><div class="notranslate step-desc" id="hs2-d">अपना स्टॉक और उधार खाते सेट करें। नोटबुक से भी तेज़।</div></div></div>
+        <div class="how-step"><div class="how-num">3</div><div><div class="notranslate step-title" id="hs3-t">हर दिन स्मार्ट तरीके से चलाएं</div><div class="notranslate step-desc" id="hs3-d">बिक्री ट्रैक करें, कम स्टॉक अलर्ट पाएं, WhatsApp रिमाइंडर भेजें।</div></div></div>
       </div>
       <div style="margin-top:2.5rem">
-        <button class="btn-hero" onclick="openModal('signup')" style="font-size:15px;padding:13px 26px;" id="hw-cta">मुफ़्त खाता बनाएं →</button>
+        <button class="notranslate btn-hero" onclick="openModal('signup')" style="font-size:15px;padding:13px 26px;" id="hw-cta">मुफ़्त खाता बनाएं →</button>
       </div>
     </div>
     <div class="how-right">
       <div class="testimonial">
         <div class="q-mark">"</div>
-        <p class="q-body" id="t-body">पहले उधार का हिसाब नोटबुक में लिखता था और भूल जाता था। अब <strong>सब कुछ फोन में है</strong> — कौन कितना देता है, WhatsApp पे भी भेज देता हूं।</p>
+        <p class="notranslate q-body" id="t-body">पहले उधार का हिसाब नोटबुक में लिखता था और भूल जाता था। अब <strong>सब कुछ फोन में है</strong> — कौन कितना देता है, WhatsApp पे भी भेज देता हूं।</p>
         <div class="q-author">
           <div class="q-av">RS</div>
-          <div><div class="q-name">Rajesh Singh</div><div class="q-loc" id="t-loc">किराना स्टोर मालिक · पुणे, महाराष्ट्र</div></div>
+          <div><div class="q-name">Rajesh Singh</div><div class="notranslate q-loc" id="t-loc">किराना स्टोर मालिक · पुणे, महाराष्ट्र</div></div>
         </div>
       </div>
     </div>
   </section>
 
   <section class="cta-band">
-    <div class="cta-label" id="cta-label">हमेशा मुफ़्त · क्लाउड सिंक · किसी भी फोन पर</div>
-    <h2 class="cta-h2" id="cta-h2">आपके स्टोर को मिले<br>एक <em>स्मार्ट</em> सिस्टम।</h2>
-    <p class="cta-sub" id="cta-sub">सैकड़ों किराना मालिकों के साथ जुड़ें जो कागज़ की नोटबुक छोड़ कर डिजिटल हो गए हैं।</p>
-    <button class="btn-hero" onclick="openModal('signup')" style="font-size:16px;padding:16px 36px;" id="cta-btn">शुरू करें — आज मुफ़्त में →</button>
-    <div class="cta-note" id="cta-note">कोई क्रेडिट कार्ड नहीं · कोई डाउनलोड नहीं · Google से साइन इन</div>
+    <div class="notranslate cta-label" id="cta-label">हमेशा मुफ़्त · क्लाउड सिंक · किसी भी फोन पर</div>
+    <h2 class="notranslate cta-h2" id="cta-h2">आपके स्टोर को मिले<br>एक <em>स्मार्ट</em> सिस्टम।</h2>
+    <p class="notranslate cta-sub" id="cta-sub">सैकड़ों किराना मालिकों के साथ जुड़ें जो कागज़ की नोटबुक छोड़ कर डिजिटल हो गए हैं।</p>
+    <button class="notranslate btn-hero" onclick="openModal('signup')" style="font-size:16px;padding:16px 36px;" id="cta-btn">शुरू करें — आज मुफ़्त में →</button>
+    <div class="notranslate cta-note" id="cta-note">कोई क्रेडिट कार्ड नहीं · कोई डाउनलोड नहीं · Google से साइन इन</div>
   </section>
 
   <footer class="footer">
     <div class="footer-logo">Kirana<span>Book</span></div>
-    <div id="f-made">भारतीय किराना मालिकों के लिए ❤️ से बनाया</div>
+    <div class="notranslate" id="f-made">भारतीय किराना मालिकों के लिए ❤️ से बनाया</div>
     <div>© 2026 KiranaBook</div>
   </footer>
 </div><!-- /home -->
@@ -612,7 +614,7 @@
         <div class="user-av" id="user-av"></div>
         <span class="user-nm" id="user-nm"></span>
       </div>
-      <button class="signout-btn" id="app-signout" onclick="signOut()">साइन आउट</button>
+      <button class="notranslate signout-btn" id="app-signout" onclick="signOut()">साइन आउट</button>
     </div>
   </nav>
   <!-- Welcome Banner -->
@@ -631,13 +633,13 @@
     <div class="stats-row" id="stats-row"></div>
     <div class="tab-bar">
       <button id="tb-inv" class="tab-btn on" onclick="showTab('inv')">
-        <span>📦</span><span id="tl-inv">इन्वेंटरी</span><span class="tab-cnt" id="tc-inv">0</span>
+        <span>📦</span><span class="notranslate" id="tl-inv">इन्वेंटरी</span><span class="tab-cnt" id="tc-inv">0</span>
       </button>
       <button id="tb-udh" class="tab-btn" onclick="showTab('udh')">
-        <span>📒</span><span id="tl-udh">उधार खाता</span><span class="tab-cnt" id="tc-udh">0</span>
+        <span>📒</span><span class="notranslate" id="tl-udh">उधार खाता</span><span class="tab-cnt" id="tc-udh">0</span>
       </button>
       <button id="tb-sal" class="tab-btn" onclick="showTab('sal')">
-        <span>📊</span><span id="tl-sal">बिक्री</span><span class="tab-cnt" id="tc-sal">0</span>
+        <span>📊</span><span class="notranslate" id="tl-sal">बिक्री</span><span class="tab-cnt" id="tc-sal">0</span>
       </button>
       <button id="tb-rep" class="tab-btn" onclick="showTab('rep')">
         <span>📈</span><span id="tl-rep">Reports</span>
@@ -647,65 +649,65 @@
     <!-- Inventory -->
     <div id="panel-inv" class="panel on">
       <div class="form-card">
-        <div class="fcard-title"><div class="fcard-icon">➕</div><span id="inv-form-title">स्टॉक में नया सामान जोड़ें</span></div>
+        <div class="fcard-title"><div class="fcard-icon">➕</div><span class="notranslate" id="inv-form-title">स्टॉक में नया सामान जोड़ें</span></div>
         <div class="frow3">
-          <div class="fg"><label id="l-iname">सामान का नाम</label><input id="i-name" class="finput" placeholder="जैसे: टाटा नमक 1kg" /></div>
-          <div class="fg"><label id="l-iqty">मात्रा</label><input id="i-qty" class="finput" type="number" placeholder="50" min="0" /></div>
-          <div class="fg"><label id="l-iprice">कीमत ₹</label><input id="i-price" class="finput" type="number" placeholder="22" min="0" /></div>
+          <div class="fg"><label class="notranslate" id="l-iname">सामान का नाम</label><input id="i-name" class="finput" placeholder="जैसे: टाटा नमक 1kg" /></div>
+          <div class="fg"><label class="notranslate" id="l-iqty">मात्रा</label><input id="i-qty" class="finput" type="number" placeholder="50" min="0" /></div>
+          <div class="fg"><label class="notranslate" id="l-iprice">कीमत ₹</label><input id="i-price" class="finput" type="number" placeholder="22" min="0" /></div>
         </div>
         <div class="frow2" style="margin-bottom:14px;">
-          <div class="fg"><label id="l-icat">श्रेणी</label>
+          <div class="fg"><label class="notranslate" id="l-icat">श्रेणी</label>
             <select id="i-cat" class="fselect">
               <option>अनाज और दाल</option><option>तेल और घी</option><option>मसाले</option>
               <option>नाश्ता</option><option>पेय पदार्थ</option><option>डेयरी</option><option>सफाई</option><option>अन्य</option>
             </select>
           </div>
-          <div class="fg"><label id="l-ilow">कम स्टॉक अलर्ट</label><input id="i-low" class="finput" type="number" placeholder="10" min="0" /></div>
+          <div class="fg"><label class="notranslate" id="l-ilow">कम स्टॉक अलर्ट</label><input id="i-low" class="finput" type="number" placeholder="10" min="0" /></div>
         </div>
-        <button id="btn-add-item" class="submit-btn">➕ इन्वेंटरी में जोड़ें</button>
+        <button id="btn-add-item" class="notranslate submit-btn">➕ इन्वेंटरी में जोड़ें</button>
       </div>
       <div class="search-wrap"><span class="search-icon">🔍</span><input id="i-search" class="search-input" placeholder="सामान का नाम खोजें..." /></div>
-      <div class="list-label" id="inv-list-label">स्टॉक सूची</div>
+      <div class="notranslate list-label" id="inv-list-label">स्टॉक सूची</div>
       <div id="inv-list"></div>
     </div>
 
     <!-- Udhar -->
     <div id="panel-udh" class="panel">
       <div class="form-card">
-        <div class="fcard-title"><div class="fcard-icon">📝</div><span id="udh-form-title">उधार एंट्री जोड़ें</span></div>
+        <div class="fcard-title"><div class="fcard-icon">📝</div><span class="notranslate" id="udh-form-title">उधार एंट्री जोड़ें</span></div>
         <div class="frow2">
-          <div class="fg"><label id="l-uname">ग्राहक का नाम</label><input id="u-name" class="finput" placeholder="जैसे: रमेश शर्मा" /></div>
-          <div class="fg"><label id="l-uamt">राशि ₹</label><input id="u-amt" class="finput" type="number" placeholder="200" min="0" /></div>
+          <div class="fg"><label class="notranslate" id="l-uname">ग्राहक का नाम</label><input id="u-name" class="finput" placeholder="जैसे: रमेश शर्मा" /></div>
+          <div class="fg"><label class="notranslate" id="l-uamt">राशि ₹</label><input id="u-amt" class="finput" type="number" placeholder="200" min="0" /></div>
         </div>
         <div class="frow2" style="margin-bottom:14px;">
-          <div class="fg"><label id="l-utype">एंट्री का प्रकार</label>
+          <div class="fg"><label class="notranslate" id="l-utype">एंट्री का प्रकार</label>
             <select id="u-type" class="fselect">
               <option value="debit" id="uopt-d">🔴 उधार दिया</option>
               <option value="credit" id="uopt-c">🟢 पैसे मिले</option>
             </select>
           </div>
-          <div class="fg"><label id="l-unote">नोट (वैकल्पिक)</label><input id="u-note" class="finput" placeholder="जैसे: नमक, ब्रेड" /></div>
+          <div class="fg"><label class="notranslate" id="l-unote">नोट (वैकल्पिक)</label><input id="u-note" class="finput" placeholder="जैसे: नमक, ब्रेड" /></div>
         </div>
-        <button id="btn-add-udhar" class="submit-btn">➕ एंट्री जोड़ें</button>
+        <button id="btn-add-udhar" class="notranslate submit-btn">➕ एंट्री जोड़ें</button>
       </div>
-      <div class="list-label" id="udh-list-label">ग्राहक बकाया</div>
+      <div class="notranslate list-label" id="udh-list-label">ग्राहक बकाया</div>
       <div id="udh-list"></div>
     </div>
 
     <!-- Sales -->
     <div id="panel-sal" class="panel">
       <div class="form-card">
-        <div class="fcard-title"><div class="fcard-icon">🧾</div><span id="sal-form-title">बिक्री दर्ज करें</span></div>
+        <div class="fcard-title"><div class="fcard-icon">🧾</div><span class="notranslate" id="sal-form-title">बिक्री दर्ज करें</span></div>
         <div class="frow3" style="margin-bottom:14px;">
-          <div class="fg"><label id="l-sitem">बेचा गया सामान</label><select id="s-item" class="fselect"></select></div>
-          <div class="fg"><label id="l-sqty">मात्रा</label><input id="s-qty" class="finput" type="number" placeholder="5" min="1" /></div>
-          <div class="fg"><label id="l-spay">भुगतान का तरीका</label>
+          <div class="fg"><label class="notranslate" id="l-sitem">बेचा गया सामान</label><select id="s-item" class="fselect"></select></div>
+          <div class="fg"><label class="notranslate" id="l-sqty">मात्रा</label><input id="s-qty" class="finput" type="number" placeholder="5" min="1" /></div>
+          <div class="fg"><label class="notranslate" id="l-spay">भुगतान का तरीका</label>
             <select id="s-pay" class="fselect"><option>Cash</option><option>UPI</option><option>Udhar</option></select>
           </div>
         </div>
-        <button id="btn-add-sale" class="submit-btn">🧾 बिक्री दर्ज करें</button>
+        <button id="btn-add-sale" class="notranslate submit-btn">🧾 बिक्री दर्ज करें</button>
       </div>
-      <div class="list-label" id="sal-list-label">आज की बिक्री</div>
+      <div class="notranslate list-label" id="sal-list-label">आज की बिक्री</div>
       <div id="sal-list"></div>
     </div>
       <!-- Reports -->
@@ -951,7 +953,8 @@ window.onerror = function(msg,src,line,col,err){
 
   window.setLang=function(l){
     lang=l; localStorage.setItem('kb_lang',l);
-    document.documentElement.lang=l; /* update html[lang] for screen readers */
+    document.documentElement.lang=l;
+    document.documentElement.setAttribute('data-lang',l);
     applyLang();
     if(document.getElementById('page-app').classList.contains('active')) drawAll();
   };
