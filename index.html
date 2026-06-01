@@ -2359,7 +2359,8 @@ window.onerror = function(msg,src,line,col,err){
   /* ── IndexedDB open ── */
   var _db = null;
   var DB_NAME = 'kiranabook', DB_VER = 1;
-  var STORES = ['kb_items','kb_udhar','kb_sales'];
+  var STORES = ['kb_items','kb_customers','kb_udhar','kb_sales','kb_audit'];
+  var DB_VER  = 2; /* bumped for new schema */
 
   function openDB(){
     return new Promise(function(resolve, reject){
@@ -2367,14 +2368,43 @@ window.onerror = function(msg,src,line,col,err){
       var req = indexedDB.open(DB_NAME, DB_VER);
       req.onupgradeneeded = function(e){
         var db = e.target.result;
-        STORES.forEach(function(name){
-          if(!db.objectStoreNames.contains(name)){
-            var s = db.createObjectStore(name, {keyPath:'id'});
-            s.createIndex('user_id','user_id',{unique:false});
-            s.createIndex('sync_status','sync_status',{unique:false});
-            s.createIndex('updated_at','updated_at',{unique:false});
-          }
-        });
+        /* kb_items */
+        if(!db.objectStoreNames.contains('kb_items')){
+          var s = db.createObjectStore('kb_items',{keyPath:'id'});
+          s.createIndex('user_id','user_id',{unique:false});
+          s.createIndex('sync_status','sync_status',{unique:false});
+          s.createIndex('updated_at','updated_at',{unique:false});
+        }
+        /* kb_customers — replaces text-only customer field */
+        if(!db.objectStoreNames.contains('kb_customers')){
+          var c = db.createObjectStore('kb_customers',{keyPath:'id'});
+          c.createIndex('user_id','user_id',{unique:false});
+          c.createIndex('sync_status','sync_status',{unique:false});
+          c.createIndex('name','name',{unique:false});
+        }
+        /* kb_udhar — now references customer_id */
+        if(!db.objectStoreNames.contains('kb_udhar')){
+          var u = db.createObjectStore('kb_udhar',{keyPath:'id'});
+          u.createIndex('user_id','user_id',{unique:false});
+          u.createIndex('customer_id','customer_id',{unique:false});
+          u.createIndex('sync_status','sync_status',{unique:false});
+          u.createIndex('updated_at','updated_at',{unique:false});
+        }
+        /* kb_sales — now stores item_id, unit_price_paise, tax_paise, discount_paise */
+        if(!db.objectStoreNames.contains('kb_sales')){
+          var sa = db.createObjectStore('kb_sales',{keyPath:'id'});
+          sa.createIndex('user_id','user_id',{unique:false});
+          sa.createIndex('item_id','item_id',{unique:false});
+          sa.createIndex('sync_status','sync_status',{unique:false});
+          sa.createIndex('updated_at','updated_at',{unique:false});
+        }
+        /* kb_audit — immutable audit log */
+        if(!db.objectStoreNames.contains('kb_audit')){
+          var a = db.createObjectStore('kb_audit',{keyPath:'id'});
+          a.createIndex('user_id','user_id',{unique:false});
+          a.createIndex('entity_type','entity_type',{unique:false});
+          a.createIndex('sync_status','sync_status',{unique:false});
+        }
       };
       req.onsuccess = function(e){ _db = e.target.result; resolve(_db); };
       req.onerror   = function(e){ reject(e.target.error); };
@@ -2625,11 +2655,13 @@ window.onerror = function(msg,src,line,col,err){
     syncBadge('sync_load');
     /* Always load from IDB first so UI shows instantly */
     try{
-      var[li,lu,ls] = await Promise.all([
-        idbGetAll('kb_items', uid),
-        idbGetAll('kb_udhar', uid),
-        idbGetAll('kb_sales', uid)
+      var[li,lc,lu,ls] = await Promise.all([
+        idbGetAll('kb_items',     uid),
+        idbGetAll('kb_customers', uid),
+        idbGetAll('kb_udhar',     uid),
+        idbGetAll('kb_sales',     uid)
       ]);
+      customers = lc.filter(function(r){ return !r.deleted_at; });
       /* Filter out locally-deleted records for display */
       items = li.filter(function(r){ return r.sync_status !== 'deleted'; });
       udhar = lu.filter(function(r){ return r.sync_status !== 'deleted'; });
@@ -2783,6 +2815,81 @@ window.onerror = function(msg,src,line,col,err){
           await idbPut('kb_sales', sale);
         }catch(e){ anyPending = true; }
       }
+      /* ── Customers ── */
+      var pendingCusts = await idbGetPending('kb_customers');
+      for(var i=0; i<pendingCusts.length; i++){
+        var cust = pendingCusts[i];
+        try{
+          var now = new Date().toISOString();
+          await sb.from('kb_customers').upsert({
+            id: cust.id, user_id: user.id, name: cust.name,
+            phone: cust.phone||'',
+            created_at: cust.created_at||now, updated_at: now,
+            deleted_at: cust.deleted_at||null
+          },{onConflict:'id'});
+          cust.sync_status='synced';
+          await idbPut('kb_customers', cust);
+        }catch(e){ anyPending=true; }
+      }
+      /* ── Audit log ── */
+      var pendingAudit = await idbGetPending('kb_audit');
+      for(var i=0; i<pendingAudit.length; i++){
+        var entry = pendingAudit[i];
+        try{
+          await sb.from('kb_audit').insert({
+            id: entry.id, user_id: user.id,
+            action: entry.action, entity_type: entry.entity_type,
+            entity_id: entry.entity_id, details: entry.details,
+            created_at: entry.created_at, updated_at: entry.updated_at
+          });
+          entry.sync_status='synced';
+          await idbPut('kb_audit', entry);
+        }catch(e){ anyPending=true; }
+      }
+      /* ── Update flushQueue for sales to include new paise fields ── */
+      var pendingSalesV2 = await idbGetPending('kb_sales');
+      for(var i=0; i<pendingSalesV2.length; i++){
+        var sale = pendingSalesV2[i];
+        if(sale.sync_status!=='pending') continue;
+        try{
+          var now = new Date().toISOString();
+          await sb.from('kb_sales').upsert({
+            id: sale.id, user_id: user.id,
+            item_id: sale.item_id||null,
+            name: sale.name, cat: sale.cat||'', qty: sale.qty,
+            unit_price_paise: sale.unit_price_paise || toPaise(sale.unit_price||sale.total/sale.qty||0),
+            tax_paise:        sale.tax_paise        || toPaise(sale.tax||0),
+            discount_paise:   sale.discount_paise   || toPaise(sale.discount||0),
+            total_paise:      sale.total_paise      || toPaise(sale.total||0),
+            pay: sale.pay, time: sale.time,
+            created_at: sale.created_at||now, updated_at: now,
+            deleted_at: sale.deleted_at||null
+          },{onConflict:'id'});
+          sale.sync_status='synced';
+          await idbPut('kb_sales', sale);
+        }catch(e){ anyPending=true; }
+      }
+      /* ── Update flushQueue for udhar to include new paise + customer_id fields ── */
+      var pendingUdharV2 = await idbGetPending('kb_udhar');
+      for(var i=0; i<pendingUdharV2.length; i++){
+        var uentry = pendingUdharV2[i];
+        if(uentry.sync_status!=='pending') continue;
+        try{
+          var now = new Date().toISOString();
+          await sb.from('kb_udhar').upsert({
+            id: uentry.id, user_id: user.id,
+            customer_id: uentry.customer_id||null,
+            customer: uentry.customer,
+            type: uentry.type,
+            amount_paise: uentry.amount_paise || toPaise(uentry.amount||0),
+            note: uentry.note||'', date: uentry.date,
+            created_at: uentry.created_at||now, updated_at: now,
+            deleted_at: uentry.deleted_at||null
+          },{onConflict:'id'});
+          uentry.sync_status='synced';
+          await idbPut('kb_udhar', uentry);
+        }catch(e){ anyPending=true; }
+      }
       syncBadge(anyPending ? 'sync_pending' : 'sync_ok');
     }catch(e){ syncBadge('sync_err'); }
     finally{ _flushing = false; }
@@ -2807,11 +2914,13 @@ window.onerror = function(msg,src,line,col,err){
   }
 
   async function delItem(id){
-    items = items.filter(function(i){ return i.id !== id; });
+    var deletedItem = items.find(function(i){ return String(i.id)===String(id); });
+    items = items.filter(function(i){ return String(i.id) !== String(id); });
     drawAll();
     toast('toast_del');
     if(!user) return;
-    /* Mark deleted in IDB — flushQueue will remove from server */
+    var now = new Date().toISOString();
+    /* Mark deleted in IDB with deleted_at timestamp */
     try{
       var existing = await new Promise(function(resolve,reject){
         openDB().then(function(db){
@@ -2822,9 +2931,17 @@ window.onerror = function(msg,src,line,col,err){
       });
       if(existing){
         existing.sync_status = 'deleted';
+        existing.deleted_at  = now;
+        existing.updated_at  = now;
         await idbPut('kb_items', existing);
       }
     }catch(e){}
+    /* Audit log */
+    await auditLog('delete', 'item', id, {
+      name:  deletedItem ? deletedItem.name : id,
+      qty:   deletedItem ? deletedItem.qty  : null,
+      price_paise: deletedItem ? toPaise(deletedItem.price) : null
+    });
     syncBadge('sync_pending');
     if(sbOK && _isOnline) flushQueue();
   }
@@ -2833,11 +2950,19 @@ window.onerror = function(msg,src,line,col,err){
     toast('toast_saved');
     if(!user) return;
     var now = new Date().toISOString();
-    e.id         = e.id || genId(user.id);
-    e.created_at = e.created_at || now;
-    e.updated_at = now;
-    e.user_id    = user.id;
-    e.sync_status = 'pending';
+    /* Ensure customer record exists and link by ID */
+    if(!e.customer_id && e.customer){
+      var cust = await findOrCreateCustomer(e.customer, user.id);
+      e.customer_id = cust.id;
+    }
+    e.id              = e.id || genId(user.id);
+    e.created_at      = e.created_at || now;
+    e.updated_at      = now;
+    e.deleted_at      = e.deleted_at || null;
+    e.user_id         = user.id;
+    e.sync_status     = 'pending';
+    /* Store amount in paise */
+    e.amount_paise    = toPaise(e.amount);
     await idbPut('kb_udhar', e);
     syncBadge('sync_pending');
     if(sbOK && _isOnline) flushQueue();
@@ -2847,11 +2972,17 @@ window.onerror = function(msg,src,line,col,err){
     toast('toast_saved');
     if(!user) return;
     var now = new Date().toISOString();
-    s.id         = s.id || genId(user.id);
-    s.created_at = s.created_at || now;
-    s.updated_at = now;
-    s.user_id    = user.id;
-    s.sync_status = 'pending';
+    s.id               = s.id || genId(user.id);
+    s.created_at       = s.created_at || now;
+    s.updated_at       = now;
+    s.deleted_at       = s.deleted_at || null;
+    s.user_id          = user.id;
+    s.sync_status      = 'pending';
+    /* Store all money as paise integers */
+    s.unit_price_paise = toPaise(s.unit_price || (s.total/s.qty));
+    s.tax_paise        = toPaise(s.tax        || 0);
+    s.discount_paise   = toPaise(s.discount   || 0);
+    s.total_paise      = toPaise(s.total);
     await idbPut('kb_sales', s);
     syncBadge('sync_pending');
     if(sbOK && _isOnline) flushQueue();
@@ -2864,6 +2995,26 @@ window.onerror = function(msg,src,line,col,err){
   function emojiFor(cat){return EMOJIS[cat]||'📦';}
 
   /* ── XSS & INPUT SANITISATION HELPERS ── */
+  /* ══ AUDIT LOG ══ */
+  async function auditLog(action, entityType, entityId, details){
+    if(!user) return;
+    var now = new Date().toISOString();
+    var entry = {
+      id:          genId(user.id),
+      user_id:     user.id,
+      action:      action,        /* 'delete' | 'payment_received' | 'sale' | 'update' */
+      entity_type: entityType,    /* 'item' | 'udhar' | 'sale' | 'customer' */
+      entity_id:   entityId,
+      details:     JSON.stringify(details||{}),
+      created_at:  now,
+      updated_at:  now,
+      deleted_at:  null,
+      sync_status: 'pending'
+    };
+    await idbPut('kb_audit', entry);
+    if(sbOK && _isOnline) flushQueue();
+  }
+
   function escapeHtml(s){
     if(s===null||s===undefined)return '';
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
@@ -2871,6 +3022,44 @@ window.onerror = function(msg,src,line,col,err){
   }
   function safeNum(v,def){var n=Number(v);return(isFinite(n)&&n>=0)?n:(def||0);}
   function safeId(s){return String(s||'').replace(/[^a-zA-Z0-9_\-]/g,'');}
+
+  /* ── Paise/cents helpers — all money stored as integers (paise) ── */
+  function toPaise(rupees){ return Math.round(safeNum(rupees,0)*100); }
+  function fromPaise(paise){ return safeNum(paise,0)/100; }
+  function rupeesFromPaise(paise){ return rupee(fromPaise(paise)); }
+
+  /* ── Customers in-memory array (mirrors kb_customers IDB store) ── */
+  var customers = [];
+
+  /* ── Find or create customer, return customer object ── */
+  async function findOrCreateCustomer(name, uid){
+    var norm = name.trim().slice(0,80);
+    var existing = customers.find(function(c){ return c.name.toLowerCase()===norm.toLowerCase(); });
+    if(existing) return existing;
+    var now = new Date().toISOString();
+    var cust = {
+      id:          genId(uid),
+      user_id:     uid,
+      name:        norm,
+      phone:       '',
+      created_at:  now,
+      updated_at:  now,
+      deleted_at:  null,
+      sync_status: 'pending'
+    };
+    customers.push(cust);
+    await idbPut('kb_customers', cust);
+    return cust;
+  }
+
+  /* ── Persist customer ── */
+  async function pCustomer(cust){
+    if(!user) return;
+    cust.user_id    = user.id;
+    cust.sync_status= 'pending';
+    await idbPut('kb_customers', cust);
+    if(sbOK && _isOnline) flushQueue();
+  }
 
   /* ══ WHATSAPP ══ */
   function waShare(cust){
@@ -3043,9 +3232,28 @@ window.onerror = function(msg,src,line,col,err){
     if(!item)return; item.qty=Math.max(0,Number(item.qty)+d); drawAll(); pItem(item,false);
   };
   window.delItem=function(id){delItem(id);};
-  window.markPaid=function(cust){
-    var tot=udharTotals(),bal=tot[cust]||0;
-    if(bal>0){var e={customer:cust,type:'credit',amount:bal,note:'Full payment received',date:'Today'};udhar.push(e);drawAll();pUdhar(e);}
+  window.markPaid=async function(cust){
+    var tot=udharTotals(), bal=tot[cust]||0;
+    if(bal>0){
+      var custRec = user ? await findOrCreateCustomer(cust, user.id) : {id: genId('anon'), name: cust};
+      var e={
+        customer:     cust,
+        customer_id:  custRec.id,
+        type:         'credit',
+        amount:       bal,
+        amount_paise: toPaise(bal),
+        note:         'Full payment received',
+        date:         new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short'})
+      };
+      udhar.push(e);
+      drawAll();
+      await pUdhar(e);
+      /* Audit: payment received */
+      await auditLog('payment_received','udhar', custRec.id, {
+        customer: cust, customer_id: custRec.id,
+        amount_paise: toPaise(bal), note: 'Full payment received'
+      });
+    }
   };
 
   /* ══ LISTENERS ══ */
@@ -3069,39 +3277,121 @@ window.onerror = function(msg,src,line,col,err){
     drawAll();pItem(item,true);
   });
 
-  document.getElementById('btn-add-udhar').addEventListener('click',function(){
-    var name=document.getElementById('u-name').value.trim().slice(0,80);
-    var amt=Math.max(0,Math.min(9999999,parseFloat(document.getElementById('u-amt').value)||0));
-    var rawType=document.getElementById('u-type').value;
-    var type=['debit','credit'].indexOf(rawType)>=0?rawType:'debit';
-    var note=document.getElementById('u-note').value.trim().slice(0,200);
-    if(!name){toast('err_cust');return;}
-    if(!amt){toast('err_amt');return;}
+  document.getElementById('btn-add-udhar').addEventListener('click',async function(){
+    var name    = document.getElementById('u-name').value.trim().slice(0,80);
+    var amt     = Math.max(0,Math.min(9999999,parseFloat(document.getElementById('u-amt').value)||0));
+    var rawType = document.getElementById('u-type').value;
+    var type    = ['debit','credit'].indexOf(rawType)>=0 ? rawType : 'debit';
+    var note    = document.getElementById('u-note').value.trim().slice(0,200);
+    if(!name){ toast('err_cust'); return; }
+    if(!amt){  toast('err_amt');  return; }
+
+    /* Free plan: limit by unique customer count */
     if(USER_PLAN==='free'){
-      var existingCusts=new Set(udhar.map(function(e){return e.customer;}));
-      if(!existingCusts.has(name)&&existingCusts.size>=10){toast('err_udhar_limit');return;}
+      var existingCusts = new Set(udhar.map(function(e){ return e.customer; }));
+      if(!existingCusts.has(name) && existingCusts.size>=10){ toast('err_udhar_limit'); return; }
     }
-    var entry={customer:name,type:type,amount:amt,note:note,date:'Today'};
+
+    /* Find or create customer record */
+    var cust = user ? await findOrCreateCustomer(name, user.id) : {id: genId('anon'), name: name};
+
+    var entry = {
+      customer:    name,
+      customer_id: cust.id,
+      type:        type,
+      amount:      amt,
+      amount_paise: toPaise(amt),
+      note:        note,
+      date:        new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short'})
+    };
     udhar.push(entry);
     document.getElementById('u-name').value='';
     document.getElementById('u-amt').value='';
     document.getElementById('u-note').value='';
-    drawUdhar();drawStats();pUdhar(entry);
+    drawUdhar(); drawStats();
+    await pUdhar(entry);
+
+    /* Audit log for payment received */
+    if(type==='credit'){
+      await auditLog('payment_received','udhar', entry.id||cust.id, {
+        customer: name, customer_id: cust.id,
+        amount_paise: toPaise(amt), note: note
+      });
+    }
   });
 
-  document.getElementById('btn-add-sale').addEventListener('click',function(){
-    var itemId=document.getElementById('s-item').value;
-    var qty=parseInt(document.getElementById('s-qty').value)||0;
-    var pay=document.getElementById('s-pay').value;
-    var item=items.find(function(i){return String(i.id)===String(itemId);});
-    if(!item||qty<=0){toast('err_qty');return;}
-    if(Number(item.qty)<qty){toast('err_stock'.replace('{n}',item.qty));return;}
-    item.qty=Number(item.qty)-qty;
-    var now=new Date();
-    var sale={name:item.name,cat:item.cat,qty:qty,total:qty*Number(item.price),pay:pay,time:now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})};
+  document.getElementById('btn-add-sale').addEventListener('click',async function(){
+    var itemId = document.getElementById('s-item').value;
+    var qty    = parseInt(document.getElementById('s-qty').value)||0;
+    var pay    = document.getElementById('s-pay').value;
+    var taxPct    = parseFloat(document.getElementById('s-tax')&&document.getElementById('s-tax').value||0)||0;
+    var discRupee = parseFloat(document.getElementById('s-disc')&&document.getElementById('s-disc').value||0)||0;
+    var item = items.find(function(i){ return String(i.id)===String(itemId); });
+    if(!item||qty<=0){ toast('err_qty'); return; }
+    if(Number(item.qty)<qty){ toast('err_stock'); return; }
+
+    var unitPrice  = Number(item.price);
+    var subtotal   = qty * unitPrice;
+    var taxAmt     = Math.round(subtotal * taxPct / 100 * 100) / 100;
+    var total      = Math.max(0, subtotal + taxAmt - discRupee);
+    var now        = new Date();
+    var nowISO     = now.toISOString();
+
+    /* ── 1. Update stock locally first (optimistic) ── */
+    item.qty = Number(item.qty) - qty;
+
+    var sale = {
+      id:            genId(user ? user.id : 'anon'),
+      item_id:       item.id,
+      name:          item.name,
+      cat:           item.cat,
+      qty:           qty,
+      unit_price:    unitPrice,
+      tax:           taxAmt,
+      discount:      discRupee,
+      total:         total,
+      pay:           pay,
+      time:          now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}),
+      created_at:    nowISO,
+      updated_at:    nowISO,
+    };
     sales.unshift(sale);
     document.getElementById('s-qty').value='';
-    drawAll();pItem(item,false);pSale(sale);
+    drawAll();
+
+    /* ── 2. Persist both stock and sale — attempt atomic RPC first ── */
+    if(sbOK && _isOnline && user){
+      try{
+        /* Call Supabase RPC: record_sale handles INSERT sale + UPDATE item qty atomically */
+        var r = await sb.rpc('record_sale',{
+          p_user_id:          user.id,
+          p_item_id:          item.id,
+          p_sale_id:          sale.id,
+          p_qty:              qty,
+          p_unit_price_paise: toPaise(unitPrice),
+          p_tax_paise:        toPaise(taxAmt),
+          p_discount_paise:   toPaise(discRupee),
+          p_total_paise:      toPaise(total),
+          p_pay_mode:         pay,
+          p_sale_time:        sale.time,
+          p_created_at:       nowISO
+        });
+        if(r.error) throw r.error;
+        /* Mark both as synced in IDB */
+        sale.sync_status = 'synced';
+        item.sync_status = 'synced';
+        await Promise.all([ idbPut('kb_sales', sale), idbPut('kb_items', item) ]);
+        syncBadge('sync_ok');
+        return;
+      }catch(e){
+        /* RPC not set up yet or offline — fall through to queue */
+        console.warn('record_sale RPC failed, queuing:', e.message);
+      }
+    }
+
+    /* ── 3. Offline / RPC unavailable: queue both independently ── */
+    await pItem(item, false);
+    await pSale(sale);
   });
 
   /* ══ STORE NAME ══ */
