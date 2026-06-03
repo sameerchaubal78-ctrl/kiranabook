@@ -1058,94 +1058,102 @@ window.onerror = function(msg,src,line,col,err){
   window.USER_PLAN = 'free'; /* live value set by loadUserPlan() on sign-in */
   window.BILLING_CYCLE = 'monthly'; /* 'monthly' | 'annual' */
 
-  /* Load plan from Supabase kb_subscriptions table */
+  /* ── Load plan from server via get_my_limits() RPC.
+     Server is the single source of truth — client never
+     reads kb_subscriptions directly (RLS blocks writes too). ── */
+  window._planLimits = null; /* cached limits object from server */
+
   async function loadUserPlan(uid){
-    if(!sbOK) return;
+    if(!sbOK){ window.USER_PLAN='free'; window._planLimits=null; return; }
     try{
-      var r = await sb.from('kb_subscriptions')
-        .select('plan,billing_cycle,status,expires_at')
-        .eq('user_id', uid)
-        .eq('status','active')
-        .order('created_at',{ascending:false})
-        .limit(1)
-        .single();
-      if(r.data && r.data.plan){
-        /* Check expiry */
-        var expires = r.data.expires_at ? new Date(r.data.expires_at) : null;
-        if(!expires || expires > new Date()){
-          window.USER_PLAN = r.data.plan;          /* 'free' | 'dukandaar' | 'malik' */
-          window.BILLING_CYCLE = r.data.billing_cycle || 'monthly';
-        } else {
-          /* Expired — downgrade to free */
-          window.USER_PLAN = 'free';
-          await sb.from('kb_subscriptions').update({status:'expired'}).eq('user_id',uid).eq('status','active');
-        }
+      var r = await sb.rpc('get_my_limits');
+      if(r.error) throw r.error;
+      var lim = Array.isArray(r.data) ? r.data[0] : r.data;
+      if(lim && lim.plan){
+        window.USER_PLAN    = lim.plan;
+        window._planLimits  = lim;
+        /* Also fetch billing cycle for UI toggle */
+        var sr = await sb.from('kb_subscriptions')
+          .select('billing_cycle')
+          .eq('user_id', uid)
+          .eq('status','active')
+          .order('created_at',{ascending:false})
+          .limit(1)
+          .maybeSingle();
+        window.BILLING_CYCLE = (sr.data && sr.data.billing_cycle) || 'monthly';
       } else {
-        window.USER_PLAN = 'free';
+        window.USER_PLAN   = 'free';
+        window._planLimits = null;
       }
     } catch(e){
-      /* No subscription row found — free plan */
-      window.USER_PLAN = 'free';
+      window.USER_PLAN   = 'free';
+      window._planLimits = null;
     }
     updatePlanBadge();
     if(typeof updateExportButton==='function') updateExportButton();
     if(typeof updateGSTButton==='function') updateGSTButton();
   }
 
-  /* ══ MULTI-DEVICE ENFORCEMENT ══
-     Dukandaar = 1 device only. On app load we write a session token to localStorage.
-     If another tab already holds an active token (<30s old), we show a block overlay. */
-  (function enforceDeviceLimit(){
-    if(USER_PLAN==='free') return;
-    var MAX_DEVICES = USER_PLAN==='malik' ? 3 : 1;
-    var LIST_KEY='kb_device_list', SES_KEY='kb_device_token';
-    /* Load + prune stale entries (>30s old) */
-    var activeDevices=[];
-    try{ activeDevices=JSON.parse(localStorage.getItem(LIST_KEY)||'[]'); }catch(e){}
-    activeDevices=activeDevices.filter(function(d){return Date.now()-d.ts<30000;});
-    var myTok=sessionStorage.getItem(SES_KEY);
-    var alreadyIn=activeDevices.some(function(d){return d.tok===myTok;});
-    var overLimit=!alreadyIn&&activeDevices.length>=MAX_DEVICES;
-    if(overLimit){
-      var ov=document.createElement('div');
-      ov.id='multidevice-block';
-      ov.style.cssText='position:fixed;inset:0;background:rgba(255,253,249,.97);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:99999;font-family:Plus Jakarta Sans,sans-serif;gap:16px;padding:2rem;text-align:center;';
-      var limitText = MAX_DEVICES===1
-        ? 'Your Dukandaar plan allows <strong>1 device</strong> at a time. Close the other session first, or upgrade to Malik for multi-device access.'
-        : 'Your Malik plan allows <strong>3 devices</strong> at a time. Please close one other session first.';
-      var _d1=document.createElement('div');_d1.style.fontSize='48px';_d1.textContent='📱';
-      var _d2=document.createElement('div');_d2.style.cssText='font-size:20px;font-weight:700;color:#1A1209;';_d2.textContent='Already open on another device';
-      var _d3=document.createElement('div');_d3.style.cssText='font-size:14px;color:#5A4A3A;max-width:320px;line-height:1.6;';_d3.innerHTML=limitText;
-      var _b1=document.createElement('button');_b1.style.cssText='padding:12px 24px;background:#E8650A;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:Plus Jakarta Sans,sans-serif;';_b1.textContent='🔄 Retry';_b1.onclick=function(){window.location.reload();};
-      var _b2=document.createElement('button');_b2.style.cssText='padding:10px 20px;background:transparent;color:#E8650A;border:1px solid #E8650A;border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;font-family:Plus Jakarta Sans,sans-serif;';_b2.textContent='⚡ Upgrade to Malik';_b2.onclick=function(){var el=document.getElementById('multidevice-block');if(el)el.remove();};
-      ov.appendChild(_d1);ov.appendChild(_d2);ov.appendChild(_d3);ov.appendChild(_b1);ov.appendChild(_b2);
-      document.body.appendChild(ov);
-      return;
+  /* Helper: read a plan limit from cached server response */
+  function planLimit(key, fallback){
+    return (window._planLimits && window._planLimits[key] != null)
+      ? window._planLimits[key] : fallback;
+  }
+
+  /* ── DEVICE ENFORCEMENT: server-side via check_device_access RPC.
+     localStorage tracking removed — server enforces per-plan device limits. ── */
+  var _deviceToken = null;
+  var _deviceHeartbeat = null;
+
+  async function enforceDeviceLimit(){
+    if(!sbOK || !user || USER_PLAN==='free') return;
+    _deviceToken = sessionStorage.getItem('kb_dev_tok');
+    if(!_deviceToken){
+      _deviceToken = 'kb_'+Math.random().toString(36).slice(2)+Date.now().toString(36);
+      sessionStorage.setItem('kb_dev_tok', _deviceToken);
     }
-    /* Register this tab's token */
-    var tok = myTok || ('kb_'+Math.random().toString(36).slice(2));
-    sessionStorage.setItem(SES_KEY, tok);
-    if(!alreadyIn){ activeDevices.push({tok:tok,ts:Date.now()}); }
-    else{ activeDevices=activeDevices.map(function(d){return d.tok===tok?{tok:tok,ts:Date.now()}:d;}); }
-    localStorage.setItem(LIST_KEY, JSON.stringify(activeDevices));
-    /* Heartbeat every 20s */
-    setInterval(function(){
-      var list=[];
-      try{ list=JSON.parse(localStorage.getItem(LIST_KEY)||'[]'); }catch(e){}
-      list=list.filter(function(d){return Date.now()-d.ts<30000;});
-      var found=list.some(function(d){return d.tok===tok;});
-      if(found){ list=list.map(function(d){return d.tok===tok?{tok:tok,ts:Date.now()}:d;}); }
-      else if(list.length<MAX_DEVICES){ list.push({tok:tok,ts:Date.now()}); }
-      localStorage.setItem(LIST_KEY, JSON.stringify(list));
-    },20000);
-    /* Clean up on tab close */
-    window.addEventListener('beforeunload',function(){
-      var list=[];
-      try{ list=JSON.parse(localStorage.getItem(LIST_KEY)||'[]'); }catch(e){}
-      list=list.filter(function(d){return d.tok!==tok;});
-      localStorage.setItem(LIST_KEY, JSON.stringify(list));
-    });
-  })();
+    try{
+      var r = await sb.rpc('check_device_access',{
+        p_token: _deviceToken,
+        p_device_info: navigator.userAgent.slice(0,120)
+      });
+      if(r.error) throw r.error;
+      if(!r.data.ok){
+        showDeviceBlockOverlay(r.data.max_devices, r.data.active_devices);
+        return;
+      }
+      /* Heartbeat every 5 min so server knows session is alive */
+      if(_deviceHeartbeat) clearInterval(_deviceHeartbeat);
+      _deviceHeartbeat = setInterval(async function(){
+        if(sbOK && user)
+          await sb.rpc('check_device_access',{p_token:_deviceToken,p_device_info:''});
+      }, 5*60*1000);
+      window.addEventListener('beforeunload', function(){
+        if(sbOK && user && _deviceToken)
+          sb.from('kb_device_sessions').delete()
+            .eq('user_id',user.id).eq('token',_deviceToken);
+      });
+    } catch(e){
+      console.warn('Device check failed — allowing access:', e.message);
+    }
+  }
+
+  function showDeviceBlockOverlay(maxDevices, activeDevices){
+    var existing=document.getElementById('multidevice-block');
+    if(existing) existing.remove();
+    var ov=document.createElement('div');
+    ov.id='multidevice-block';
+    ov.style.cssText='position:fixed;inset:0;background:rgba(255,253,249,.97);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:99999;font-family:Plus Jakarta Sans,sans-serif;gap:16px;padding:2rem;text-align:center;';
+    var planLabel=USER_PLAN==='malik'?'Malik':'Dukandaar';
+    var _d1=document.createElement('div');_d1.style.fontSize='48px';_d1.textContent='📱';
+    var _d2=document.createElement('div');_d2.style.cssText='font-size:20px;font-weight:700;color:#1A1209;';_d2.textContent='Already open on another device';
+    var _d3=document.createElement('div');_d3.style.cssText='font-size:14px;color:#5A4A3A;max-width:340px;line-height:1.6;';
+    _d3.textContent='Your '+planLabel+' plan allows '+maxDevices+' device'+(maxDevices>1?'s':'')+' at a time. You have '+(activeDevices||'multiple')+' active sessions. Close another session first.';
+    var _b1=document.createElement('button');_b1.style.cssText='padding:12px 24px;background:#E8650A;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:Plus Jakarta Sans,sans-serif;';_b1.textContent='🔄 Retry';_b1.onclick=function(){window.location.reload();};
+    var _b2=document.createElement('button');_b2.style.cssText='padding:10px 20px;background:transparent;color:#E8650A;border:1px solid #E8650A;border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;font-family:Plus Jakarta Sans,sans-serif;';_b2.textContent='⚡ Upgrade to Malik';_b2.onclick=function(){var el=document.getElementById('multidevice-block');if(el)el.remove();};
+    ov.appendChild(_d1);ov.appendChild(_d2);ov.appendChild(_d3);ov.appendChild(_b1);ov.appendChild(_b2);
+    document.body.appendChild(ov);
+  }
 
   window.updatePlanBadge = function updatePlanBadge(){
     var badge  = document.getElementById('plan-badge');
@@ -1197,7 +1205,7 @@ window.onerror = function(msg,src,line,col,err){
         av.innerHTML='';av.appendChild(img);
       } else { var ini=nm.trim().split(/\s+/).map(function(w){return w[0];}).join('').toUpperCase().slice(0,2);av.textContent=ini; }
     } else { var ini=nm.trim().split(/\s+/).map(function(w){return w[0];}).join('').toUpperCase().slice(0,2);av.textContent=ini; }
-    await loadUserPlan(u.id); await loadData(u.id); loadStoreName(); drawAll();
+    await loadUserPlan(u.id); await enforceDeviceLimit(); await loadData(u.id); loadStoreName(); drawAll();
   }
   async function loadData(uid){
     syncBadge('sync_load');
@@ -1807,7 +1815,7 @@ window.onerror = function(msg,src,line,col,err){
   /* ══ LISTENERS ══ */
   document.getElementById('i-search').addEventListener('input',drawInv);
 
-  document.getElementById('btn-add-item').addEventListener('click',function(){
+  document.getElementById('btn-add-item').addEventListener('click',async function(){
     var name=document.getElementById('i-name').value.trim().slice(0,100);
     var qty=Math.max(0,Math.min(999999,parseInt(document.getElementById('i-qty').value)||0));
     var price=Math.max(0,Math.min(999999,parseFloat(document.getElementById('i-price').value)||0));
@@ -1816,13 +1824,32 @@ window.onerror = function(msg,src,line,col,err){
     var cat=validCats.indexOf(catEl.value)>=0?catEl.value:validCats[0];
     var low=Math.max(0,Math.min(99999,parseInt(document.getElementById('i-low').value)||10));
     if(!name){toast('err_name');return;}
-    if(USER_PLAN==='free'&&items.length>=50){toast('err_item_limit');return;}
-    var item={id:'tmp_'+Date.now(),name:name,qty:qty,price:price,cat:cat,low:low};
+    var newId = genId(user?user.id:'anon');
+    var item={id:newId,name:name,qty:qty,price:price,cat:cat,low:low};
+    /* ── Server enforces plan limit via add_item RPC ── */
+    if(sbOK && user && _isOnline){
+      try{
+        var r = await sb.rpc('add_item',{
+          p_id:newId, p_name:name, p_qty:qty,
+          p_price:price, p_cat:cat, p_low:low
+        });
+        if(r.error) throw r.error;
+        if(r.data && !r.data.ok){
+          if(r.data.error==='item_limit') toast('err_item_limit');
+          else toast('err_name');
+          return;
+        }
+        item.sync_status='synced';
+      }catch(e){
+        /* Offline: fall through to IDB queue */
+        console.warn('add_item RPC failed, queuing:', e.message);
+      }
+    }
     items.push(item);
     document.getElementById('i-name').value='';
     document.getElementById('i-qty').value='';
     document.getElementById('i-price').value='';
-    drawAll();pItem(item,true);
+    drawAll(); await pItem(item, true);
   });
 
   document.getElementById('btn-add-udhar').addEventListener('click',async function(){
@@ -1834,11 +1861,8 @@ window.onerror = function(msg,src,line,col,err){
     if(!name){ toast('err_cust'); return; }
     if(!amt){  toast('err_amt');  return; }
 
-    /* Free plan: limit by unique customer count */
-    if(USER_PLAN==='free'){
-      var existingCusts = new Set(udhar.map(function(e){ return e.customer; }));
-      if(!existingCusts.has(name) && existingCusts.size>=10){ toast('err_udhar_limit'); return; }
-    }
+    /* ── Server enforces plan limit via add_udhar RPC ── */
+    /* Client check removed — server is authoritative */
 
     /* Find or create customer record */
     var cust = user ? await findOrCreateCustomer(name, user.id) : {id: genId('anon'), name: name};
@@ -1857,6 +1881,28 @@ window.onerror = function(msg,src,line,col,err){
     document.getElementById('u-amt').value='';
     document.getElementById('u-note').value='';
     drawUdhar(); drawStats();
+    /* Use add_udhar RPC when online — server enforces limit */
+    if(sbOK && user && _isOnline){
+      try{
+        var ru = await sb.rpc('add_udhar',{
+          p_id:           entry.id,
+          p_customer_id:  cust.id,
+          p_customer:     name,
+          p_type:         type,
+          p_amount_paise: toPaise(amt),
+          p_note:         note,
+          p_date:         entry.date
+        });
+        if(ru.error) throw ru.error;
+        if(ru.data && !ru.data.ok){
+          if(ru.data.error==='udhar_limit') toast('err_udhar_limit');
+          /* Rollback optimistic add */
+          udhar.pop(); drawUdhar(); drawStats();
+          return;
+        }
+        entry.sync_status='synced';
+      }catch(e){ console.warn('add_udhar RPC failed, queuing:', e.message); }
+    }
     await pUdhar(entry);
 
     /* Audit log for payment received */
@@ -1997,8 +2043,14 @@ window.onerror = function(msg,src,line,col,err){
   window.closeNewFeatModal=function(){ document.getElementById('new-feat-modal').style.display='none'; };
 
   /* ══ GST BILL GENERATOR (Malik only) ══ */
-  window.openGSTModal = function(){
-    if(USER_PLAN!=='malik'){ toast('err_gst_locked'); return; }
+  window.openGSTModal = async function(){
+    /* ── Server enforces Malik-only gate via check_gst_access RPC ── */
+    if(!sbOK || !user){ toast('err_gst_locked'); return; }
+    try{
+      var r = await sb.rpc('check_gst_access');
+      if(r.error) throw r.error;
+      if(!r.data.ok){ toast('err_gst_locked'); return; }
+    }catch(e){ toast('err_gst_locked'); return; }
     document.getElementById('gst-preview').style.display='none';
     document.getElementById('gst-modal').style.display='flex';
   };
@@ -2123,20 +2175,44 @@ window.onerror = function(msg,src,line,col,err){
   }
 
   /* ══ EXPORT TO CSV (Malik plan only) ══ */
-  function exportCSV(){
-    if(USER_PLAN!=='malik'){ toast('err_export_locked'); return; }
-    var rows=[['Type','Name/Customer','Category','Qty','Price','Total','Payment','Date/Note']];
-    items.forEach(function(i){ rows.push(['Inventory',i.name,i.cat||'',i.qty,i.price,i.qty*i.price,'','']); });
-    udhar.forEach(function(e){ rows.push(['Udhar',e.customer,'','',(e.type==='debit'?'+':'-')+e.amount,'','',e.note||'']); });
-    sales.forEach(function(s){ rows.push(['Sale',s.name,s.cat||'',s.qty,'',s.total,s.pay,s.time||'']); });
-    var csv=rows.map(function(r){ return r.map(function(c){ return '"'+(String(c).replace(/"/g,'""'))+'"'; }).join(','); }).join('\r\n');
-    var blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
-    var url=URL.createObjectURL(blob);
-    var a=document.createElement('a'); a.href=url;
-    a.download='KiranaBook_Export_'+new Date().toISOString().slice(0,10)+'.csv';
-    document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    toast('export_ok');
+  async function exportCSV(){
+    /* ── Server enforces Malik-only gate via export_data RPC.
+       Data comes from server — client memory is not trusted. ── */
+    if(!sbOK || !user){ toast('err_export_locked'); return; }
+    try{
+      var r = await sb.rpc('export_data');
+      if(r.error) throw r.error;
+      if(!r.data || !r.data.ok){ toast('err_export_locked'); return; }
+      var d = r.data;
+      var rows=[['Type','Name/Customer','Category','Qty','Unit Price (₹)','Total (₹)','Payment','Note']];
+      (d.items||[]).forEach(function(i){
+        rows.push(['Inventory',i.name,i.cat||'',i.qty,
+          fromPaise(i.unit_price_paise||0),
+          fromPaise((i.qty||0)*(i.unit_price_paise||0)),'','']);
+      });
+      (d.udhar||[]).forEach(function(e){
+        rows.push(['Udhar',e.customer,'','',
+          (e.type==='debit'?'+':'-')+fromPaise(e.amount_paise||0),'','',e.note||'']);
+      });
+      (d.sales||[]).forEach(function(s){
+        rows.push(['Sale',s.name,s.cat||'',s.qty,
+          fromPaise(s.unit_price_paise||0),
+          fromPaise(s.total_paise||0),s.pay,s.time||'']);
+      });
+      var csv=rows.map(function(row){
+        return row.map(function(c){ return '"'+(String(c).replace(/"/g,'""'))+'"'; }).join(',');
+      }).join('\r\n');
+      var blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+      var url=URL.createObjectURL(blob);
+      var a=document.createElement('a'); a.href=url;
+      a.download='KiranaBook_Export_'+new Date().toISOString().slice(0,10)+'.csv';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      toast('export_ok');
+    }catch(e){
+      console.error('export_data RPC error:', e);
+      toast('err_export_locked');
+    }
   }
 
   function updateExportButton(){
@@ -2220,35 +2296,28 @@ window.onerror = function(msg,src,line,col,err){
   /* Save subscription row in Supabase after successful payment */
   async function activatePlan(plan, cycle, paymentId){
     if(!sbOK||!user) return;
-    /* Calculate expiry: monthly = 31 days, annual = 366 days */
-    var days = cycle==='annual' ? 366 : 31;
-    var expiresAt = new Date(Date.now() + days*24*60*60*1000).toISOString();
+    /* ── Call Edge Function — client cannot self-grant subscriptions.
+       The Edge Function verifies the Razorpay payment signature,
+       then calls activate_plan_internal() via service_role. ── */
     try{
-      /* Deactivate any existing active subscription */
-      await sb.from('kb_subscriptions')
-        .update({status:'superseded'})
-        .eq('user_id', user.id)
-        .eq('status','active');
-      /* Insert new subscription */
-      await sb.from('kb_subscriptions').insert({
-        user_id:      user.id,
-        plan:         plan,
-        billing_cycle: cycle,
-        status:       'active',
-        payment_id:   paymentId,
-        expires_at:   expiresAt,
-        created_at:   new Date().toISOString()
+      var days = cycle==='annual' ? 366 : 31;
+      var expiresAt = new Date(Date.now() + days*24*60*60*1000).toISOString();
+      var r = await sb.functions.invoke('activate-plan', {
+        body: {
+          user_id:    user.id,
+          plan:       plan,
+          billing:    cycle,
+          payment_id: paymentId,
+          expires_at: expiresAt
+        }
       });
-      /* Update in-memory plan */
-      window.USER_PLAN = plan;
-      window.BILLING_CYCLE = cycle;
-      updatePlanBadge();
-      if(typeof updateExportButton==='function') updateExportButton();
-      if(typeof updateGSTButton==='function') updateGSTButton();
-      /* Show success */
+      if(r.error) throw r.error;
+      if(r.data && r.data.error) throw new Error(r.data.error);
+      /* Reload plan limits from server to confirm */
+      await loadUserPlan(user.id);
       showPaymentSuccess(plan);
     } catch(e){
-      console.error('Failed to save subscription:', e);
+      console.error('activatePlan Edge Function error:', e);
       alert('Payment received but activation failed. Please contact support@kiranabook.app with payment ID: ' + paymentId);
     }
   }
